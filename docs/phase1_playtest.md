@@ -16,7 +16,7 @@ explain the promotion solution or coach their clicks during observation.
 Record:
 
 - Start/end time and active play time (exclude breaks); compare with the
-  provisional 30–45 minute session target without treating one sample as balance proof.
+  provisional 30â€“45 minute session target without treating one sample as balance proof.
 - First hesitation, the screen/control involved, and what they expected.
 - Whether they dispatch, read a return report, recover, take the trial and
   approve Bronze using the on-screen guidance alone.

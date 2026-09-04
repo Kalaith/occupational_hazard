@@ -1,7 +1,7 @@
 # Playable demo roadmap
 
 Status: Phase 1 software implemented and technically verified, 2026-09-04.
-Its unfamiliar-player observation and pacing validation remain open. Phases 2–6
+Its unfamiliar-player observation and pacing validation remain open. Phases 2â€“6
 are proposed work. See [Phase 1 evidence](phase1_verification.md).
 
 ## Demo promise
@@ -44,9 +44,10 @@ character history are still demo work.
 **Player outcome:** a new player knows what the branch is working toward and can
 complete a coherent session with the existing roster and contracts.
 
-- [x] Add a first-month objective panel and a head-office review on day 30. Start
+- [ ] Add a first-month objective panel and a head-office review on day 30. Start
   with a provisional target of one Bronze certification and one successful
   Bronze commission; tune this against actual playthrough length.
+  The panel and review are implemented; player pacing evidence is still pending.
 - [x] Introduce the desk through short contextual prompts covering selection,
   DISPATCH, NEXT DAY, return reports, recovery and APPROVE BRONZE. Every prompt
   names its visible control. Allow tutorial skip and later help access.

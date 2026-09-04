@@ -66,4 +66,4 @@ tuning require a human participant and have not been performed. A repeatable
 protocol is in phase1_playtest.md. The one-certification/one-commission target
 remains provisional. The deterministic route reaches both by day 17, but an
 agent's tool-driven interaction time is not valid evidence for a new player's
-30–45 minute session. Phase 2 remains gated on that observation.
+30â€“45 minute session. Phase 2 remains gated on that observation.
