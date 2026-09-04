@@ -4,37 +4,20 @@
   "roost_slug": "rust_occupational_hazard",
   "status": {
     "text": "In Development",
-    "class": "development"
+    "class": "in-development"
   },
-  "canvas_rendering": "pixelated",
+  "canvas_rendering": "auto",
   "about": [
-    "A fantasy management simulation about running the front desk of an Adventurers' Guild and deciding who to send on each quest.",
-    "Initial development scaffold. The current build demonstrates template systems; guild gameplay is still in development."
+    "A fantasy guild management game in development. The title screen opens an empty game workspace with settings."
   ],
   "controls": [
     {
-      "desc": "Start the development sandbox",
-      "key": "Open Sandbox"
+      "key": "Start",
+      "desc": "Open the game workspace"
     },
     {
-      "desc": "Tap a card to try a sample action",
-      "key": "Action cards"
-    },
-    {
-      "desc": "Tap to select a tile",
-      "key": "Map tiles"
-    },
-    {
-      "desc": "Adjust the map",
-      "key": "Zoom In / Zoom Out / Reset View"
-    },
-    {
-      "desc": "Store or restore a sandbox session",
-      "key": "Save / Load"
-    },
-    {
-      "desc": "Return to the title screen and pause the sandbox",
-      "key": "Menu"
+      "key": "Settings cog",
+      "desc": "Open settings in the top-right corner"
     }
   ],
   "details": [
@@ -50,5 +33,6 @@
       "label": "Platform",
       "value": "Browser, Windows"
     }
-  ]
+  ],
+  "layout": "viewport"
 }

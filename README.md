@@ -1,46 +1,26 @@
 # Occupational Hazard
 
-A fantasy guild management simulation about assessing contracts, assigning adventurers, and living with the consequences. The complete design is in [gdd.md](gdd.md), preserved exactly from the supplied document.
+A fantasy guild management game. The complete design is in [gdd.md](gdd.md).
 
-## Development status
+## Current foundation
 
-Initial scaffold copied from `rust_management/template`. The current build runs the template grid/action demonstration with Occupational Hazard branding. Guild gameplay is not implemented yet.
+The title screen opens a clean game workspace with one procedurally drawn settings cog in the top-right corner. Settings provides Close and Return to Title. The grid, actions, energy, camera demo, sample persistence, and their data have been removed. Guild gameplay is not implemented yet.
 
-Includes toolkit UI, embedded JSON data, assets, save/load, notifications, event handling, grid helpers, camera controls, tests, screenshot capture, GitHub CI, and Windows/WebGL packaging.
+The UI uses the full current window dimensions without a fixed aspect ratio or letterboxing. Native builds open fullscreen. Browser builds opt into the shared publisher's `layout: viewport` mode so the canvas fills the available browser viewport without surrounding page headings or panels.
 
-## Setup
+## Development
 
-Keep `occupational_hazard`, `macroquad-toolkit`, and `rust_management` as sibling folders under `RustGames`. Install Rust and the `wasm32-unknown-unknown` target. The parent Cargo workspace automatically includes this game.
-
-Run from this folder:
+Keep this folder, `macroquad-toolkit`, and `rust_management` as siblings under `RustGames`. Install Rust and the `wasm32-unknown-unknown` target.
 
 ```powershell
 cargo run -p occupational_hazard
 cargo fmt -p occupational_hazard -- --check
 cargo test -p occupational_hazard
 cargo clippy -p occupational_hazard --all-targets --all-features -- -D warnings
-.\publish.ps1
 .\scripts\capture_ui.ps1
+.\publish.ps1
 ```
 
-The default publisher builds Windows and WebGL and deploys locally for preview. `game_page.json` supplies the generated browser page. `itch.json` retains a placeholder until an itch.io destination is assigned.
+`src/game.rs` owns screen transitions; `src/ui.rs` draws the workspace, procedural cog, and settings; `src/ui/title.rs` draws the responsive title. `asset_registry.json` and `assets/data/texture_manifest.json` remain empty until assets are introduced. Capture scenes are title, gameplay, and settings. The publisher generates the browser page from `game_page.json` and builds Windows/WebGL preview packages. The itch.io target remains unconfigured.
 
-## Layout
-
-- `src/main.rs`: runtime entry and `OCCUPATIONAL_HAZARD_CAPTURE_*` hooks.
-- `src/game.rs`: input, events, and lifecycle.
-- `src/state.rs`: serializable starter state and updates.
-- `src/data.rs`, `assets/data/`: configuration and embedded data.
-- `src/ui.rs`: rendering and controls.
-- `tests/`: asset integrity and source size checks.
-- `docs/verification/`: development captures.
-
-Read `AGENTS.md`, `CODE_STANDARDS.md`, `MACROQUAD_TOOLKIT.md`, and `GAME_DEVELOPMENT_GUIDE.md` before implementing game systems.
-
-## First gameplay milestone
-
-Replace sample grid/actions with a reception desk, persistent roster, contracts, party assignment, and a deterministic day/expedition loop. Then add injuries, rewards, promotions, quotas, recruitment, and save/load for that state, following the GDD prototype scope.
-
-The first design question is: **Is deciding who to send on a quest interesting?**
-
-The title screen opens or loads the sandbox. Menu pauses the session, and Resume Sandbox returns to it. The map has visible zoom/reset controls. Screenshot capture produces both title and gameplay scenes; the title capture supplies the catalog thumbnail.
+Read `AGENTS.md` and the shared development documents before adding systems. The next gameplay milestone is the guild roster, contracts, and party assignment described in the GDD.

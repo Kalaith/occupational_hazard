@@ -1,22 +1,20 @@
-//! Macroquad game template wired to macroquad-toolkit.
+//! Occupational Hazard runtime entry point.
 
 use macroquad::prelude::*;
 use macroquad_toolkit::capture;
 
-mod data;
 mod game;
-mod state;
+
 mod ui;
 
 use game::Game;
 
 fn window_conf() -> Conf {
-    capture::capture_window_conf(
-        "OCCUPATIONAL_HAZARD",
-        "Occupational Hazard",
-        ui::LOGICAL_WIDTH as i32,
-        ui::LOGICAL_HEIGHT as i32,
-    )
+    let mut config =
+        capture::capture_window_conf("OCCUPATIONAL_HAZARD", "Occupational Hazard", 1280, 720);
+    config.fullscreen = !capture::capture_requested("OCCUPATIONAL_HAZARD");
+    config.window_resizable = true;
+    config
 }
 
 #[macroquad::main(window_conf)]

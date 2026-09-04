@@ -6,5 +6,6 @@ edition = "2021"
 [dependencies]
 macroquad = "0.4"
 macroquad-toolkit = { path = "../macroquad-toolkit" }
-serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
 serde_json = "1.0"
