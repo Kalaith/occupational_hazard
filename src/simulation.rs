@@ -46,6 +46,8 @@ pub struct Report {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Guild {
+    #[serde(default)]
+    pub services: crate::services::Services,
     pub day: u32,
     pub gold: u32,
     pub reputation: u32,
@@ -77,6 +79,7 @@ impl Guild {
         })
         .collect();
         Self {
+            services: crate::services::Services::default(),
             day: 1,
             gold: 80,
             reputation: 0,
@@ -89,6 +92,16 @@ impl Guild {
     }
 
     pub fn validate(&self, contracts: &[Contract]) -> Result<(), String> {
+        let mut scouted = self.services.scouted.clone();
+        scouted.sort_unstable();
+        scouted.dedup();
+        if scouted.len() != self.services.scouted.len()
+            || scouted
+                .iter()
+                .any(|&id| id >= contracts.len() || contracts[id].promotion)
+        {
+            return Err("This ledger has invalid scouting records.".into());
+        }
         if self.roster.len() != 3
             || self.completed.len() != contracts.len()
             || self.day == 0
@@ -195,9 +208,19 @@ impl Guild {
             contract: id,
             party: party.to_vec(),
             returns: self.day + qs[id].days,
-            strength: self.strength(&qs[id], party),
+            strength: self.prepared_strength(id, &qs[id], party),
         });
+        self.services.scouted.retain(|&q| q != id);
         Ok(())
+    }
+
+    pub fn prepared_strength(&self, id: usize, q: &Contract, party: &[usize]) -> i32 {
+        self.strength(q, party)
+            + if self.services.scouted.contains(&id) {
+                2
+            } else {
+                0
+            }
     }
 
     pub fn next_day(&mut self, qs: &[Contract]) {
@@ -205,8 +228,18 @@ impl Guild {
         for id in 0..self.roster.len() {
             if !self.busy(id) {
                 let a = &mut self.roster[id];
+                if self.services.training_yard
+                    && !a.bronze
+                    && a.xp < 60
+                    && a.fatigue == 0
+                    && a.injury == 0
+                {
+                    a.xp = (a.xp + 5).min(60);
+                }
                 a.fatigue = a.fatigue.saturating_sub(2);
-                a.injury = a.injury.saturating_sub(1);
+                a.injury = a
+                    .injury
+                    .saturating_sub(if self.services.infirmary { 2 } else { 1 });
             }
         }
         self.day += 1;

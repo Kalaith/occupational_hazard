@@ -18,3 +18,11 @@
 The end-to-end gameplay verification is driven by the actual Guild simulation,
 including travel days and explicit promotion. Capture scenes use isolated seeded
 presentation states and never write the player's autosave.
+
+## Guild services extension - 2026-09-04
+
+Eleven tests pass, including old-save loading, purchase affordability and
+idempotence, scouting consumption, training eligibility, and infirmary recovery.
+The original Iron-to-Bronze progression tests still pass. Clippy passes with
+warnings denied. Services screens were inspected at 1280x720 and 360x640;
+existing desktop and compact captures were refreshed.

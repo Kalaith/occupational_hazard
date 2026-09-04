@@ -44,22 +44,20 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
     let inner = match g.tab {
         0 => contracts(g, area),
         1 => dossier::draw_dossier(g, area),
+        3 => services::draw_services(g, area),
         _ => reports(g, area),
     };
     if inner.is_some() {
         action = inner;
     }
     let travelling = g.guild.expeditions.len();
-    label(
-        &format!(
-            "{} expedition{} away",
-            travelling,
-            if travelling == 1 { "" } else { "s" }
-        ),
+    if button(
         Rect::new(12.0, h - 58.0, w - 180.0, 44.0),
-        18.0,
-        MUTED,
-    );
+        &format!("GUILD SERVICES / {travelling} away"),
+        g.tab == 3,
+    ) {
+        action = Some(UiAction::Tab(3));
+    }
     if button(
         Rect::new(w - 162.0, h - 58.0, 150.0, 46.0),
         "NEXT DAY",
@@ -160,7 +158,15 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     );
     let base = r.y + 86.0 + brief_height;
     label(
-        &format!("Danger: {}", q.danger),
+        &format!(
+            "Danger: {}{}",
+            q.danger,
+            if g.guild.services.scouted.contains(&g.selected) {
+                " / SCOUTED"
+            } else {
+                ""
+            }
+        ),
         Rect::new(x, base, width, 24.0),
         18.0,
         INK,
@@ -193,9 +199,9 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     let problem = g.guild.dispatch_problem(g.selected, &g.party, &g.contracts);
     let assessment = if g.party.is_empty() {
         "Select your party above."
-    } else if g.guild.strength(q, &g.party) >= q.difficulty + 2 {
+    } else if g.guild.prepared_strength(g.selected, q, &g.party) >= q.difficulty + 2 {
         "Well prepared. Rest still matters."
-    } else if g.guild.strength(q, &g.party) >= q.difficulty {
+    } else if g.guild.prepared_strength(g.selected, q, &g.party) >= q.difficulty {
         "A close call is likely. Consider support or rest."
     } else {
         "Outmatched. Bring support or rest first."
@@ -242,9 +248,9 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             }
         }
         let problem = g.guild.dispatch_problem(g.selected, &g.party, &g.contracts);
-        let assessment = if g.guild.strength(q, &g.party) >= q.difficulty + 2 {
+        let assessment = if g.guild.prepared_strength(g.selected, q, &g.party) >= q.difficulty + 2 {
             "Well prepared. Tap DISPATCH to send this party."
-        } else if g.guild.strength(q, &g.party) >= q.difficulty {
+        } else if g.guild.prepared_strength(g.selected, q, &g.party) >= q.difficulty {
             "A close call is likely. Consider support or rest before DISPATCH."
         } else {
             "Outmatched. Select more support, or tap NEXT DAY to rest."
@@ -305,7 +311,15 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             INK,
         );
         paragraph(
-            &format!("Danger: {}", q.danger),
+            &format!(
+                "Danger: {}{}",
+                q.danger,
+                if g.guild.services.scouted.contains(&g.selected) {
+                    " / SCOUTED"
+                } else {
+                    ""
+                }
+            ),
             Rect::new(x, r.y + r.h - 109.0, w, 44.0),
             19.0,
             INK,

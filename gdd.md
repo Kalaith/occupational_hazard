@@ -916,3 +916,15 @@ This milestone deliberately excludes the larger prototype's recruitment, permane
 death, monthly closure quotas, relationship simulation and procedural contracts.
 Personality labels currently establish identity; their behavioural simulation remains
 future work. The working slice proves assignment, consequences and certification first.
+
+## Prototype Extension: Guild Services
+
+Contract earnings now fund a permanent infirmary (100g), a permanent training
+yard (140g), or route preparation (20g for the next dispatch of that contract).
+The infirmary doubles medical-leave recovery at home. The yard grants 5 XP per
+day to uninjured, fatigue-free Iron adventurers who remain at home, capped at
+60 XP; it never grants successful contracts or replaces the field trial.
+Scouting contributes a small deterministic preparation advantage and is consumed
+on dispatch, including on an expedition that later retreats. Promotion trials
+cannot be scouted. Services and unconsumed preparation are saved; older ledgers
+start with no purchased services.

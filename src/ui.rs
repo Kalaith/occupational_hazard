@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod desk;
 mod dossier;
+mod services;
 mod title;
 
 pub const BACKGROUND: Color = Color::new(0.055, 0.095, 0.10, 1.0);
@@ -14,6 +15,7 @@ const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    Purchase(crate::services::Purchase),
     ChooseParty(bool),
     Start,
     Continue,
@@ -61,7 +63,7 @@ fn menu(game: &Game) -> Option<UiAction> {
         GOLD,
     );
     paragraph(
-        "Progress saves after dispatch, day changes and promotions.",
+        "Progress saves after dispatch, day changes, promotions and purchases.",
         Rect::new(x + 20.0, y + 65.0, w - 40.0, 50.0),
         18.0,
         MUTED,

@@ -14,8 +14,8 @@
     ./scripts/capture_ui.ps1 -Frames 60 -SkipBuild
 #>
 param(
-    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip")]
-    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip"),
+    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip", "services")]
+    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip", "services"),
     [int]$Frames = 150,
     [string]$OutputDir = "docs\verification",
     [switch]$SkipBuild
@@ -27,4 +27,3 @@ $shared = Join-Path (Split-Path -Parent $gameDir) "macroquad-toolkit\scripts\cap
 
 # Keep all deterministic verification screens directly in docs/verification.
 & $shared -GameDir $gameDir -Prefix "OCCUPATIONAL_HAZARD" -Scenes $Scenes -Frames $Frames -OutputDir $OutputDir -MinBytes 10000 -SkipBuild:$SkipBuild
-

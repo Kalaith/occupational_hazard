@@ -25,11 +25,20 @@ and relationship simulation remain beyond this milestone.
 
 ## Controls and persistence
 
+GUILD SERVICES spends contract earnings on permanent facilities and preparation:
+the 100g infirmary clears two medical-leave days per day at home, and the 140g
+training yard grants fully rested Iron recruits 5 XP daily up to 60 XP. Training
+does not grant successful contracts. For 20g, scouts prepare the selected route,
+giving its next dispatched party a small capability advantage. Scouting is
+consumed only on dispatch and is forbidden for the unaided promotion trial.
+Readiness assessments include purchased scouting. Existing ledgers load with
+facilities unpurchased; new purchases persist in the autosave.
+
 All actions have visible tap/click targets. Smaller windows use CHOOSE PARTY and
 BACK to separate contract reading from dispatch. MENU offers SAVE and RETURN TO
 TITLE. Starting a new guild asks before replacing an existing ledger.
 
-The toolkit stores an autosave after dispatch, day progression and promotion.
+The toolkit stores an autosave after dispatch, day progression, promotion and purchases.
 CONTINUE restores it, including expeditions in progress. Native saves use the
 application data directory; browsers use local storage. Save errors appear in the
 receptionist's notice. Progress is per browser/device, without cloud sync.

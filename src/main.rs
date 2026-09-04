@@ -5,6 +5,7 @@ use macroquad_toolkit::capture;
 
 mod contracts;
 mod game;
+mod services;
 mod simulation;
 
 mod ui;

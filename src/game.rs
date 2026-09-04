@@ -75,6 +75,13 @@ impl Game {
             return;
         };
         match action {
+            UiAction::Purchase(purchase) => match self.guild.purchase(purchase, &self.contracts) {
+                Ok(message) => {
+                    self.notice = message;
+                    self.save();
+                }
+                Err(error) => self.notice = error,
+            },
             UiAction::ChooseParty(value) => self.choosing_party = value,
             #[cfg(target_os = "windows")]
             UiAction::Exit => self.exit_requested = true,
@@ -116,7 +123,10 @@ impl Game {
                 self.in_title = true;
                 self.settings_open = false;
             }
-            UiAction::Tab(tab) => self.tab = tab,
+            UiAction::Tab(tab) => {
+                self.tab = tab;
+                self.notice.clear();
+            }
             UiAction::Quest(id) => {
                 self.selected = id;
                 self.notice.clear();
@@ -198,6 +208,9 @@ impl Game {
     }
 
     pub fn hint(&self) -> &str {
+        if self.tab == 3 {
+            return "Invest your contract earnings here. Facilities are permanent; scouting prepares one dispatch on the contract you selected.";
+        }
         if !self.guild.expeditions.is_empty() {
             return "The road takes time. Tap NEXT DAY to advance expeditions; resting staff recover.";
         }
@@ -253,6 +266,11 @@ impl Game {
         }
         if scene == "victory" {
             self.victory = true;
+        }
+        if matches!(scene, "services" | "mobile_services") {
+            self.tab = 3;
+            self.guild.gold = 180;
+            self.selected = 3;
         }
     }
 }
