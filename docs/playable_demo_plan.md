@@ -1,7 +1,8 @@
 # Playable demo roadmap
 
-Status: proposed implementation sequence, 2026-09-04. No phases below are
-implemented by this document. The existing vertical slice is the starting point.
+Status: Phase 1 software implemented and technically verified, 2026-09-04.
+Its unfamiliar-player observation and pacing validation remain open. Phases 2–6
+are proposed work. See [Phase 1 evidence](phase1_verification.md).
 
 ## Demo promise
 
@@ -43,19 +44,28 @@ character history are still demo work.
 **Player outcome:** a new player knows what the branch is working toward and can
 complete a coherent session with the existing roster and contracts.
 
-- Add a first-month objective panel and a head-office review on day 30. Start
+- [x] Add a first-month objective panel and a head-office review on day 30. Start
   with a provisional target of one Bronze certification and one successful
   Bronze commission; tune this against actual playthrough length.
-- Introduce the desk through short contextual prompts covering selection,
+- [x] Introduce the desk through short contextual prompts covering selection,
   DISPATCH, NEXT DAY, return reports, recovery and APPROVE BRONZE. Every prompt
   names its visible control. Allow tutorial skip and later help access.
-- Keep the first promotion celebration as an intermediate achievement. The
+- [x] Keep the first promotion celebration as an intermediate achievement. The
   final review summarises objective results, careers and finances, with visible
   restart and continue actions. A missed target produces an understandable
   unsuccessful review, not an unexplained blocked game.
-- Define day-boundary ordering: resolve returning expeditions and their rewards
+- [x] Define day-boundary ordering: resolve returning expeditions and their rewards
   before evaluating the review. Explain the cutoff before the player dispatches
   work that cannot return in time. Review completion and continuation must save.
+
+**Technical gate verified:** fresh-guild success and missed-target paths,
+review and sandbox reloads, restart confirmation, browser click controls,
+Iron-to-Bronze progression, late returns, and 360x640 layouts.
+
+**Still open:** observe an unfamiliar player using the
+[playtest protocol](phase1_playtest.md), record session duration and onboarding
+blockers, and tune the provisional target only if that evidence calls for it.
+Do not start Phase 2 before that gate is satisfied.
 
 **Exit gate:** a fresh guild can reach either review result, reload it, and use
 the completion controls with clicks/taps alone. The established Iron-to-Bronze
