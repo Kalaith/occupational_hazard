@@ -27,7 +27,8 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
     if guided_button(g, Rect::new(w - 90.0, 8.0, 78.0, 42.0), "MENU", false) {
         action = Some(UiAction::Settings);
     }
-    let tabs = ["CONTRACTS", "ADVENTURERS", "REPORTS"];
+    let report_tab = format!("REPORTS ({})", g.guild.unread_reports());
+    let tabs = ["CONTRACTS", "ADVENTURERS", &report_tab];
     for (i, text) in tabs.iter().enumerate() {
         let tw = (w - 32.0) / 3.0;
         if guided_button(
@@ -63,7 +64,7 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
         0 => contracts(g, area),
         1 => dossier::draw_dossier(g, area),
         3 => services::draw_services(g, area),
-        _ => reports(g, area),
+        _ => super::reports::draw_reports(g, area),
     };
     if inner.is_some() {
         action = inner;
@@ -378,81 +379,6 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
         ) {
             return Some(UiAction::ChooseParty(true));
         }
-    }
-    None
-}
-
-fn reports(g: &Game, r: Rect) -> Option<UiAction> {
-    panel(r, PAPER);
-    let x = r.x + 18.0;
-    let width = r.w - 36.0;
-    if g.guild.reports.is_empty() {
-        label(
-            "NO RETURN REPORTS YET",
-            Rect::new(x, r.y + 16.0, width, 38.0),
-            24.0,
-            INK,
-        );
-        paragraph("Dispatch an expedition from CONTRACTS, then tap NEXT DAY until it returns. Rewards and experience are recorded automatically.",
-            Rect::new(x, r.y + 72.0, width, 100.0), 22.0, INK);
-    } else {
-        let index = g.report.min(g.guild.reports.len() - 1);
-        let report = &g.guild.reports[index];
-        label(
-            &report.title,
-            Rect::new(x, r.y + 12.0, width, 42.0),
-            25.0,
-            INK,
-        );
-        paragraph(
-            &report.body,
-            Rect::new(x, r.y + 65.0, width, r.h * 0.36),
-            23.0,
-            INK,
-        );
-        paragraph(
-            &report.reward,
-            Rect::new(x, r.y + r.h * 0.55, width, 50.0),
-            21.0,
-            INK,
-        );
-        let bw = (width - 12.0) / 2.0;
-        if guided_button(
-            g,
-            Rect::new(x, r.y + r.h - 54.0, bw, 44.0),
-            "NEWER REPORT",
-            false,
-        ) {
-            return Some(UiAction::Report(index.saturating_sub(1)));
-        }
-        if guided_button(
-            g,
-            Rect::new(x + bw + 12.0, r.y + r.h - 54.0, bw, 44.0),
-            "OLDER REPORT",
-            false,
-        ) {
-            return Some(UiAction::Report((index + 1).min(g.guild.reports.len() - 1)));
-        }
-    }
-    if !g.guild.expeditions.is_empty() {
-        let text = g
-            .guild
-            .expeditions
-            .iter()
-            .map(|e| {
-                format!(
-                    "{}: returns day {}",
-                    g.contracts[e.contract].title, e.returns
-                )
-            })
-            .collect::<Vec<_>>()
-            .join(" / ");
-        paragraph(
-            &text,
-            Rect::new(x, r.y + r.h - 123.0, width, 60.0),
-            18.0,
-            INK,
-        );
     }
     None
 }

@@ -6,6 +6,7 @@ mod desk;
 mod dossier;
 mod help;
 mod month;
+mod reports;
 mod services;
 mod title;
 
@@ -17,6 +18,8 @@ const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    ReportList,
+    ReportPage(usize),
     Help(usize),
     CloseHelp,
     LessonDone(crate::tutorial::Lesson),

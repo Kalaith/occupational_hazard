@@ -39,6 +39,8 @@ pub struct Expedition {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Report {
+    #[serde(default)]
+    pub read: bool,
     pub title: String,
     pub body: String,
     pub reward: String,
@@ -291,7 +293,7 @@ impl Guild {
                 self.reputation += if q.promotion { 5 } else { 2 };
                 self.completed[e.contract] += 1;
             }
-            self.reports.insert(0, Report {
+            self.reports.insert(0, Report { read: false,
                 title: format!("Day {} / {} / {}", self.day, if success { "SUCCESS" } else { "RETREAT" }, q.title),
                 body: format!("{names}. {} {}", if success { &q.report } else {
                     "The party could not safely finish the job. Everyone returned; rest, bring support and try again."
@@ -315,7 +317,7 @@ impl Guild {
             return Err("The candidate must return with a passed assessment.".into());
         }
         a.bronze = true;
-        self.reports.insert(0, Report { title: format!("{} / BRONZE CERTIFIED", a.name),
+        self.reports.insert(0, Report { read: false, title: format!("{} / BRONZE CERTIFIED", a.name),
             body: "You sign the promotion form. An Iron recruit becomes a trusted Bronze adventurer. The North Bridge commission is now open.".into(),
             reward: "Bronze licence / stronger expedition capability / new commission".into() });
         self.reports.truncate(30);

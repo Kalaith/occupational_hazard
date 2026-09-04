@@ -21,6 +21,8 @@ pub struct Game {
     pub tab: usize,
     pub dossier: usize,
     pub report: usize,
+    pub report_detail: bool,
+    pub report_page: usize,
     pub notice: String,
     pub has_save: bool,
     pub confirm_new: bool,
@@ -60,6 +62,8 @@ impl Game {
             tab: 0,
             dossier: 0,
             report: 0,
+            report_detail: false,
+            report_page: 0,
             notice: String::new(),
             has_save: persistence::slot_exists("occupational_hazard", "guild"),
             confirm_new: false,
@@ -79,6 +83,10 @@ impl Game {
             return;
         };
         match action {
+            UiAction::ReportList => {
+                self.report_detail = false;
+            }
+            UiAction::ReportPage(page) => self.report_page = page,
             UiAction::Help(page) => {
                 self.help_page = Some(page);
                 self.settings_open = false;
@@ -132,6 +140,8 @@ impl Game {
                 self.choosing_party = false;
                 self.dossier = 0;
                 self.report = 0;
+                self.report_detail = false;
+                self.report_page = 0;
                 self.party.clear();
                 self.selected = 0;
                 self.tab = 0;
@@ -165,6 +175,10 @@ impl Game {
             }
             UiAction::Tab(tab) => {
                 self.tab = tab;
+                if tab == 2 {
+                    self.report_detail = false;
+                    self.report_page = 0;
+                }
                 if tab == 2 && !self.guild.reports.is_empty() {
                     self.guild
                         .tutorial
@@ -231,22 +245,36 @@ impl Game {
                     .guild
                     .expeditions
                     .iter()
-                    .any(|e| e.returns == self.guild.day + 1);
+                    .filter(|e| e.returns == self.guild.day + 1)
+                    .count();
                 self.guild.next_day(&self.contracts);
-                self.notice = if returning {
-                    "Adventurers returned. Their reports are on your desk."
+                self.notice = if returning > 0 {
+                    format!(
+                        "{returning} expeditions returned. Tap REPORTS: {} unread reports.",
+                        self.guild.unread_reports()
+                    )
                 } else {
-                    "A new day. Adventurers at the guild have rested."
-                }
-                .into();
-                if returning {
+                    "A new day. Adventurers at the guild have rested.".into()
+                };
+                if returning > 0 {
                     self.tab = 2;
                     self.report = 0;
+                    self.report_detail = false;
+                    self.report_page = 0;
                 }
                 self.save();
             }
             UiAction::Dossier(id) => self.dossier = id,
-            UiAction::Report(id) => self.report = id,
+            UiAction::Report(id) => {
+                if self.guild.read_report(id) {
+                    self.report = id;
+                    self.report_detail = true;
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Reports);
+                    self.save();
+                }
+            }
             UiAction::Promote(id) => match self.guild.promote(id) {
                 Ok(()) => {
                     self.guild
@@ -317,6 +345,8 @@ impl Game {
         self.guild = Guild::new();
         self.guild.tutorial.skipped = scene != "tutorial";
         self.help_page = None;
+        self.report_detail = false;
+        self.report_page = 0;
         self.party = vec![0];
         self.has_save = false;
         self.in_title = scene == "title";
@@ -354,8 +384,10 @@ impl Game {
             a.trial_passed = true;
             self.tab = 1;
         }
-        if scene == "report" {
+        if matches!(scene, "report" | "reports") {
             self.guild.dispatch(0, &[0], &self.contracts).unwrap();
+            self.guild.dispatch(1, &[2], &self.contracts).unwrap();
+            self.report_detail = scene == "report";
             self.guild.next_day(&self.contracts);
             self.tab = 2;
         }
