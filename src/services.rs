@@ -46,6 +46,9 @@ impl Guild {
                 (TRAINING_COST, "Training yard opened. Fully rested Iron recruits gain 5 XP per day at the guild, up to 60 XP.")
             }
             Purchase::Scout(id) => {
+                if !self.contract_open(id, contracts) {
+                    return Err("Choose an unfinished contract to scout.".into());
+                }
                 let q = contracts
                     .get(id)
                     .ok_or("Select a valid contract to scout.")?;

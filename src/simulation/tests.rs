@@ -12,8 +12,8 @@ fn iron_to_bronze_and_first_commission_are_playable() {
     let mut g = Guild::new();
     assert!(g.promote(0).is_err());
     assert!(g.dispatch(4, &[0], &qs).is_err());
-    for _ in 0..3 {
-        g.dispatch(0, &[0], &qs).unwrap();
+    for quest in [0, 6, 7] {
+        g.dispatch(quest, &[0], &qs).unwrap();
         g.next_day(&qs);
         rest(&mut g, &qs);
     }
@@ -37,7 +37,7 @@ fn iron_to_bronze_and_first_commission_are_playable() {
         g.next_day(&qs);
     }
     assert_eq!(g.completed[5], 1);
-    assert_eq!(g.gold, 80 + 72 + 80 + 120);
+    assert_eq!(g.gold, 80 + 82 + 80 + 120);
 }
 
 #[test]
@@ -104,9 +104,9 @@ fn save_round_trip_preserves_expedition_and_certification() {
 #[test]
 fn each_class_can_earn_bronze_through_its_specialty() {
     let qs = crate::contracts::load().unwrap();
-    for (candidate, quest) in [(0, 0), (1, 2), (2, 1)] {
+    for (candidate, route) in [(0, [0, 6, 7]), (1, [2, 8, 9]), (2, [1, 10, 11])] {
         let mut g = Guild::new();
-        for _ in 0..3 {
+        for quest in route {
             g.dispatch(quest, &[candidate], &qs).unwrap();
             rest(&mut g, &qs);
         }

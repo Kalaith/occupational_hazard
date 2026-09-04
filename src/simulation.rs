@@ -94,7 +94,7 @@ impl Guild {
             roster,
             expeditions: vec![],
             reports: vec![],
-            completed: vec![0; 6],
+            completed: vec![0; crate::contracts::CONTRACT_COUNT],
             victory_seen: false,
         }
     }
@@ -177,6 +177,9 @@ impl Guild {
         let Some(q) = qs.get(id) else {
             return Some("Select a contract.".into());
         };
+        if !self.contract_open(id, qs) {
+            return Some("This request is complete. Choose another contract.".into());
+        }
         if self.expeditions.iter().any(|e| e.contract == id) {
             return Some("This contract already has an expedition.".into());
         }

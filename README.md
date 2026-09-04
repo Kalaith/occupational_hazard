@@ -3,13 +3,18 @@
 A playable fantasy guild-management vertical slice based on [gdd.md](gdd.md).
 
 The [playable demo roadmap](docs/playable_demo_plan.md) sets out six gated phases
-from this slice to a complete first-month guild-management demo.
+from this slice to a complete first-month guild-management demo. The first
+unfamiliar-player session stopped on onboarding and report visibility issues;
+those blockers have been addressed, but a repeat observation is still needed.
+The roadmap's 30–45 minute target is not an established duration for this build.
 
 ## The first Bronze licence
 
 Open NEW GUILD, review a contract, select adventurers and tap DISPATCH. NEXT DAY
 advances expeditions and lets people at the guild recover. Returning reports
-record rewards, experience, fatigue and medical leave. Contracts can be repeated.
+record rewards, experience, fatigue and medical leave in a separate inbox entry
+for every expedition. REPORTS shows the unread count; reading never pays twice.
+Completed jobs leave the board permanently. Failed jobs remain available.
 
 Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
 for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
@@ -28,8 +33,13 @@ The roster has Mira (fighter), Tomas (ranger) and Pip (healer). Class matches,
 experience, rank and fatigue affect expedition outcomes. Healers reduce injuries.
 Danger and qualitative readiness replace numerical success probabilities.
 
-Six authored contracts cover extermination, medicine delivery, search and rescue,
-an uncertain investigation, a promotion trial, and a Bronze defence commission.
+Twelve authored contracts provide ten distinct Iron jobs, a candidate-specific
+promotion assessment and a Bronze commission. Each class has three suitable
+Iron jobs, so promotion does not require repeating completed requests. The
+assessment remains available for other candidates until everyone has passed.
+Desktop MORE JOBS and compact < / > controls browse unfinished requests.
+Original six-contract saves retain their missions, purchases and completions;
+the six new jobs are added on load.
 This slice uses deterministic resolution and recoverable injuries. Personality
 labels are character flavour here; recruitment, death, quotas, procedural quests
 and relationship simulation remain beyond this milestone.
@@ -46,8 +56,10 @@ Readiness assessments include purchased scouting. Existing ledgers load with
 facilities unpurchased; new purchases persist in the autosave.
 
 New guilds receive contextual lessons for selection, DISPATCH, NEXT DAY,
-reports, recovery, the solo trial and APPROVE BRONZE. BACK TO DESK closes each
-lesson; SKIP TUTORIAL is saved. MENU > HELP revisits all eight lessons.
+reports, recovery, the solo trial and APPROVE BRONZE. Guidance stays in a small
+desk panel while the outlined controls remain usable. Following a step advances
+it automatically; NEXT TIP advances manually and SKIP TUTORIAL is saved.
+MENU > HELP opens the full handbook.
 
 All actions have visible tap/click targets. Smaller windows use CHOOSE PARTY and
 BACK to separate contract reading from dispatch. MENU offers SAVE and RETURN TO

@@ -23,6 +23,7 @@ pub struct Game {
     pub report: usize,
     pub report_detail: bool,
     pub report_page: usize,
+    pub board_page: usize,
     pub notice: String,
     pub has_save: bool,
     pub confirm_new: bool,
@@ -64,6 +65,7 @@ impl Game {
             report: 0,
             report_detail: false,
             report_page: 0,
+            board_page: 0,
             notice: String::new(),
             has_save: persistence::slot_exists("occupational_hazard", "guild"),
             confirm_new: false,
@@ -83,6 +85,7 @@ impl Game {
             return;
         };
         match action {
+            UiAction::BoardPage(page) => self.board_page = page,
             UiAction::ReportList => {
                 self.report_detail = false;
             }
@@ -144,6 +147,7 @@ impl Game {
                 self.report_page = 0;
                 self.party.clear();
                 self.selected = 0;
+                self.board_page = 0;
                 self.tab = 0;
                 self.in_title = false;
                 self.confirm_new = false;
@@ -153,17 +157,20 @@ impl Game {
             UiAction::Cancel => self.confirm_new = false,
             UiAction::Continue => {
                 match persistence::load_from_slot::<Guild>("occupational_hazard", "guild") {
-                    Ok(guild) => match guild.validate(&self.contracts) {
-                        Ok(()) => {
-                            self.guild = guild;
-                            self.guild.finish_review(&self.contracts);
-                            self.month_open = false;
-                            self.in_title = false;
-                            self.notice.clear();
-                            self.save();
+                    Ok(mut guild) => {
+                        guild.migrate_board(&self.contracts);
+                        match guild.validate(&self.contracts) {
+                            Ok(()) => {
+                                self.guild = guild;
+                                self.guild.finish_review(&self.contracts);
+                                self.month_open = false;
+                                self.in_title = false;
+                                self.notice.clear();
+                                self.save();
+                            }
+                            Err(e) => self.notice = format!("Cannot open ledger: {e}"),
                         }
-                        Err(e) => self.notice = format!("Cannot open ledger: {e}"),
-                    },
+                    }
                     Err(e) => self.notice = format!("Cannot open ledger: {e}"),
                 }
             }
@@ -291,6 +298,12 @@ impl Game {
             UiAction::CloseVictory => self.victory = false,
             UiAction::Save => self.save(),
         }
+        if !self.guild.contract_open(self.selected, &self.contracts) {
+            if let Some(id) = self.guild.open_contracts(&self.contracts).first() {
+                self.selected = *id;
+            }
+            self.choosing_party = false;
+        }
     }
 
     fn save(&mut self) {
@@ -347,6 +360,7 @@ impl Game {
         self.help_page = None;
         self.report_detail = false;
         self.report_page = 0;
+        self.board_page = 0;
         self.party = vec![0];
         self.has_save = false;
         self.in_title = scene == "title";

@@ -12,8 +12,8 @@ fn reload(g: &Guild) -> Guild {
 fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
     let qs = crate::contracts::load().unwrap();
     let mut g = Guild::new();
-    for _ in 0..3 {
-        g.dispatch(0, &[0], &qs).unwrap();
+    for quest in [0, 6, 7] {
+        g.dispatch(quest, &[0], &qs).unwrap();
         for _ in 0..3 {
             g.next_day(&qs);
         }
@@ -33,7 +33,7 @@ fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
     }
     let r = g.month.review.as_ref().unwrap();
     assert!(r.passed());
-    assert_eq!(r.gold, 352);
+    assert_eq!(r.gold, 362);
     assert_eq!(r.careers[0].successes, 5);
     let snapshot = serde_json::to_string(r).unwrap();
     g = reload(&g);

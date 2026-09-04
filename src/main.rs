@@ -3,6 +3,7 @@
 use macroquad::prelude::*;
 use macroquad_toolkit::capture;
 
+mod board;
 mod contracts;
 mod game;
 mod reports;

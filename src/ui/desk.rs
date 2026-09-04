@@ -90,6 +90,13 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
 }
 
 fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
+    let open = g.guild.open_contracts(&g.contracts);
+    if open.is_empty() {
+        panel(area, PAPER);
+        paragraph("All requests fulfilled. Completed jobs are filed in REPORTS. Tap NEXT DAY to reach the review, or MENU to start another guild.",
+            Rect::new(area.x + 20.0, area.y + 30.0, area.w - 40.0, area.h - 60.0), 24.0, INK);
+        return None;
+    }
     if area.w < 850.0 || area.h < 420.0 {
         return compact_contract(g, area);
     }
@@ -103,8 +110,12 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
             20.0,
             GOLD,
         );
-        for (i, q) in g.contracts.iter().enumerate() {
-            let y = area.y + 45.0 + i as f32 * 57.0;
+        let rows = ((area.h - 110.0) / 57.0).floor().max(1.0) as usize;
+        let pages = open.len().div_ceil(rows);
+        let page = g.board_page.min(pages - 1);
+        for (row, &i) in open.iter().skip(page * rows).take(rows).enumerate() {
+            let q = &g.contracts[i];
+            let y = area.y + 45.0 + row as f32 * 57.0;
             let tag = if q.promotion {
                 "TRIAL"
             } else if q.bronze {
@@ -121,6 +132,23 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
                 action = Some(UiAction::Quest(i));
             }
         }
+        if pages > 1 {
+            let y = area.y + area.h - 48.0;
+            if button(
+                Rect::new(area.x, y, (list_w - 18.0) / 2.0, 44.0),
+                "PREV JOBS",
+                false,
+            ) {
+                action = Some(UiAction::BoardPage(page.saturating_sub(1)));
+            }
+            if button(
+                Rect::new(area.x + list_w / 2.0, y, (list_w - 24.0) / 2.0, 44.0),
+                "MORE JOBS",
+                false,
+            ) {
+                action = Some(UiAction::BoardPage((page + 1) % pages));
+            }
+        }
     }
     let r = Rect::new(area.x + list_w, area.y, area.w - list_w, area.h);
     panel(r, PAPER);
@@ -130,9 +158,11 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     let width = r.w - pad * 2.0;
     if !wide {
         if guided_button(g, Rect::new(x, r.y + 8.0, 50.0, 44.0), "<", false) {
-            action = Some(UiAction::Quest(
-                (g.selected + g.contracts.len() - 1) % g.contracts.len(),
-            ));
+            action = Some(UiAction::Quest(g.guild.adjacent_contract(
+                g.selected,
+                false,
+                &g.contracts,
+            )));
         }
         if guided_button(
             g,
@@ -140,7 +170,11 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
             ">",
             false,
         ) {
-            action = Some(UiAction::Quest((g.selected + 1) % g.contracts.len()));
+            action = Some(UiAction::Quest(g.guild.adjacent_contract(
+                g.selected,
+                true,
+                &g.contracts,
+            )));
         }
     }
     label(
@@ -315,9 +349,11 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
         }
     } else {
         if guided_button(g, Rect::new(x, r.y + 8.0, 48.0, 44.0), "<", false) {
-            return Some(UiAction::Quest(
-                (g.selected + g.contracts.len() - 1) % g.contracts.len(),
-            ));
+            return Some(UiAction::Quest(g.guild.adjacent_contract(
+                g.selected,
+                false,
+                &g.contracts,
+            )));
         }
         if guided_button(
             g,
@@ -325,7 +361,11 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             ">",
             false,
         ) {
-            return Some(UiAction::Quest((g.selected + 1) % g.contracts.len()));
+            return Some(UiAction::Quest(g.guild.adjacent_contract(
+                g.selected,
+                true,
+                &g.contracts,
+            )));
         }
         label(
             &q.title,

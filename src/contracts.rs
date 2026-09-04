@@ -1,6 +1,8 @@
 //! Authored contracts for the first guild licence.
 use serde::Deserialize;
 
+pub const CONTRACT_COUNT: usize = 12;
+
 #[derive(Clone, Deserialize)]
 pub struct Contract {
     pub title: String,
@@ -20,8 +22,8 @@ pub struct Contract {
 pub fn load() -> Result<Vec<Contract>, String> {
     let contracts: Vec<Contract> =
         macroquad_toolkit::include_json!("../assets/data/contracts.json")?;
-    if contracts.len() != 6 || contracts.iter().filter(|q| q.promotion).count() != 1 {
-        return Err("The Iron licence needs six contracts and one promotion assessment.".into());
+    if contracts.len() != CONTRACT_COUNT || contracts.iter().filter(|q| q.promotion).count() != 1 {
+        return Err("The Iron licence needs twelve contracts and one promotion assessment.".into());
     }
     if contracts
         .iter()

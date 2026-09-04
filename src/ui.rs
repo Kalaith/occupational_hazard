@@ -18,6 +18,7 @@ const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    BoardPage(usize),
     ReportList,
     ReportPage(usize),
     Help(usize),

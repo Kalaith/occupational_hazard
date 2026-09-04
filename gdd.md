@@ -259,7 +259,7 @@ Record:
 
 Initial ranks could be:
 
-**F → E → D → C → B → A → S**
+**F â†’ E â†’ D â†’ C â†’ B â†’ A â†’ S**
 
 Rank represents professional certification rather than simply character level.
 
@@ -793,7 +793,7 @@ The first playable version should deliberately remain small.
 
 - One guild branch
 - Day progression
-- 10–15 persistent adventurers
+- 10â€“15 persistent adventurers
 - F through C ranks
 - Several classes
 - Adventurer traits
@@ -859,9 +859,9 @@ But there are **two** D-rank contracts.
 
 The player could send:
 
-Veteran → Missing Hunters
+Veteran â†’ Missing Hunters
 
-Two E-ranks + talented F-rank → Ruins
+Two E-ranks + talented F-rank â†’ Ruins
 
 The second party is underqualified.
 
@@ -941,3 +941,23 @@ Scouting contributes a small deterministic preparation advantage and is consumed
 on dispatch, including on an expedition that later retreats. Promotion trials
 cannot be scouted. Services and unconsumed preparation are saved; older ledgers
 start with no purchased services.
+
+
+## Phase 1 observation follow-up
+
+The first unfamiliar player stopped before the review: the tutorial took focus,
+multiple mission returns were hard to find, and completed quests remained on the
+board. Guidance now sits alongside usable controls with the next target outlined.
+Every report has an inbox entry and saved unread state. Completed ordinary jobs
+leave the board; failures remain retryable. Six additional authored Iron jobs
+preserve a distinct three-job promotion route for every class without repeat
+rewards. Original six-slot saves are extended without changing existing slots.
+The trial is a per-candidate appointment and remains for candidates who need it.
+
+The player saw no need for the 100g infirmary in the interrupted session and
+estimated the small mission set would take about five minutes. This is evidence
+against claiming a 30-minute session, not a measured full playthrough. Facility
+prices remain provisional; no facility is mandatory. Further pacing and service
+value decisions require a repeat session after the blockers are fixed. Phase 2
+has not been broadly implemented: dated arrivals, expiry and stable instance
+identities remain on the roadmap.
