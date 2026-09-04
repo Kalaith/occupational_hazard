@@ -1,8 +1,10 @@
 # Playable demo roadmap
 
-Status: Phase 1 software implemented and technically verified, 2026-09-04.
-Its unfamiliar-player observation and pacing validation remain open. Phases 2â€“6
-are proposed work. See [Phase 1 evidence](phase1_verification.md).
+Status: Phase 1 complete, 2026-09-04. The unfamiliar player reached the ending
+and reported about five minutes of gameplay. Follow-up warning and personal-rank
+clarity fixes are verified. Phases 2-6 remain proposed work; the full demo's
+30-45 minute pacing target is not met by this introductory slice.
+See [Phase 1 evidence](phase1_verification.md).
 
 ## Demo promise
 
@@ -44,10 +46,14 @@ character history are still demo work.
 **Player outcome:** a new player knows what the branch is working toward and can
 complete a coherent session with the existing roster and contracts.
 
-- [ ] Add a first-month objective panel and a head-office review on day 30. Start
+- [x] Add a first-month objective panel and a head-office review on day 30. Start
   with a provisional target of one Bronze certification and one successful
   Bronze commission; tune this against actual playthrough length.
-  The panel and review are implemented; player pacing evidence is still pending.
+  Observed completion is about five minutes. Retain one individually earned
+  Bronze certification and one commission as the introductory milestone: the
+  final mission was understood and completed. Raising this count alone would
+  repeat the same training loop. Meaningful assignment decisions and longer
+  pacing remain work for the later demo phases, not extra waiting in Phase 1.
 - [x] Introduce the desk through short contextual prompts covering selection,
   DISPATCH, NEXT DAY, return reports, recovery and APPROVE BRONZE. Every prompt
   names its visible control. Allow tutorial skip and later help access.
@@ -63,10 +69,12 @@ complete a coherent session with the existing roster and contracts.
 review and sandbox reloads, restart confirmation, browser click controls,
 Iron-to-Bronze progression, late returns, and 360x640 layouts.
 
-**Still open:** repeat the interrupted unfamiliar-player session using the
-[playtest protocol](phase1_playtest.md), record session duration and onboarding
-blockers, and tune the provisional target only if that evidence calls for it.
-Do not start Phase 2 before that gate is satisfied.
+**Observation gate satisfied:** after the first session's blockers were fixed,
+the player reached the ending. Follow-up feedback prompted a rested-idle warning
+and explicit per-adventurer rank wording. Services remain optional; no purchase
+is needed to pass. The five-minute observation is approximate, not a stopwatch
+measurement or proof of broad balance. The later demo still needs substantial
+playable decisions to reach its 30-45 minute target.
 
 **Exit gate:** a fresh guild can reach either review result, reload it, and use
 the completion controls with clicks/taps alone. The established Iron-to-Bronze
@@ -221,5 +229,6 @@ first. Preserve the complete session, competing assignments, recruitment,
 recoverable consequences, persistence and touch controls. Do not add a new system
 to compensate for a failed pacing or comprehension gate.
 
-**Next implementation:** Phase 1 only â€” first-month objective state, review
-resolution, contextual guidance and persistent completion/restart controls.
+**Next implementation:** Phase 2, when requested. Use the observed five-minute
+baseline to test competing useful assignments; preserve the completed Phase 1
+flow. Do not claim the full demo duration or force services into the review.

@@ -49,11 +49,11 @@ pub fn draw_dossier(g: &Game, r: Rect) -> Option<UiAction> {
     let text = if a.bronze {
         "BRONZE CERTIFIED. Lead a party to North Bridge, or help your fellow recruits grow."
     } else if a.trial_passed {
-        "ASSESSMENT PASSED. Examiner Vale recommends promotion. Your signature is the final step."
+        "ASSESSMENT PASSED. APPROVE BRONZE promotes this adventurer. Each person earns their own rank."
     } else if a.eligible() {
         "ELIGIBLE. Rest, then select The Lantern Road Trial in CONTRACTS. Dispatch this candidate alone."
     } else {
-        "IRON LICENCE. Earn 60 XP and three successes, pass The Lantern Road Trial, then approve promotion here."
+        "PERSONAL RANK: IRON. This adventurer needs 60 XP, three successes and a solo trial pass. Approve their promotion here."
     };
     paragraph(
         text,

@@ -955,10 +955,17 @@ preserve a distinct three-job promotion route for every class without repeat
 rewards. Original six-slot saves are extended without changing existing slots.
 The trial is a per-candidate appointment and remains for candidates who need it.
 
-The player saw no need for the 100g infirmary in the interrupted session and
-estimated the small mission set would take about five minutes. This is evidence
-against claiming a 30-minute session, not a measured full playthrough. Facility
-prices remain provisional; no facility is mandatory. Further pacing and service
-value decisions require a repeat session after the blockers are fixed. Phase 2
-has not been broadly implemented: dated arrivals, expiry and stable instance
-identities remain on the roadmap.
+The follow-up player reached the ending and reported about five minutes of
+play. The final mission requirements were clear, but individual rank ownership
+was not. Objectives and guidance now specify one adventurer's own XP, successes
+and Bronze promotion. NEXT DAY warns by name about fully rested, uninjured staff
+at home; the player can return to assignments or deliberately advance.
+
+Services still appeared unnecessary, and remain explicitly optional. No facility
+is required for the review. The infirmary explains twice-normal medical recovery;
+prices remain unchanged. Phase 1's observation gate is complete, with an observed
+five-minute introductory slice. This does not satisfy the full demo's 30-45
+minute ambition. Keep one Bronze adventurer and one Bronze commission as its
+introductory goals; meaningful longer pacing belongs to later assignment/roster
+work. Phase 2's dated arrivals, expiry and stable instance identities remain
+unimplemented. Do not equate additional waits or required purchases with depth.

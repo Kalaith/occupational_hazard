@@ -3,15 +3,17 @@
 A playable fantasy guild-management vertical slice based on [gdd.md](gdd.md).
 
 The [playable demo roadmap](docs/playable_demo_plan.md) sets out six gated phases
-from this slice to a complete first-month guild-management demo. The first
-unfamiliar-player session stopped on onboarding and report visibility issues;
-those blockers have been addressed, but a repeat observation is still needed.
-The roadmap's 30–45 minute target is not an established duration for this build.
+from this slice to a complete first-month guild-management demo. Phase 1 is
+complete: after initial blockers were fixed, the unfamiliar player reached the
+ending and reported about five minutes of gameplay. This introductory slice
+does not meet the full roadmap's 30-45 minute target.
 
 ## The first Bronze licence
 
 Open NEW GUILD, review a contract, select adventurers and tap DISPATCH. NEXT DAY
-advances expeditions and lets people at the guild recover. Returning reports
+advances expeditions and lets people at the guild recover. Fully rested,
+unassigned staff trigger a warning: BACK TO DESK preserves the day, while
+ADVANCE DAY confirms it. Returning reports
 record rewards, experience, fatigue and medical leave in a separate inbox entry
 for every expedition. REPORTS shows the unread count; reading never pays twice.
 Completed jobs leave the board permanently. Failed jobs remain available.
@@ -46,6 +48,7 @@ and relationship simulation remain beyond this milestone.
 
 ## Controls and persistence
 
+Services are optional; the review can be passed without purchasing any.
 GUILD SERVICES spends contract earnings on permanent facilities and preparation:
 the 100g infirmary clears two medical-leave days per day at home, and the 140g
 training yard grants fully rested Iron recruits 5 XP daily up to 60 XP. Training

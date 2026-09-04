@@ -1,8 +1,11 @@
 # Phase 1 unfamiliar-player observation
 
-Status: first unfamiliar-player feedback received; participant stopped before
-finishing due to blockers. Repeat the affected checks after the fixes.
-The agent's scripted browser run verifies fixes but does not replace the retest.
+Status: follow-up observation received. The player reached the ending and
+reported about five minutes of gameplay; final mission requirements were clear.
+Personal-rank clarity and rested-idle warnings were addressed afterward and
+technically verified. Phase 1's human observation gate is satisfied. The full
+30-45 minute demo pacing remains unproven. Evidence and limits are recorded in
+phase1_verification.md. Keep the protocol below for future milestone tests.
 
 Open the published preview at http://127.0.0.1/games/occupational_hazard/ on the
 host machine. The publisher deploys to the configured local WSL preview; it
@@ -27,7 +30,6 @@ Record:
 - Whether they can reload the result and use CONTINUE SANDBOX and RESTART.
 - One assignment decision they found difficult and one adventurer they remember.
 
-Have the observer supply notes in this task. Fix any observed onboarding
-blockers, repeat affected checks with the participant, and record the outcome
-in phase1_verification.md before opening Phase 2. The initial interrupted
-observation and its limits are recorded in phase1_verification.md.
+For future observations, supply notes in this task and record outcomes in
+phase1_verification.md. Specifically watch whether the new personal-rank wording
+and idle warning prevent the hesitations from the completed follow-up session.

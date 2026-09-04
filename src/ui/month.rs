@@ -22,7 +22,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         .map(|r| (r.certifications, r.commissions))
         .unwrap_or_else(|| g.guild.objective_counts(&g.contracts));
     paragraph(
-        &format!("Bronze certification: {certs}/1\nSuccessful Bronze commission: {commissions}/1"),
+        &format!("Bronze adventurers: {certs}/1\nSuccessful Bronze commission: {commissions}/1"),
         Rect::new(x + 16.0, y + 55.0, w - 32.0, 62.0),
         21.0,
         WHITE,
@@ -49,7 +49,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
             .join("\n");
         format!("{result}\n\nClosing treasury: {}g (opened with 80g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, i64::from(r.gold) - 80, r.reputation)
     } else {
-        "Train an Iron recruit: earn 60 XP and 3 successes, pass The Lantern Road Trial alone, then tap ADVENTURERS and APPROVE BRONZE.\n\nComplete A Bridge Worth Keeping with a Bronze leader.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO DESK to begin.".into()
+        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In ADVENTURERS, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO DESK to begin.".into()
     };
     paragraph(
         &body,

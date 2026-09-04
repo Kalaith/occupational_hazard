@@ -9,11 +9,11 @@ pub fn draw_services(g: &Game, r: Rect) -> Option<UiAction> {
     let row_h = (r.h - 16.0) / 3.0;
     let q = &g.contracts[g.selected];
     let entries = [
-        ("Infirmary", "Recover 2 medical-leave days per day at the guild. Fatigue still needs rest.".to_owned(),
+        ("Infirmary (optional)", "Medical leave clears twice as fast at home: 2 days per day instead of 1. Fatigue still needs rest.".to_owned(),
             INFIRMARY_COST, g.guild.services.infirmary, Purchase::Infirmary),
-        ("Training yard", "Fully rested Iron recruits at the guild gain 5 XP daily, up to 60. Three quest successes are still required.".to_owned(),
+        ("Training yard (optional)", "Fully rested Iron recruits at the guild gain 5 XP daily, up to 60. Three quest successes are still required.".to_owned(),
             TRAINING_COST, g.guild.services.training_yard, Purchase::TrainingYard),
-        ("Scout the route", format!("{}: prepare the next dispatch. Choose another route in CONTRACTS. Trials forbid scouting.", q.title),
+        ("Scout route (optional)", format!("{}: prepare the next dispatch. Choose another route in CONTRACTS. Trials forbid scouting.", q.title),
             SCOUT_COST, g.guild.services.scouted.contains(&g.selected), Purchase::Scout(g.selected)),
     ];
     for (i, (title, description, cost, owned, purchase)) in entries.into_iter().enumerate() {

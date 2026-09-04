@@ -108,17 +108,28 @@ Screenshots: browser_guidance_mobile.png and browser_reports_mobile.png;
 updated native ui_tutorial.png, ui_reports.png, ui_report.png and ui_gameplay.png.
 No physical touchscreen-device coverage is claimed.
 
-## Remaining gate and balance decision
+## Completed unfamiliar-player follow-up and pacing decision
 
-Repeat the interrupted session with the player to confirm the fixes remove
-the blockers, then record completion time and whether services create a
-useful choice. The current content is not evidence for a 30-minute session.
-Prices remain unchanged: the participant did not reach a situation where a
-facility was needed, so this observation does not establish a better price.
-Do not force service purchases or pad the month with waits to claim duration.
-The day-30 review target remains provisional; Phase 2 stays gated on the
-retest and a decision about achievable demo pacing.
+The user subsequently reported reaching the ending, with about five minutes
+of gameplay. The final mission's requirements were clear. Rank was not clear
+as an individual adventurer's progression; additional services still did not
+seem necessary. They requested a warning when rested adventurers are left idle
+before NEXT DAY. This is a reported approximate duration, not a timestamped
+measurement; review result, career dates and service purchases were not supplied.
 
+The human completion observation satisfies Phase 1's unfamiliar-player gate.
+The rank/objective text now explicitly assigns XP, successes and promotion to
+one person. Service titles identify optional purchases and the infirmary states
+its improvement over normal recovery. The warning is verified below.
+
+Keep one individual Bronze certification and one successful Bronze commission
+as the introductory target. The observed final mission worked; multiplying
+promotion requirements would repeat that loop without establishing management
+depth. The current slice is about five minutes by this observation. The full
+roadmap's 30-45 minute target remains unmet and must be tested through later
+assignment and roster decisions. Do not inflate playtime with waits or require
+services merely to spend surplus gold. Services' strategic value remains a
+balance question for those later phases; current prices are unchanged.
 
 ## Rested-staff warning verification
 
@@ -131,3 +142,13 @@ alone in the warning on day 2, cancellation retained day 2/134g, and explicit
 confirmation advanced to day 3/134g. See browser_idle_warning_mobile.png.
 All 24 Rust tests (22 unit and two integration) and the required no-argument
 publish.ps1 passed. Windows and WebGL packages deployed to the WSL preview.
+
+
+## Follow-up wording validation
+
+The final build passed the no-argument publisher and clippy with warnings as
+errors. Published-browser clicks at 360x640 verified the complete objective
+explanation, the individual Iron record, and all three optional-service rows.
+Updated ui_objectives.png and ui_mobile_services.png now come from this browser
+check, replacing captures of those same screens. These checks verify layout
+and controls, not a second human comprehension study or physical touch hardware.

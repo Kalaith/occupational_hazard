@@ -32,7 +32,7 @@ pub fn draw_guidance(g: &Game, r: Rect) -> Option<UiAction> {
 
 fn tip(g: &Game, lesson: Lesson) -> &'static str {
     match lesson {
-        Lesson::Welcome => "Day 30 goal: one Bronze licence and commission. Tap D30 for details, or keep playing below.",
+        Lesson::Welcome => "By day 30: promote one adventurer to Bronze; complete a Bronze commission. Tap D30 for details.",
         Lesson::Selection if g.tab != 0 => "Tap CONTRACTS to choose an assignment. The outlined controls show the next step.",
         Lesson::Selection if g.choosing_party => "Tap Mira Ashford for the cellar job. Gold names join your party; tap again to remove.",
         Lesson::Selection => "Browse contracts. Tap CHOOSE PARTY, then an adventurer; gold names join the party.",
@@ -42,7 +42,7 @@ fn tip(g: &Game, lesson: Lesson) -> &'static str {
         Lesson::Reports => "Tap REPORTS to read every return. Each expedition has its own report and automatic rewards.",
         Lesson::Recovery => "Leave tired or injured people at home and tap NEXT DAY. Typical fatigue clears in two days.",
         Lesson::Trial => "Rest the eligible candidate. In CONTRACTS select The Lantern Road Trial; DISPATCH that person alone.",
-        Lesson::Promotion => "Tap ADVENTURERS, select the passed candidate, then APPROVE BRONZE. The Bronze commission is next.",
+        Lesson::Promotion => "Tap ADVENTURERS, select the passed candidate, then APPROVE BRONZE to promote that person.",
     }
 }
 

@@ -347,7 +347,7 @@ impl Game {
 
     pub fn hint(&self) -> &str {
         if self.tab == 3 {
-            return "Invest your contract earnings here. Facilities are permanent; scouting prepares one dispatch on the contract you selected.";
+            return "Services are optional. You can pass the review without buying any. Facilities speed recovery or training; scouting helps one dispatch.";
         }
         if !self.guild.expeditions.is_empty() {
             return "The road takes time. Tap NEXT DAY to advance expeditions; resting staff recover.";
