@@ -1,5 +1,8 @@
 # Phase 1 verification
 
+The initial checks below describe the pre-feedback build. The later feedback
+and fix section supersedes its tutorial, report navigation and repeated-job path.
+
 ## First-month review
 
 2026-09-04: `cargo test -p occupational_hazard` passed 15 tests, including
@@ -59,11 +62,59 @@ Evidence lives directly in docs/verification/: browser_review_mobile.png,
 browser_review_missed_mobile.png, browser_cutoff_mobile.png and
 browser_help_mobile.png, with deterministic title, objectives, promotion and
 review captures. The catalog thumbnail was refreshed from the new title screen.
-## Remaining human gate
+## First unfamiliar-player feedback and fixes
 
-The roadmap's unfamiliar-player observation and measured session-duration
-tuning require a human participant and have not been performed. A repeatable
-protocol is in phase1_playtest.md. The one-certification/one-commission target
-remains provisional. The deterministic route reaches both by day 17, but an
-agent's tool-driven interaction time is not valid evidence for a new player's
-30–45 minute session. Phase 2 remains gated on that observation.
+Feedback supplied by the user after the session:
+
+- Tutorial took full focus; the player wanted a subwindow and a highlighted next control.
+- Sending adventurers on two missions appeared to show only one result.
+- Completed quests should leave the board.
+- The player stopped before finishing because of those issues.
+- They saw no reason to spend 100g on services given smaller quest rewards,
+  although no service was required before they stopped.
+- They estimated the roughly five-mission offering looked closer to five
+  minutes than thirty. This was an estimate, not a timed completed session.
+
+Corrections are committed separately:
+
+- 8d6fd5d: nonmodal tutorial panel, outlined next controls, automatic step
+  acknowledgements and optional NEXT TIP / SKIP TUTORIAL.
+- 58dd9fc: an inbox entry for every report, saved read status and an unread
+  badge. Simulation regressions establish both simultaneous and staggered
+  missions already pay and report independently; visibility was the observed problem.
+- eced808: completed ordinary jobs leave the board and cannot dispatch or
+  consume scouting again. Failed jobs remain retryable. Six distinct Iron
+  jobs preserve three-job promotion routes for every class. Original six-slot
+  saves migrate without losing expedition, scouting or completed-job data.
+  The trial remains an appointment for candidates who have not passed it.
+
+Twenty-three Rust tests (21 unit, two integration checks), clippy with warnings
+as errors and the required no-argument publisher pass after these fixes.
+Publication built Windows and WebGL and deployed to the configured preview.
+The source-size integration gate passes for every Rust file.
+
+Actual browser clicks at 360x640 verified the revised flow: CHOOSE PARTY,
+Mira selection and DISPATCH work while the tutorial remains open. Its next
+control changes from D30 to DISPATCH and NEXT DAY through normal play.
+Two simultaneous one-day assignments to Mira and Pip returned two visible
+inbox entries and raised the treasury from 80g to 134g. Opening each report
+cleared its own unread marker. The board advanced past both completed jobs,
+and backwards navigation wrapped to a new unfinished job rather than either
+completed one. Reload retained day 2, 134g, zero unread reports and removal
+of both completed quests. The previous six-job test ledger also loaded with
+its day-33/152g state intact and completed jobs absent from navigation.
+
+Screenshots: browser_guidance_mobile.png and browser_reports_mobile.png;
+updated native ui_tutorial.png, ui_reports.png, ui_report.png and ui_gameplay.png.
+No physical touchscreen-device coverage is claimed.
+
+## Remaining gate and balance decision
+
+Repeat the interrupted session with the player to confirm the fixes remove
+the blockers, then record completion time and whether services create a
+useful choice. The current content is not evidence for a 30-minute session.
+Prices remain unchanged: the participant did not reach a situation where a
+facility was needed, so this observation does not establish a better price.
+Do not force service purchases or pad the month with waits to claim duration.
+The day-30 review target remains provisional; Phase 2 stays gated on the
+retest and a decision about achievable demo pacing.

@@ -1,7 +1,7 @@
 # Playable demo roadmap
 
 Status: Phase 1 software implemented and technically verified, 2026-09-04.
-Its unfamiliar-player observation and pacing validation remain open. Phases 2–6
+Its unfamiliar-player observation and pacing validation remain open. Phases 2â€“6
 are proposed work. See [Phase 1 evidence](phase1_verification.md).
 
 ## Demo promise
@@ -12,10 +12,10 @@ the next expedition is worth the risk. Finish with a review of the people and
 decisions that shaped the branch, then restart or continue in a clearly labelled
 sandbox.
 
-Target a first session of **30–45 minutes across one 30-day review period**.
+Target a first session of **30â€“45 minutes across one 30-day review period**.
 These are initial pacing targets to validate with players, not established
 balance. Keep one branch, Iron and Bronze ranks, the three existing classes,
-and a roster capped at six. The GDD's 10–15 adventurers, additional ranks and
+and a roster capped at six. The GDD's 10â€“15 adventurers, additional ranks and
 broader simulation remain longer-term ambitions.
 
 The demo succeeds when players can explain a difficult assignment decision,
@@ -39,7 +39,7 @@ explicitly does not establish live browser input coverage. Recruitment, changing
 contract supply, deadlines, review objectives, consequential reputation and
 character history are still demo work.
 
-## Phase 1 — Give the first month a beginning and an ending
+## Phase 1 â€” Give the first month a beginning and an ending
 
 **Player outcome:** a new player knows what the branch is working toward and can
 complete a coherent session with the existing roster and contracts.
@@ -63,7 +63,7 @@ complete a coherent session with the existing roster and contracts.
 review and sandbox reloads, restart confirmation, browser click controls,
 Iron-to-Bronze progression, late returns, and 360x640 layouts.
 
-**Still open:** observe an unfamiliar player using the
+**Still open:** repeat the interrupted unfamiliar-player session using the
 [playtest protocol](phase1_playtest.md), record session duration and onboarding
 blockers, and tune the provisional target only if that evidence calls for it.
 Do not start Phase 2 before that gate is satisfied.
@@ -73,7 +73,7 @@ the completion controls with clicks/taps alone. The established Iron-to-Bronze
 path still works. Observe one unfamiliar player to find onboarding blockers
 before adding more systems.
 
-## Phase 2 — Make today's assignments compete
+## Phase 2 â€” Make today's assignments compete
 
 Depends on Phase 1. **Player outcome:** there are worthwhile reasons to split
 the party, rest someone, or let a contract go.
@@ -82,7 +82,7 @@ the party, rest someone, or let a contract go.
   definitions and instances stable IDs; stop tying saved progress and active
   expeditions to positions in a six-item array.
 - Add a bounded rotating board with authored arrival schedules, expiry dates
-  and clear duration information. Begin with 10–12 authored definitions across
+  and clear duration information. Begin with 10â€“12 authored definitions across
   the existing categories, including short safe jobs and overlapping demands.
 - Specify expiry as the last day to accept; accepted expeditions may return
   later. Review credit requires return by the review cutoff. Show both rules
@@ -102,7 +102,7 @@ between competing useful assignments. Verify expiry boundaries, one-time
 rewards, board refresh after reload and a viable recovery route. Review whether
 services versus recruitment savings will have room to matter in Phase 3.
 
-## Phase 3 — Make the roster a management decision
+## Phase 3 â€” Make the roster a management decision
 
 Depends on Phase 2. **Player outcome:** hiring and developing another adventurer
 changes which contracts the guild can handle.
@@ -127,7 +127,7 @@ selection works on compact screens, and saves retain identities and histories.
 Compare a facilities-first run with a hiring-first run; both should be viable
 without requiring identical outcomes or balances.
 
-## Phase 4 — Make risk understandable and consequential
+## Phase 4 â€” Make risk understandable and consequential
 
 Depends on Phase 3. **Player outcome:** uncertainty creates hesitation, while
 reports explain enough for the player to learn from the result.
@@ -152,7 +152,7 @@ afterwards. Equivalent saved states reproduce outcomes, and an injured roster
 can recover to useful play. Do not introduce permanent death for this demo:
 prove attachment and readable risk first, then evaluate mortality separately.
 
-## Phase 5 — Tune the complete month and finish presentation
+## Phase 5 â€” Tune the complete month and finish presentation
 
 Depends on Phase 4. **Player outcome:** the whole session has variety, legible
 consequences and a satisfying ending without excessive repeated clicks.
@@ -175,7 +175,7 @@ consequences and a satisfying ending without excessive repeated clicks.
 at least one plausible recovery run remains viable after an early failure.
 Measure session duration and repeated actions before declaring pacing complete.
 
-## Phase 6 — Validate and release the demo
+## Phase 6 â€” Validate and release the demo
 
 Depends on Phase 5. **Player outcome:** the published build works for someone
 who has never seen the project.
@@ -221,5 +221,5 @@ first. Preserve the complete session, competing assignments, recruitment,
 recoverable consequences, persistence and touch controls. Do not add a new system
 to compensate for a failed pacing or comprehension gate.
 
-**Next implementation:** Phase 1 only — first-month objective state, review
+**Next implementation:** Phase 1 only â€” first-month objective state, review
 resolution, contextual guidance and persistent completion/restart controls.

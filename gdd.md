@@ -259,7 +259,7 @@ Record:
 
 Initial ranks could be:
 
-**F â†’ E â†’ D â†’ C â†’ B â†’ A â†’ S**
+**F Ã¢â€ â€™ E Ã¢â€ â€™ D Ã¢â€ â€™ C Ã¢â€ â€™ B Ã¢â€ â€™ A Ã¢â€ â€™ S**
 
 Rank represents professional certification rather than simply character level.
 
@@ -793,7 +793,7 @@ The first playable version should deliberately remain small.
 
 - One guild branch
 - Day progression
-- 10â€“15 persistent adventurers
+- 10Ã¢â‚¬â€œ15 persistent adventurers
 - F through C ranks
 - Several classes
 - Adventurer traits
@@ -859,9 +859,9 @@ But there are **two** D-rank contracts.
 
 The player could send:
 
-Veteran â†’ Missing Hunters
+Veteran Ã¢â€ â€™ Missing Hunters
 
-Two E-ranks + talented F-rank â†’ Ruins
+Two E-ranks + talented F-rank Ã¢â€ â€™ Ruins
 
 The second party is underqualified.
 
@@ -898,7 +898,7 @@ If those behaviours emerge with a small roster and a simple quest simulator, **O
 
 For this milestone, the rank vocabulary is **Iron -> Bronze**, superseding the
 letter-rank examples above within the playable slice. Three persistent recruits
-share a desk with receptionist Elowen. The player reviews six authored contracts,
+share a desk with receptionist Elowen. The player reviews twelve authored contracts,
 selects a party, dispatches expeditions, advances days, and reads return reports.
 
 Bronze eligibility requires 60 experience and three successful contracts. The
@@ -916,13 +916,14 @@ control reopens the frozen review in sandbox. Late dispatches show the cutoff.
 
 Saved contextual tutorial acknowledgements and skip state introduce selection,
 dispatch, day progression, reports, recovery, the trial and explicit approval.
-MENU offers HELP to revisit every lesson. Closing guidance returns to the desk
-before another relevant action can trigger a new prompt.
+MENU offers HELP to revisit every lesson. Short guidance stays in a desk panel
+with outlined next controls; normal play advances steps without closing a modal.
 
 Class suitability, experience, rank, party support and fatigue drive deterministic
 outcomes. Healers reduce injury risk. Retreats grant limited experience but no gold;
-medical leave and fatigue recover on days spent at the guild. Contracts are renewable
-so no failed assignment permanently blocks the promotion objective. Autosaves preserve
+medical leave and fatigue recover on days spent at the guild. Failed jobs can be
+retried, while successful requests leave the board. Distinct class-suitable jobs
+provide the experience and successes needed for promotion. Autosaves preserve
 the roster, expeditions, reports, completed contracts and certifications.
 
 This milestone deliberately excludes the larger prototype's recruitment, permanent

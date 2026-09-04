@@ -1,7 +1,8 @@
 # Phase 1 unfamiliar-player observation
 
-Status: awaiting a participant who has not worked on or played this game.
-The agent's scripted browser run is technical verification, not this observation.
+Status: first unfamiliar-player feedback received; participant stopped before
+finishing due to blockers. Repeat the affected checks after the fixes.
+The agent's scripted browser run verifies fixes but does not replace the retest.
 
 Open the published preview at http://127.0.0.1/games/occupational_hazard/ on the
 host machine. The publisher deploys to the configured local WSL preview; it
@@ -16,7 +17,7 @@ explain the promotion solution or coach their clicks during observation.
 Record:
 
 - Start/end time and active play time (exclude breaks); compare with the
-  provisional 30–45 minute session target without treating one sample as balance proof.
+  provisional 30â€“45 minute session target without treating one sample as balance proof.
 - First hesitation, the screen/control involved, and what they expected.
 - Whether they dispatch, read a return report, recover, take the trial and
   approve Bronze using the on-screen guidance alone.
@@ -28,5 +29,5 @@ Record:
 
 Have the observer supply notes in this task. Fix any observed onboarding
 blockers, repeat affected checks with the participant, and record the outcome
-in phase1_verification.md before opening Phase 2. No observation has yet been
-claimed or recorded.
+in phase1_verification.md before opening Phase 2. The initial interrupted
+observation and its limits are recorded in phase1_verification.md.
