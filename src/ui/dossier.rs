@@ -6,7 +6,8 @@ pub fn draw_dossier(g: &Game, r: Rect) -> Option<UiAction> {
     let mut action = None;
     let tw = (r.w - 12.0) / 3.0;
     for (i, member) in g.guild.roster.iter().enumerate() {
-        if button(
+        if guided_button(
+            g,
             Rect::new(r.x + i as f32 * (tw + 6.0), r.y, tw, 44.0),
             member.name.split(' ').next().unwrap_or("Member"),
             g.dossier == i,
@@ -67,7 +68,8 @@ pub fn draw_dossier(g: &Game, r: Rect) -> Option<UiAction> {
     );
     if a.trial_passed
         && !a.bronze
-        && button(
+        && guided_button(
+            g,
             Rect::new(x, r.y + r.h - 48.0, width, 44.0),
             "APPROVE BRONZE",
             true,
@@ -100,7 +102,8 @@ pub fn victory(g: &Game) -> Option<UiAction> {
         Rect::new(x + 24.0, y + 250.0, width - 48.0, 118.0), 23.0, WHITE);
     paragraph("First target achieved. Complete A Bridge Worth Keeping by day 30 for the head-office review. Tap BACK TO THE DESK to continue.",
         Rect::new(x + 24.0, y + 380.0, width - 48.0, 70.0), 20.0, MUTED);
-    if button(
+    if guided_button(
+        g,
         Rect::new(x + 24.0, y + 470.0, width - 48.0, 48.0),
         "BACK TO THE DESK",
         true,

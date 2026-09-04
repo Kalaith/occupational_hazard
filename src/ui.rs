@@ -64,9 +64,6 @@ pub fn draw(game: &Game) -> Option<UiAction> {
     if game.victory {
         return dossier::victory(game);
     }
-    if game.lesson().is_some() {
-        return help::draw_help(game);
-    }
     desk::draw_desk(game)
 }
 
@@ -168,4 +165,19 @@ fn portrait(game: &Game, key: &str, rect: Rect) {
         );
         draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2.0, GOLD);
     }
+}
+
+fn guided_button(g: &Game, rect: Rect, text: &str, selected: bool) -> bool {
+    let clicked = button(rect, text, selected);
+    if help::is_target(g, text) {
+        draw_rectangle_lines(
+            rect.x + 2.0,
+            rect.y + 2.0,
+            rect.w - 4.0,
+            rect.h - 4.0,
+            3.0,
+            GOLD,
+        );
+    }
+    clicked
 }

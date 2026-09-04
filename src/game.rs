@@ -27,7 +27,6 @@ pub struct Game {
     pub victory: bool,
     pub month_open: bool,
     pub help_page: Option<usize>,
-    pub tutorial_paused: bool,
     capture: bool,
     pending: Option<UiAction>,
 }
@@ -67,7 +66,6 @@ impl Game {
             victory: false,
             month_open: false,
             help_page: None,
-            tutorial_paused: false,
             capture: false,
             pending: None,
         }
@@ -80,20 +78,6 @@ impl Game {
         let Some(action) = self.pending.take() else {
             return;
         };
-        if matches!(
-            &action,
-            UiAction::Start
-                | UiAction::Continue
-                | UiAction::Quest(_)
-                | UiAction::Party(_)
-                | UiAction::Dispatch
-                | UiAction::NextDay
-                | UiAction::Tab(_)
-                | UiAction::ChooseParty(_)
-                | UiAction::Promote(_)
-        ) {
-            self.tutorial_paused = false;
-        }
         match action {
             UiAction::Help(page) => {
                 self.help_page = Some(page);
@@ -101,7 +85,6 @@ impl Game {
             }
             UiAction::CloseHelp => self.help_page = None,
             UiAction::LessonDone(lesson) => {
-                self.tutorial_paused = true;
                 self.guild.tutorial.acknowledge(lesson);
                 self.save();
             }
@@ -109,7 +92,13 @@ impl Game {
                 self.guild.tutorial.skipped = true;
                 self.save();
             }
-            UiAction::Month => self.month_open = true,
+            UiAction::Month => {
+                self.guild
+                    .tutorial
+                    .acknowledge(crate::tutorial::Lesson::Welcome);
+                self.month_open = true;
+                self.save();
+            }
             UiAction::CloseMonth => self.month_open = false,
             UiAction::Sandbox => {
                 self.guild.continue_sandbox();
@@ -176,6 +165,12 @@ impl Game {
             }
             UiAction::Tab(tab) => {
                 self.tab = tab;
+                if tab == 2 && !self.guild.reports.is_empty() {
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Reports);
+                    self.save();
+                }
                 self.notice.clear();
             }
             UiAction::Quest(id) => {
@@ -187,6 +182,12 @@ impl Game {
                     self.party.retain(|&a| a != id);
                 } else if !self.guild.busy(id) && self.guild.roster[id].injury == 0 {
                     self.party.push(id);
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Welcome);
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Selection);
                 }
                 self.notice.clear();
             }
@@ -197,6 +198,14 @@ impl Game {
                 {
                     Ok(()) => {
                         self.guild.tutorial.dispatched = true;
+                        self.guild
+                            .tutorial
+                            .acknowledge(crate::tutorial::Lesson::Dispatch);
+                        if self.contracts[self.selected].promotion {
+                            self.guild
+                                .tutorial
+                                .acknowledge(crate::tutorial::Lesson::Trial);
+                        }
                         self.notice = "Dispatched. Tap NEXT DAY to advance their journey.".into();
                         self.party.clear();
                         self.save();
@@ -205,6 +214,19 @@ impl Game {
                 }
             }
             UiAction::NextDay => {
+                self.guild
+                    .tutorial
+                    .acknowledge(crate::tutorial::Lesson::Time);
+                if self
+                    .guild
+                    .roster
+                    .iter()
+                    .any(|a| a.fatigue > 0 || a.injury > 0)
+                {
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Recovery);
+                }
                 let returning = self
                     .guild
                     .expeditions
@@ -227,6 +249,9 @@ impl Game {
             UiAction::Report(id) => self.report = id,
             UiAction::Promote(id) => match self.guild.promote(id) {
                 Ok(()) => {
+                    self.guild
+                        .tutorial
+                        .acknowledge(crate::tutorial::Lesson::Promotion);
                     self.victory = !self.guild.victory_seen;
                     self.guild.victory_seen = true;
                     self.notice =
@@ -284,11 +309,7 @@ impl Game {
     }
 
     pub fn lesson(&self) -> Option<crate::tutorial::Lesson> {
-        if self.tutorial_paused {
-            None
-        } else {
-            self.guild.lesson(!self.party.is_empty())
-        }
+        self.guild.lesson(!self.party.is_empty())
     }
 
     pub fn begin_capture_scene(&mut self, scene: &str) {
@@ -296,7 +317,6 @@ impl Game {
         self.guild = Guild::new();
         self.guild.tutorial.skipped = scene != "tutorial";
         self.help_page = None;
-        self.tutorial_paused = false;
         self.party = vec![0];
         self.has_save = false;
         self.in_title = scene == "title";

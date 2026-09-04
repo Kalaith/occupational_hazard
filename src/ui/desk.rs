@@ -21,16 +21,17 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
             usize::from(certs > 0) + usize::from(commissions > 0)
         )
     };
-    if button(Rect::new(w - 212.0, 8.0, 114.0, 42.0), &objective, false) {
+    if guided_button(g, Rect::new(w - 212.0, 8.0, 114.0, 42.0), &objective, false) {
         action = Some(UiAction::Month);
     }
-    if button(Rect::new(w - 90.0, 8.0, 78.0, 42.0), "MENU", false) {
+    if guided_button(g, Rect::new(w - 90.0, 8.0, 78.0, 42.0), "MENU", false) {
         action = Some(UiAction::Settings);
     }
     let tabs = ["CONTRACTS", "ADVENTURERS", "REPORTS"];
     for (i, text) in tabs.iter().enumerate() {
         let tw = (w - 32.0) / 3.0;
-        if button(
+        if guided_button(
+            g,
             Rect::new(12.0 + i as f32 * (tw + 4.0), 58.0, tw, 44.0),
             text,
             g.tab == i,
@@ -38,18 +39,26 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
             action = Some(UiAction::Tab(i));
         }
     }
-    portrait(g, "elowen", Rect::new(12.0, 112.0, 60.0, 60.0));
-    paragraph(
-        if g.notice.is_empty() {
-            g.hint()
-        } else {
-            &g.notice
-        },
-        Rect::new(84.0, 113.0, w - 100.0, 58.0),
-        18.0,
-        MUTED,
-    );
-    let area = Rect::new(12.0, 184.0, w - 24.0, h - 254.0);
+    let guidance = g.lesson().is_some();
+    let top = if guidance { 238.0 } else { 184.0 };
+    if guidance {
+        if let Some(next) = help::draw_guidance(g, Rect::new(12.0, 110.0, w - 24.0, 116.0)) {
+            action = Some(next);
+        }
+    } else {
+        portrait(g, "elowen", Rect::new(12.0, 112.0, 60.0, 60.0));
+        paragraph(
+            if g.notice.is_empty() {
+                g.hint()
+            } else {
+                &g.notice
+            },
+            Rect::new(84.0, 113.0, w - 100.0, 58.0),
+            18.0,
+            MUTED,
+        );
+    }
+    let area = Rect::new(12.0, top, w - 24.0, h - top - 70.0);
     let inner = match g.tab {
         0 => contracts(g, area),
         1 => dossier::draw_dossier(g, area),
@@ -60,14 +69,16 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
         action = inner;
     }
     let travelling = g.guild.expeditions.len();
-    if button(
+    if guided_button(
+        g,
         Rect::new(12.0, h - 58.0, w - 180.0, 44.0),
         &format!("GUILD SERVICES / {travelling} away"),
         g.tab == 3,
     ) {
         action = Some(UiAction::Tab(3));
     }
-    if button(
+    if guided_button(
+        g,
         Rect::new(w - 162.0, h - 58.0, 150.0, 46.0),
         "NEXT DAY",
         true,
@@ -100,7 +111,8 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
             } else {
                 "IRON"
             };
-            if button(
+            if guided_button(
+                g,
                 Rect::new(area.x, y, list_w - 12.0, 49.0),
                 &format!("{} / {}", tag, q.title),
                 g.selected == i,
@@ -116,12 +128,13 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     let x = r.x + pad;
     let width = r.w - pad * 2.0;
     if !wide {
-        if button(Rect::new(x, r.y + 8.0, 50.0, 44.0), "<", false) {
+        if guided_button(g, Rect::new(x, r.y + 8.0, 50.0, 44.0), "<", false) {
             action = Some(UiAction::Quest(
                 (g.selected + g.contracts.len() - 1) % g.contracts.len(),
             ));
         }
-        if button(
+        if guided_button(
+            g,
             Rect::new(x + width - 50.0, r.y + 8.0, 50.0, 44.0),
             ">",
             false,
@@ -197,7 +210,8 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
             a.class,
             status
         );
-        if button(
+        if guided_button(
+            g,
             Rect::new(x, party_y + i as f32 * (row_h + 4.0), width, row_h),
             &text,
             g.party.contains(&i),
@@ -228,7 +242,8 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
         16.0,
         INK,
     );
-    if button(
+    if guided_button(
+        g,
         Rect::new(x, bottom - 46.0, width, 40.0),
         "DISPATCH",
         problem.is_none(),
@@ -253,7 +268,8 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             } else {
                 format!("Fatigue {}/6", a.fatigue)
             };
-            if button(
+            if guided_button(
+                g,
                 Rect::new(x, r.y + 52.0 + id as f32 * 50.0, w, 44.0),
                 &format!("{} / {} / {}", a.name, a.class, status),
                 g.party.contains(&id),
@@ -280,10 +296,16 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             20.0,
             INK,
         );
-        if button(Rect::new(x, r.y + r.h - 52.0, w * 0.4, 44.0), "BACK", false) {
+        if guided_button(
+            g,
+            Rect::new(x, r.y + r.h - 52.0, w * 0.4, 44.0),
+            "BACK",
+            false,
+        ) {
             return Some(UiAction::ChooseParty(false));
         }
-        if button(
+        if guided_button(
+            g,
             Rect::new(x + w * 0.42, r.y + r.h - 52.0, w * 0.58, 44.0),
             "DISPATCH",
             problem.is_none(),
@@ -291,12 +313,17 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             return Some(UiAction::Dispatch);
         }
     } else {
-        if button(Rect::new(x, r.y + 8.0, 48.0, 44.0), "<", false) {
+        if guided_button(g, Rect::new(x, r.y + 8.0, 48.0, 44.0), "<", false) {
             return Some(UiAction::Quest(
                 (g.selected + g.contracts.len() - 1) % g.contracts.len(),
             ));
         }
-        if button(Rect::new(x + w - 48.0, r.y + 8.0, 48.0, 44.0), ">", false) {
+        if guided_button(
+            g,
+            Rect::new(x + w - 48.0, r.y + 8.0, 48.0, 44.0),
+            ">",
+            false,
+        ) {
             return Some(UiAction::Quest((g.selected + 1) % g.contracts.len()));
         }
         label(
@@ -343,7 +370,8 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             19.0,
             INK,
         );
-        if button(
+        if guided_button(
+            g,
             Rect::new(x, r.y + r.h - 52.0, w, 44.0),
             "CHOOSE PARTY",
             true,
@@ -389,14 +417,16 @@ fn reports(g: &Game, r: Rect) -> Option<UiAction> {
             INK,
         );
         let bw = (width - 12.0) / 2.0;
-        if button(
+        if guided_button(
+            g,
             Rect::new(x, r.y + r.h - 54.0, bw, 44.0),
             "NEWER REPORT",
             false,
         ) {
             return Some(UiAction::Report(index.saturating_sub(1)));
         }
-        if button(
+        if guided_button(
+            g,
             Rect::new(x + bw + 12.0, r.y + r.h - 54.0, bw, 44.0),
             "OLDER REPORT",
             false,
