@@ -25,6 +25,7 @@ pub struct Game {
     pub has_save: bool,
     pub confirm_new: bool,
     pub victory: bool,
+    pub month_open: bool,
     capture: bool,
     pending: Option<UiAction>,
 }
@@ -62,6 +63,7 @@ impl Game {
             has_save: persistence::slot_exists("occupational_hazard", "guild"),
             confirm_new: false,
             victory: false,
+            month_open: false,
             capture: false,
             pending: None,
         }
@@ -75,6 +77,18 @@ impl Game {
             return;
         };
         match action {
+            UiAction::Month => self.month_open = true,
+            UiAction::CloseMonth => self.month_open = false,
+            UiAction::Sandbox => {
+                self.guild.continue_sandbox();
+                self.month_open = false;
+                self.save();
+            }
+            UiAction::Restart => {
+                self.in_title = true;
+                self.confirm_new = true;
+                self.month_open = false;
+            }
             UiAction::Purchase(purchase) => match self.guild.purchase(purchase, &self.contracts) {
                 Ok(message) => {
                     self.notice = message;
@@ -91,6 +105,7 @@ impl Game {
                     return;
                 }
                 self.guild = Guild::new();
+                self.month_open = false;
                 self.victory = false;
                 self.choosing_party = false;
                 self.dossier = 0;
@@ -109,8 +124,11 @@ impl Game {
                     Ok(guild) => match guild.validate(&self.contracts) {
                         Ok(()) => {
                             self.guild = guild;
+                            self.guild.finish_review(&self.contracts);
+                            self.month_open = false;
                             self.in_title = false;
                             self.notice.clear();
+                            self.save();
                         }
                         Err(e) => self.notice = format!("Cannot open ledger: {e}"),
                     },
@@ -240,8 +258,20 @@ impl Game {
         self.settings_open = scene == "settings";
         self.tab = 0;
         self.victory = false;
+        self.month_open = scene == "objectives";
         self.notice.clear();
         self.pending = None;
+        if matches!(scene, "review" | "review_missed") {
+            if scene == "review" {
+                self.guild.roster[0].bronze = true;
+                self.guild.roster[0].xp = 135;
+                self.guild.roster[0].successes = 5;
+                self.guild.completed[5] = 1;
+                self.guild.gold = 352;
+            }
+            self.guild.day = 30;
+            self.guild.finish_review(&self.contracts);
+        }
         self.dossier = match scene {
             "tomas" => 1,
             "pip" => 2,

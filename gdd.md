@@ -904,7 +904,15 @@ selects a party, dispatches expeditions, advances days, and reads return reports
 Bronze eligibility requires 60 experience and three successful contracts. The
 candidate must then complete the two-day Lantern Road Trial alone. Certification
 requires the player's explicit APPROVE BRONZE signature in the adventurer dossier.
-It unlocks a Bronze commission, increases capability and celebrates slice completion.
+It unlocks a Bronze commission, increases capability and celebrates an intermediate achievement.
+
+The implemented first-month review closes on day 30 after returning expeditions,
+XP and rewards resolve. Its targets are one Bronze certification and one successful
+Bronze commission. The saved review records both targets, each recruit's rank, XP
+and successes, and closing treasury with net change from the opening 80g.
+Unsuccessful reviews explain the missed targets. Visible controls continue into
+a labelled sandbox or restart through replacement confirmation. The objective
+control reopens the frozen review in sandbox. Late dispatches show the cutoff.
 
 Class suitability, experience, rank, party support and fatigue drive deterministic
 outcomes. Healers reduce injury risk. Retreats grant limited experience but no gold;

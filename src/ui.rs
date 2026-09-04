@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod desk;
 mod dossier;
+mod month;
 mod services;
 mod title;
 
@@ -15,6 +16,10 @@ const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    Month,
+    CloseMonth,
+    Sandbox,
+    Restart,
     Purchase(crate::services::Purchase),
     ChooseParty(bool),
     Start,
@@ -44,6 +49,9 @@ pub fn draw(game: &Game) -> Option<UiAction> {
     }
     if game.settings_open {
         return menu(game);
+    }
+    if game.guild.review_pending() || game.month_open {
+        return month::draw_month(game);
     }
     if game.victory {
         return dossier::victory(game);

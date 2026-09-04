@@ -26,6 +26,9 @@ impl Guild {
         purchase: Purchase,
         contracts: &[crate::contracts::Contract],
     ) -> Result<String, String> {
+        if self.review_pending() {
+            return Err("Tap CONTINUE SANDBOX to resume the guild.".into());
+        }
         let (cost, message) = match purchase {
             Purchase::Infirmary => {
                 if self.services.infirmary {

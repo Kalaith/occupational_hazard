@@ -47,6 +47,8 @@ pub struct Report {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Guild {
     #[serde(default)]
+    pub month: crate::review::Month,
+    #[serde(default)]
     pub services: crate::services::Services,
     pub day: u32,
     pub gold: u32,
@@ -79,6 +81,7 @@ impl Guild {
         })
         .collect();
         Self {
+            month: crate::review::Month::default(),
             services: crate::services::Services::default(),
             day: 1,
             gold: 80,
@@ -92,6 +95,7 @@ impl Guild {
     }
 
     pub fn validate(&self, contracts: &[Contract]) -> Result<(), String> {
+        self.validate_month()?;
         let mut scouted = self.services.scouted.clone();
         scouted.sort_unstable();
         scouted.dedup();
@@ -162,6 +166,9 @@ impl Guild {
     }
 
     pub fn dispatch_problem(&self, id: usize, party: &[usize], qs: &[Contract]) -> Option<String> {
+        if self.review_pending() {
+            return Some("Read the review, then tap CONTINUE SANDBOX or RESTART.".into());
+        }
         let Some(q) = qs.get(id) else {
             return Some("Select a contract.".into());
         };
@@ -224,6 +231,9 @@ impl Guild {
     }
 
     pub fn next_day(&mut self, qs: &[Contract]) {
+        if self.review_pending() {
+            return;
+        }
         // Recover only people who stayed at the guild, never people still travelling.
         for id in 0..self.roster.len() {
             if !self.busy(id) {
@@ -288,9 +298,14 @@ impl Guild {
         }
         self.expeditions = remaining;
         self.reports.truncate(30);
+        // Returns, XP and payments on the cutoff day count before the review closes.
+        self.finish_review(qs);
     }
 
     pub fn promote(&mut self, id: usize) -> Result<(), String> {
+        if self.review_pending() {
+            return Err("Tap CONTINUE SANDBOX to resume the guild.".into());
+        }
         let busy = self.busy(id);
         let a = self.roster.get_mut(id).ok_or("Select an adventurer.")?;
         if busy || !a.eligible() || !a.trial_passed {

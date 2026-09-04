@@ -14,7 +14,15 @@ record rewards, experience, fatigue and medical leave. Contracts can be repeated
 Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
 for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
 assessment, then open ADVENTURERS and tap APPROVE BRONZE. Promotion unlocks the
-North Bridge commission and a completion celebration; you can keep playing.
+North Bridge commission and an intermediate promotion celebration.
+
+The first month ends with a day-30 head-office review: certify one Bronze
+adventurer and complete one Bronze commission. Tap the D30 objective control
+for details. Returns and rewards on day 30 count before evaluation; later
+returns wait for sandbox continuation. The review saves its career, objective
+and treasury snapshot. CONTINUE SANDBOX resumes play; RESTART opens a
+confirmation before replacing the guild. Older slice saves beyond day 30
+receive a review of their existing progress on load.
 
 The roster has Mira (fighter), Tomas (ranger) and Pip (healer). Class matches,
 experience, rank and fatigue affect expedition outcomes. Healers reduce injuries.
