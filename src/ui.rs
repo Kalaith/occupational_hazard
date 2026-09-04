@@ -2,6 +2,7 @@
 use crate::game::Game;
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
+mod day;
 mod desk;
 mod dossier;
 mod help;
@@ -44,6 +45,8 @@ pub enum UiAction {
     Party(usize),
     Dispatch,
     NextDay,
+    ConfirmDay,
+    CancelDay,
     Dossier(usize),
     Report(usize),
     Promote(usize),
@@ -67,6 +70,9 @@ pub fn draw(game: &Game) -> Option<UiAction> {
     }
     if game.victory {
         return dossier::victory(game);
+    }
+    if game.confirm_day {
+        return day::draw_warning(game);
     }
     desk::draw_desk(game)
 }

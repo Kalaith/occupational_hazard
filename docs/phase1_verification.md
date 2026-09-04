@@ -118,3 +118,16 @@ facility was needed, so this observation does not establish a better price.
 Do not force service purchases or pad the month with waits to claim duration.
 The day-30 review target remains provisional; Phase 2 stays gated on the
 retest and a decision about achievable demo pacing.
+
+
+## Rested-staff warning verification
+
+The follow-up player requested a warning before NEXT DAY leaves rested staff
+unassigned. The warning lists only fully rested, uninjured people at home;
+BACK TO DESK preserves the day and ADVANCE DAY deliberately proceeds.
+A regression covers a fresh roster, mixed availability, recovery and everyone
+away. At 360x640, actual browser clicks on the published build showed Tomas
+alone in the warning on day 2, cancellation retained day 2/134g, and explicit
+confirmation advanced to day 3/134g. See browser_idle_warning_mobile.png.
+All 24 Rust tests (22 unit and two integration) and the required no-argument
+publish.ps1 passed. Windows and WebGL packages deployed to the WSL preview.

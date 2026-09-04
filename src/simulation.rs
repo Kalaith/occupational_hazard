@@ -99,6 +99,16 @@ impl Guild {
         }
     }
 
+    /// Fully recovered adventurers who would spend the next day at the guild.
+    pub fn rested_idle(&self) -> Vec<&str> {
+        self.roster
+            .iter()
+            .enumerate()
+            .filter(|(id, a)| !self.busy(*id) && a.fatigue == 0 && a.injury == 0)
+            .map(|(_, a)| a.name.as_str())
+            .collect()
+    }
+
     pub fn validate(&self, contracts: &[Contract]) -> Result<(), String> {
         self.validate_month()?;
         let mut scouted = self.services.scouted.clone();

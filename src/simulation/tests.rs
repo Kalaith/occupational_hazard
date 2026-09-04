@@ -116,3 +116,23 @@ fn each_class_can_earn_bronze_through_its_specialty() {
         assert!(g.roster[candidate].bronze);
     }
 }
+
+#[test]
+fn day_warning_lists_only_rested_unassigned_adventurers() {
+    let qs = crate::contracts::load().unwrap();
+    let mut g = Guild::new();
+    assert_eq!(
+        g.rested_idle(),
+        vec!["Mira Ashford", "Tomas Reed", "Pip Fenwick"]
+    );
+    g.dispatch(0, &[0], &qs).unwrap();
+    assert_eq!(g.rested_idle(), vec!["Tomas Reed", "Pip Fenwick"]);
+    g.roster[1].fatigue = 2;
+    g.roster[2].injury = 1;
+    assert!(g.rested_idle().is_empty());
+    g.next_day(&qs);
+    assert_eq!(g.rested_idle(), vec!["Tomas Reed", "Pip Fenwick"]);
+    g.roster[0].fatigue = 0;
+    g.dispatch(2, &[0, 1, 2], &qs).unwrap();
+    assert!(g.rested_idle().is_empty());
+}

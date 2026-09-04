@@ -29,6 +29,7 @@ pub struct Game {
     pub confirm_new: bool,
     pub victory: bool,
     pub month_open: bool,
+    pub confirm_day: bool,
     pub help_page: Option<usize>,
     capture: bool,
     pending: Option<UiAction>,
@@ -71,6 +72,7 @@ impl Game {
             confirm_new: false,
             victory: false,
             month_open: false,
+            confirm_day: false,
             help_page: None,
             capture: false,
             pending: None,
@@ -136,6 +138,7 @@ impl Game {
                     self.confirm_new = true;
                     return;
                 }
+                self.confirm_day = false;
                 self.guild = Guild::new();
                 self.help_page = None;
                 self.month_open = false;
@@ -161,6 +164,7 @@ impl Game {
                         guild.migrate_board(&self.contracts);
                         match guild.validate(&self.contracts) {
                             Ok(()) => {
+                                self.confirm_day = false;
                                 self.guild = guild;
                                 self.guild.finish_review(&self.contracts);
                                 self.month_open = false;
@@ -178,6 +182,7 @@ impl Game {
             UiAction::CloseSettings => self.settings_open = false,
             UiAction::Title => {
                 self.in_title = true;
+                self.confirm_day = false;
                 self.settings_open = false;
             }
             UiAction::Tab(tab) => {
@@ -235,42 +240,19 @@ impl Game {
                 }
             }
             UiAction::NextDay => {
-                self.guild
-                    .tutorial
-                    .acknowledge(crate::tutorial::Lesson::Time);
-                if self
-                    .guild
-                    .roster
-                    .iter()
-                    .any(|a| a.fatigue > 0 || a.injury > 0)
-                {
-                    self.guild
-                        .tutorial
-                        .acknowledge(crate::tutorial::Lesson::Recovery);
-                }
-                let returning = self
-                    .guild
-                    .expeditions
-                    .iter()
-                    .filter(|e| e.returns == self.guild.day + 1)
-                    .count();
-                self.guild.next_day(&self.contracts);
-                self.notice = if returning > 0 {
-                    format!(
-                        "{returning} expeditions returned. Tap REPORTS: {} unread reports.",
-                        self.guild.unread_reports()
-                    )
+                if self.guild.rested_idle().is_empty() {
+                    self.advance_day();
                 } else {
-                    "A new day. Adventurers at the guild have rested.".into()
-                };
-                if returning > 0 {
-                    self.tab = 2;
-                    self.report = 0;
-                    self.report_detail = false;
-                    self.report_page = 0;
+                    self.confirm_day = true;
                 }
-                self.save();
             }
+            UiAction::ConfirmDay => {
+                if self.confirm_day {
+                    self.confirm_day = false;
+                    self.advance_day();
+                }
+            }
+            UiAction::CancelDay => self.confirm_day = false,
             UiAction::Dossier(id) => self.dossier = id,
             UiAction::Report(id) => {
                 if self.guild.read_report(id) {
@@ -304,6 +286,44 @@ impl Game {
             }
             self.choosing_party = false;
         }
+    }
+
+    fn advance_day(&mut self) {
+        self.guild
+            .tutorial
+            .acknowledge(crate::tutorial::Lesson::Time);
+        if self
+            .guild
+            .roster
+            .iter()
+            .any(|a| a.fatigue > 0 || a.injury > 0)
+        {
+            self.guild
+                .tutorial
+                .acknowledge(crate::tutorial::Lesson::Recovery);
+        }
+        let returning = self
+            .guild
+            .expeditions
+            .iter()
+            .filter(|e| e.returns == self.guild.day + 1)
+            .count();
+        self.guild.next_day(&self.contracts);
+        self.notice = if returning > 0 {
+            format!(
+                "{returning} expeditions returned. Tap REPORTS: {} unread reports.",
+                self.guild.unread_reports()
+            )
+        } else {
+            "A new day. Adventurers at the guild have rested.".into()
+        };
+        if returning > 0 {
+            self.tab = 2;
+            self.report = 0;
+            self.report_detail = false;
+            self.report_page = 0;
+        }
+        self.save();
     }
 
     fn save(&mut self) {
@@ -368,6 +388,7 @@ impl Game {
         self.tab = 0;
         self.victory = false;
         self.month_open = scene == "objectives";
+        self.confirm_day = scene == "idle_warning";
         self.notice.clear();
         self.pending = None;
         if matches!(scene, "review" | "review_missed") {
