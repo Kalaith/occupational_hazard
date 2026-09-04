@@ -1,8 +1,9 @@
-# Initial scaffold verification
+# Scaffold verification
 
 - Five starter tests passed with `cargo test -p occupational_hazard`.
 - Formatting and Clippy with warnings denied passed.
-- Native screenshot capture succeeded; `ui_gameplay.png` shows the branded template scaffold.
-- `catalog_thumbnail.png` is a temporary copy of that capture until a title screen exists.
-- `gdd.md` SHA-256 matches the supplied attachment.
-- The no-argument `publish.ps1` built and packaged Windows and WebGL and copied the preview files successfully. The process returned exit code 1; its output reported unavailable Project Roost tracking at localhost:80. No production or FTP publishing was performed.
+- Title and gameplay capture scenes rendered successfully and were visually inspected.
+- `catalog_thumbnail.png` uses the title screen capture.
+- The supplied `gdd.md` remains unchanged.
+- The no-argument `publish.ps1` built and packaged Windows and WebGL, deployed the local preview, and returned exit code 0. Project Roost tracking still warns that localhost:80 is unavailable.
+- Captures verify appearance; automated input interaction coverage has not been added.

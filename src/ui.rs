@@ -8,6 +8,9 @@ use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::draw_ui_text_ex;
 use macroquad_toolkit::ui::{RectExt, VirtualUi};
 
+mod title;
+pub use title::draw_title;
+
 pub const LOGICAL_WIDTH: f32 = 1280.0;
 pub const LOGICAL_HEIGHT: f32 = 720.0;
 
@@ -17,6 +20,11 @@ pub enum UiAction {
     Save,
     Load,
     DeleteSave,
+    OpenMenu,
+    Resume,
+    ZoomIn,
+    ZoomOut,
+    ResetCamera,
     RunAction(String),
     SelectTile(TilePos),
 }
@@ -45,6 +53,25 @@ pub fn draw_game_ui(ctx: UiContext<'_>) -> Vec<UiAction> {
     }
     draw_control_panel(&ctx, mouse, &mut actions);
     draw_footer();
+    for (index, (label, action)) in [
+        ("Zoom Out", UiAction::ZoomOut),
+        ("Zoom In", UiAction::ZoomIn),
+        ("Reset View", UiAction::ResetCamera),
+        ("Menu", UiAction::OpenMenu),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        if virtual_button(
+            Rect::new(40.0 + index as f32 * 190.0, 552.0, 176.0, 42.0),
+            label,
+            true,
+            ButtonTone::Secondary,
+            mouse,
+        ) {
+            actions.push(action);
+        }
+    }
 
     actions
 }
@@ -102,7 +129,7 @@ fn draw_world_panel(ctx: &UiContext<'_>, mouse: Vec2) {
 
     if grid_rect.contains_point(mouse) {
         draw_tooltip(
-            "Arrow keys move the selected tile. Right mouse drag and +/- adjust the toolkit camera state.",
+            "Tap a tile to select it. Use Zoom In, Zoom Out, or Reset View to adjust the map.",
             mouse,
         );
     }
@@ -118,6 +145,14 @@ fn draw_grid_demo(ctx: &UiContext<'_>, rect: Rect) {
         if !rect.overlaps(&tile_rect) {
             continue;
         }
+        let left = tile_rect.x.max(rect.x);
+        let top = tile_rect.y.max(rect.y);
+        let tile_rect = Rect::new(
+            left,
+            top,
+            tile_rect.right().min(rect.right()) - left,
+            tile_rect.bottom().min(rect.bottom()) - top,
+        );
 
         let base = match fog {
             FogState::Hidden => Color::new(0.08, 0.08, 0.10, 1.0),
@@ -143,7 +178,7 @@ fn draw_grid_demo(ctx: &UiContext<'_>, rect: Rect) {
         }
     }
 
-    let footer = Rect::new(rect.x, rect.bottom() - 28.0, rect.w, 28.0);
+    let footer = Rect::new(rect.x, rect.bottom(), rect.w, 28.0);
     draw_text_centered_in_box(
         &format!(
             "Selected tile: {}, {} | Reachable: {}",
@@ -196,7 +231,7 @@ fn draw_control_panel(ctx: &UiContext<'_>, mouse: Vec2, actions: &mut Vec<UiActi
     y += 12.0;
 
     let action_count = ctx.data.actions.len();
-    let layout = GridLayout::new(content.x, y + 10.0, content.w, 10.0, 1, 72.0);
+    let layout = GridLayout::new(content.x, y + 10.0, content.w, 8.0, 1, 60.0);
     for (index, (_, action)) in ctx.data.actions.iter().enumerate() {
         let (x, card_y, w, h) = layout.get_item_rect(index, 0.0);
         let card_rect = Rect::new(x, card_y, w, h);
@@ -369,7 +404,7 @@ fn draw_footer() {
             .with_border(1.0, Color::new(0.38, 0.45, 0.58, 0.45)),
     );
     draw_text_block(
-        "Template systems: macroquad-toolkit VirtualUi, SurfaceStyle, TextStyle, GridLayout, FlatGrid, FogState, Camera2D, EventBus, NotificationManager, DataRegistry, AssetManager, save slots, and migration callbacks.",
+        "Development sandbox: tap an action card or a map tile to try the starter systems. Guild management is coming next.",
         rect.x + 18.0,
         rect.y + 14.0,
         rect.w - 36.0,
@@ -413,7 +448,7 @@ fn world_panel_rect() -> Rect {
 
 fn world_grid_rect() -> Rect {
     let rect = world_panel_rect();
-    Rect::new(rect.x + 24.0, rect.y + 66.0, rect.w - 48.0, rect.h - 92.0)
+    Rect::new(rect.x + 24.0, rect.y + 66.0, rect.w - 48.0, rect.h - 160.0)
 }
 
 #[derive(Debug, Clone, Copy)]

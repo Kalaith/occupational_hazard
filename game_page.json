@@ -13,24 +13,28 @@
   ],
   "controls": [
     {
-      "key": "Arrow Keys",
-      "desc": "Move selected tile"
+      "desc": "Start the development sandbox",
+      "key": "Open Sandbox"
     },
     {
-      "key": "Right Mouse",
-      "desc": "Drag camera"
+      "desc": "Tap a card to try a sample action",
+      "key": "Action cards"
     },
     {
-      "key": "+ / -",
-      "desc": "Zoom camera"
+      "desc": "Tap to select a tile",
+      "key": "Map tiles"
     },
     {
-      "key": "Space",
-      "desc": "Run first data action"
+      "desc": "Adjust the map",
+      "key": "Zoom In / Zoom Out / Reset View"
     },
     {
-      "key": "S / L",
-      "desc": "Save / load toolkit slot"
+      "desc": "Store or restore a sandbox session",
+      "key": "Save / Load"
+    },
+    {
+      "desc": "Return to the title screen and pause the sandbox",
+      "key": "Menu"
     }
   ],
   "details": [

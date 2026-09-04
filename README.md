@@ -42,3 +42,5 @@ Read `AGENTS.md`, `CODE_STANDARDS.md`, `MACROQUAD_TOOLKIT.md`, and `GAME_DEVELOP
 Replace sample grid/actions with a reception desk, persistent roster, contracts, party assignment, and a deterministic day/expedition loop. Then add injuries, rewards, promotions, quotas, recruitment, and save/load for that state, following the GDD prototype scope.
 
 The first design question is: **Is deciding who to send on a quest interesting?**
+
+The title screen opens or loads the sandbox. Menu pauses the session, and Resume Sandbox returns to it. The map has visible zoom/reset controls. Screenshot capture produces both title and gameplay scenes; the title capture supplies the catalog thumbnail.
