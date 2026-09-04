@@ -98,7 +98,7 @@ pub fn victory(g: &Game) -> Option<UiAction> {
     );
     paragraph("The first licence is signed. You sent a recruit into the world and helped them come home a professional. Elowen files the form with a rare, satisfied smile.",
         Rect::new(x + 24.0, y + 250.0, width - 48.0, 118.0), 23.0, WHITE);
-    paragraph("Vertical slice complete. Continue with the new Bronze commission, or develop the rest of your roster.",
+    paragraph("First target achieved. Complete A Bridge Worth Keeping by day 30 for the head-office review. Tap BACK TO THE DESK to continue.",
         Rect::new(x + 24.0, y + 380.0, width - 48.0, 70.0), 20.0, MUTED);
     if button(
         Rect::new(x + 24.0, y + 470.0, width - 48.0, 48.0),

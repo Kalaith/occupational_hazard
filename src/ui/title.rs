@@ -25,7 +25,7 @@ pub fn draw_title(game: &Game) -> Option<UiAction> {
         BACKGROUND,
     );
     label(
-        "ADVENTURERS' GUILD / FIRST LICENCE",
+        "ADVENTURERS' GUILD / FIRST MONTH",
         Rect::new(x + 8.0, y + 16.0, width - 16.0, 25.0),
         17.0,
         GOLD,
@@ -36,7 +36,7 @@ pub fn draw_title(game: &Game) -> Option<UiAction> {
         38.0,
         WHITE,
     );
-    paragraph("Every contract is someone's future. Assign a party, read their reports, and guide an Iron recruit to Bronze.",
+    paragraph("Head office visits on day 30. Certify a Bronze adventurer and complete a Bronze commission before the review.",
         Rect::new(x + 24.0, y + 120.0, width - 48.0, 76.0), 21.0, MUTED);
     let bw = width - 48.0;
     if game.confirm_new {

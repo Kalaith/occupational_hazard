@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod desk;
 mod dossier;
+mod help;
 mod month;
 mod services;
 mod title;
@@ -16,6 +17,10 @@ const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    Help(usize),
+    CloseHelp,
+    LessonDone(crate::tutorial::Lesson),
+    SkipTutorial,
     Month,
     CloseMonth,
     Sandbox,
@@ -50,11 +55,17 @@ pub fn draw(game: &Game) -> Option<UiAction> {
     if game.settings_open {
         return menu(game);
     }
+    if game.help_page.is_some() {
+        return help::draw_help(game);
+    }
     if game.guild.review_pending() || game.month_open {
         return month::draw_month(game);
     }
     if game.victory {
         return dossier::victory(game);
+    }
+    if game.lesson().is_some() {
+        return help::draw_help(game);
     }
     desk::draw_desk(game)
 }
@@ -62,8 +73,8 @@ pub fn draw(game: &Game) -> Option<UiAction> {
 fn menu(game: &Game) -> Option<UiAction> {
     let w = (screen_width() - 32.0).min(440.0);
     let x = (screen_width() - w) / 2.0;
-    let y = (screen_height() - 360.0).max(0.0) / 2.0;
-    panel(Rect::new(x, y, w, 360.0), PANEL);
+    let y = (screen_height() - 420.0).max(0.0) / 2.0;
+    panel(Rect::new(x, y, w, 420.0), PANEL);
     label(
         "THE GUILD LEDGER",
         Rect::new(x, y + 14.0, w, 44.0),
@@ -78,6 +89,7 @@ fn menu(game: &Game) -> Option<UiAction> {
     );
     for (i, (text, action)) in [
         ("SAVE", UiAction::Save),
+        ("HELP", UiAction::Help(0)),
         ("RETURN TO TITLE", UiAction::Title),
         ("CLOSE", UiAction::CloseSettings),
     ]

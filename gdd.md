@@ -914,6 +914,11 @@ Unsuccessful reviews explain the missed targets. Visible controls continue into
 a labelled sandbox or restart through replacement confirmation. The objective
 control reopens the frozen review in sandbox. Late dispatches show the cutoff.
 
+Saved contextual tutorial acknowledgements and skip state introduce selection,
+dispatch, day progression, reports, recovery, the trial and explicit approval.
+MENU offers HELP to revisit every lesson. Closing guidance returns to the desk
+before another relevant action can trigger a new prompt.
+
 Class suitability, experience, rank, party support and fatigue drive deterministic
 outcomes. Healers reduce injury risk. Retreats grant limited experience but no gold;
 medical leave and fatigue recover on days spent at the guild. Contracts are renewable

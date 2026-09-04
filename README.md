@@ -45,6 +45,10 @@ consumed only on dispatch and is forbidden for the unaided promotion trial.
 Readiness assessments include purchased scouting. Existing ledgers load with
 facilities unpurchased; new purchases persist in the autosave.
 
+New guilds receive contextual lessons for selection, DISPATCH, NEXT DAY,
+reports, recovery, the solo trial and APPROVE BRONZE. BACK TO DESK closes each
+lesson; SKIP TUTORIAL is saved. MENU > HELP revisits all eight lessons.
+
 All actions have visible tap/click targets. Smaller windows use CHOOSE PARTY and
 BACK to separate contract reading from dispatch. MENU offers SAVE and RETURN TO
 TITLE. Starting a new guild asks before replacing an existing ledger.

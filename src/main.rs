@@ -8,6 +8,7 @@ mod game;
 mod review;
 mod services;
 mod simulation;
+mod tutorial;
 
 mod ui;
 

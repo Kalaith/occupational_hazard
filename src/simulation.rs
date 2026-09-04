@@ -47,6 +47,8 @@ pub struct Report {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Guild {
     #[serde(default)]
+    pub tutorial: crate::tutorial::Tutorial,
+    #[serde(default)]
     pub month: crate::review::Month,
     #[serde(default)]
     pub services: crate::services::Services,
@@ -81,6 +83,7 @@ impl Guild {
         })
         .collect();
         Self {
+            tutorial: crate::tutorial::Tutorial::default(),
             month: crate::review::Month::default(),
             services: crate::services::Services::default(),
             day: 1,

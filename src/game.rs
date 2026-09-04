@@ -26,6 +26,8 @@ pub struct Game {
     pub confirm_new: bool,
     pub victory: bool,
     pub month_open: bool,
+    pub help_page: Option<usize>,
+    pub tutorial_paused: bool,
     capture: bool,
     pending: Option<UiAction>,
 }
@@ -64,6 +66,8 @@ impl Game {
             confirm_new: false,
             victory: false,
             month_open: false,
+            help_page: None,
+            tutorial_paused: false,
             capture: false,
             pending: None,
         }
@@ -76,7 +80,35 @@ impl Game {
         let Some(action) = self.pending.take() else {
             return;
         };
+        if matches!(
+            &action,
+            UiAction::Start
+                | UiAction::Continue
+                | UiAction::Quest(_)
+                | UiAction::Party(_)
+                | UiAction::Dispatch
+                | UiAction::NextDay
+                | UiAction::Tab(_)
+                | UiAction::ChooseParty(_)
+                | UiAction::Promote(_)
+        ) {
+            self.tutorial_paused = false;
+        }
         match action {
+            UiAction::Help(page) => {
+                self.help_page = Some(page);
+                self.settings_open = false;
+            }
+            UiAction::CloseHelp => self.help_page = None,
+            UiAction::LessonDone(lesson) => {
+                self.tutorial_paused = true;
+                self.guild.tutorial.acknowledge(lesson);
+                self.save();
+            }
+            UiAction::SkipTutorial => {
+                self.guild.tutorial.skipped = true;
+                self.save();
+            }
             UiAction::Month => self.month_open = true,
             UiAction::CloseMonth => self.month_open = false,
             UiAction::Sandbox => {
@@ -105,6 +137,7 @@ impl Game {
                     return;
                 }
                 self.guild = Guild::new();
+                self.help_page = None;
                 self.month_open = false;
                 self.victory = false;
                 self.choosing_party = false;
@@ -163,6 +196,7 @@ impl Game {
                     .dispatch(self.selected, &self.party, &self.contracts)
                 {
                     Ok(()) => {
+                        self.guild.tutorial.dispatched = true;
                         self.notice = "Dispatched. Tap NEXT DAY to advance their journey.".into();
                         self.party.clear();
                         self.save();
@@ -249,9 +283,20 @@ impl Game {
         "Tap a contract, then adventurers, then DISPATCH. Earn 60 XP and 3 successes to qualify for the Bronze trial."
     }
 
+    pub fn lesson(&self) -> Option<crate::tutorial::Lesson> {
+        if self.tutorial_paused {
+            None
+        } else {
+            self.guild.lesson(!self.party.is_empty())
+        }
+    }
+
     pub fn begin_capture_scene(&mut self, scene: &str) {
         self.capture = true;
         self.guild = Guild::new();
+        self.guild.tutorial.skipped = scene != "tutorial";
+        self.help_page = None;
+        self.tutorial_paused = false;
         self.party = vec![0];
         self.has_save = false;
         self.in_title = scene == "title";
