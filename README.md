@@ -2,6 +2,9 @@
 
 A playable fantasy guild-management vertical slice based on [gdd.md](gdd.md).
 
+The [playable demo roadmap](docs/playable_demo_plan.md) sets out six gated phases
+from this slice to a complete first-month guild-management demo.
+
 ## The first Bronze licence
 
 Open NEW GUILD, review a contract, select adventurers and tap DISPATCH. NEXT DAY
