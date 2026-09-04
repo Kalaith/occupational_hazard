@@ -1,26 +1,54 @@
 # Occupational Hazard
 
-A fantasy guild management game. The complete design is in [gdd.md](gdd.md).
+A playable fantasy guild-management vertical slice based on [gdd.md](gdd.md).
 
-## Current foundation
+## The first Bronze licence
 
-The title screen opens a clean game workspace with one procedurally drawn settings cog in the top-right corner. Settings provides Close and Return to Title. The grid, actions, energy, camera demo, sample persistence, and their data have been removed. Guild gameplay is not implemented yet.
+Open NEW GUILD, review a contract, select adventurers and tap DISPATCH. NEXT DAY
+advances expeditions and lets people at the guild recover. Returning reports
+record rewards, experience, fatigue and medical leave. Contracts can be repeated.
 
-The UI uses the full current window dimensions without a fixed aspect ratio or letterboxing. Native builds open fullscreen. Browser builds opt into the shared publisher's `layout: viewport` mode so the canvas fills the available browser viewport without surrounding page headings or panels.
+Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
+for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
+assessment, then open ADVENTURERS and tap APPROVE BRONZE. Promotion unlocks the
+North Bridge commission and a completion celebration; you can keep playing.
 
-## Development
+The roster has Mira (fighter), Tomas (ranger) and Pip (healer). Class matches,
+experience, rank and fatigue affect expedition outcomes. Healers reduce injuries.
+Danger and qualitative readiness replace numerical success probabilities.
 
-Keep this folder, `macroquad-toolkit`, and `rust_management` as siblings under `RustGames`. Install Rust and the `wasm32-unknown-unknown` target.
+Six authored contracts cover extermination, medicine delivery, search and rescue,
+an uncertain investigation, a promotion trial, and a Bronze defence commission.
+This slice uses deterministic resolution and recoverable injuries. Personality
+labels are character flavour here; recruitment, death, quotas, procedural quests
+and relationship simulation remain beyond this milestone.
+
+## Controls and persistence
+
+All actions have visible tap/click targets. Smaller windows use CHOOSE PARTY and
+BACK to separate contract reading from dispatch. MENU offers SAVE and RETURN TO
+TITLE. Starting a new guild asks before replacing an existing ledger.
+
+The toolkit stores an autosave after dispatch, day progression and promotion.
+CONTINUE restores it, including expeditions in progress. Native saves use the
+application data directory; browsers use local storage. Save errors appear in the
+receptionist's notice. Progress is per browser/device, without cloud sync.
+
+## Development and validation
+
+Keep this folder, macroquad-toolkit and rust_management as siblings. Use the
+project's required publishing path:
 
 ```powershell
-cargo run -p occupational_hazard
-cargo fmt -p occupational_hazard -- --check
-cargo test -p occupational_hazard
-cargo clippy -p occupational_hazard --all-targets --all-features -- -D warnings
-.\scripts\capture_ui.ps1
 .\publish.ps1
 ```
 
-`src/game.rs` owns screen transitions; `src/ui.rs` draws the workspace, procedural cog, and settings; `src/ui/title.rs` draws the responsive title. `asset_registry.json` and `assets/data/texture_manifest.json` remain empty until assets are introduced. Capture scenes are title, gameplay, and settings. The publisher generates the browser page from `game_page.json` and builds Windows/WebGL preview packages. The itch.io target remains unconfigured.
+Targeted checks are `cargo test -p occupational_hazard` and
+`cargo clippy -p occupational_hazard --all-targets -- -D warnings`.
+`./scripts/capture_ui.ps1` records deterministic screens in docs/verification.
+Captures do not write the player's save.
 
-Read `AGENTS.md` and the shared development documents before adding systems. The next gameplay milestone is the guild roster, contracts, and party assignment described in the GDD.
+`src/simulation.rs` owns gameplay, `src/contracts.rs` loads typed authored data
+through the toolkit, `src/game.rs` handles actions and persistence, and `src/ui/`
+contains responsive views. Artwork is packaged from assets/portraits; generation
+prompts and provenance are in [docs/artwork.md](docs/artwork.md).

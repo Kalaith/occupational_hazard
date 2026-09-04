@@ -892,3 +892,27 @@ The prototype is successful when the player:
 7. Can tell memorable stories about what happened to their guild without those stories being explicitly scripted.
 
 If those behaviours emerge with a small roster and a simple quest simulator, **Occupational Hazard has its core game**.
+---
+
+# Implemented Vertical Slice: The First Bronze Licence
+
+For this milestone, the rank vocabulary is **Iron -> Bronze**, superseding the
+letter-rank examples above within the playable slice. Three persistent recruits
+share a desk with receptionist Elowen. The player reviews six authored contracts,
+selects a party, dispatches expeditions, advances days, and reads return reports.
+
+Bronze eligibility requires 60 experience and three successful contracts. The
+candidate must then complete the two-day Lantern Road Trial alone. Certification
+requires the player's explicit APPROVE BRONZE signature in the adventurer dossier.
+It unlocks a Bronze commission, increases capability and celebrates slice completion.
+
+Class suitability, experience, rank, party support and fatigue drive deterministic
+outcomes. Healers reduce injury risk. Retreats grant limited experience but no gold;
+medical leave and fatigue recover on days spent at the guild. Contracts are renewable
+so no failed assignment permanently blocks the promotion objective. Autosaves preserve
+the roster, expeditions, reports, completed contracts and certifications.
+
+This milestone deliberately excludes the larger prototype's recruitment, permanent
+death, monthly closure quotas, relationship simulation and procedural contracts.
+Personality labels currently establish identity; their behavioural simulation remains
+future work. The working slice proves assignment, consequences and certification first.

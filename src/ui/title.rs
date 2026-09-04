@@ -1,54 +1,82 @@
-//! Opening title screen, sized to the current window.
-
+//! The guild opens with the people whose careers the player will shape.
 use super::*;
 
-pub fn draw_title() -> Option<UiAction> {
-    let width = screen_width();
-    let height = screen_height();
-    let content_width = (width - 40.0).clamp(180.0, 900.0);
-    let left = (width - content_width) / 2.0;
-    let middle = height / 2.0;
+pub fn draw_title(game: &Game) -> Option<UiAction> {
+    let w = screen_width();
+    let h = screen_height();
+    if w > 850.0 {
+        let size = (w * 0.32).min(h * 0.73);
+        portrait(game, "mira", Rect::new(0.0, h - size, size, size));
+        portrait(game, "elowen", Rect::new(w - size, h - size, size, size));
+    } else {
+        let size = (h * 0.25).min(160.0);
+        portrait(game, "mira", Rect::new(w / 2.0 - size, 16.0, size, size));
+        portrait(game, "elowen", Rect::new(w / 2.0, 16.0, size, size));
+    }
+    let width = (w - 32.0).min(480.0);
+    let x = (w - width) / 2.0;
+    let y = if w > 850.0 {
+        h * 0.13
+    } else {
+        (h * 0.25).min(160.0) + 28.0
+    };
+    panel(
+        Rect::new(x, y, width, (h - y - 20.0).min(500.0)),
+        BACKGROUND,
+    );
     label(
-        "ADVENTURERS' GUILD",
-        Rect::new(left, middle - 130.0, content_width, 36.0),
-        20.0,
+        "ADVENTURERS' GUILD / FIRST LICENCE",
+        Rect::new(x + 8.0, y + 16.0, width - 16.0, 25.0),
+        17.0,
         GOLD,
     );
     label(
         "Occupational Hazard",
-        Rect::new(left, middle - 80.0, content_width, 70.0),
-        (width / 20.0).clamp(24.0, 54.0),
+        Rect::new(x + 8.0, y + 50.0, width - 16.0, 55.0),
+        38.0,
         WHITE,
     );
-    label(
-        "Every contract is someone's future.",
-        Rect::new(left, middle, content_width, 40.0),
-        (width / 35.0).clamp(14.0, 24.0),
-        Color::new(0.65, 0.67, 0.66, 1.0),
+    paragraph("Every contract is someone's future. Assign a party, read their reports, and guide an Iron recruit to Bronze.",
+        Rect::new(x + 24.0, y + 120.0, width - 48.0, 76.0), 21.0, MUTED);
+    let bw = width - 48.0;
+    if game.confirm_new {
+        paragraph(
+            "Open a new branch? This replaces your saved guild.",
+            Rect::new(x + 24.0, y + 204.0, bw, 45.0),
+            17.0,
+            GOLD,
+        );
+        if button(
+            Rect::new(x + 24.0, y + 255.0, bw, 48.0),
+            "START NEW GUILD",
+            false,
+        ) {
+            return Some(UiAction::Start);
+        }
+        if button(
+            Rect::new(x + 24.0, y + 313.0, bw, 48.0),
+            "KEEP MY GUILD",
+            false,
+        ) {
+            return Some(UiAction::Cancel);
+        }
+    } else {
+        if button(Rect::new(x + 24.0, y + 214.0, bw, 50.0), "NEW GUILD", true) {
+            return Some(UiAction::Start);
+        }
+        if game.has_save && button(Rect::new(x + 24.0, y + 274.0, bw, 50.0), "CONTINUE", false) {
+            return Some(UiAction::Continue);
+        }
+        #[cfg(target_os = "windows")]
+        if button(Rect::new(x + 24.0, y + 334.0, bw, 46.0), "EXIT GAME", false) {
+            return Some(UiAction::Exit);
+        }
+    }
+    paragraph(
+        &game.notice,
+        Rect::new(x + 16.0, y + 390.0, width - 32.0, 78.0),
+        16.0,
+        GOLD,
     );
-    let button_width = content_width.min(320.0);
-    if button(
-        Rect::new(
-            (width - button_width) / 2.0,
-            middle + 84.0,
-            button_width,
-            56.0,
-        ),
-        "Start",
-    ) {
-        return Some(UiAction::Start);
-    }
-    #[cfg(target_os = "windows")]
-    if button(
-        Rect::new(
-            (width - button_width) / 2.0,
-            middle + 156.0,
-            button_width,
-            56.0,
-        ),
-        "Exit Game",
-    ) {
-        return Some(UiAction::Exit);
-    }
     None
 }

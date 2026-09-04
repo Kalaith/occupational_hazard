@@ -8,16 +8,24 @@
   },
   "canvas_rendering": "auto",
   "about": [
-    "A fantasy guild management game in development. The title screen opens an empty game workspace with settings."
+    "Run a fantasy guild desk: assign three Iron recruits to six contracts, read expedition reports, manage recovery, and sign their Bronze promotions after a field assessment."
   ],
   "controls": [
     {
-      "key": "Start",
-      "desc": "Open the game workspace"
+      "key": "CONTRACTS / DISPATCH",
+      "desc": "Review a contract and select a party; compact screens use CHOOSE PARTY first"
     },
     {
-      "key": "Settings cog",
-      "desc": "Open settings in the top-right corner"
+      "key": "NEXT DAY",
+      "desc": "Advance journeys and recover resting adventurers"
+    },
+    {
+      "key": "ADVENTURERS",
+      "desc": "Review careers and approve Bronze after a passed trial"
+    },
+    {
+      "key": "MENU",
+      "desc": "Save or return to the title; CONTINUE restores your guild"
     }
   ],
   "details": [

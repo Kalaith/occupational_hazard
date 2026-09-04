@@ -14,8 +14,8 @@
     ./scripts/capture_ui.ps1 -Frames 60 -SkipBuild
 #>
 param(
-    [ValidateSet("title", "gameplay", "settings")]
-    [string[]]$Scenes = @("title", "gameplay", "settings"),
+    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "victory")]
+    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "victory"),
     [int]$Frames = 150,
     [string]$OutputDir = "docs\verification",
     [switch]$SkipBuild
@@ -25,6 +25,6 @@ $ErrorActionPreference = "Stop"
 $gameDir = Split-Path -Parent $PSScriptRoot
 $shared = Join-Path (Split-Path -Parent $gameDir) "macroquad-toolkit\scripts\capture_ui.ps1"
 
-# The empty workspace intentionally compresses below the shared demo threshold.
+# Keep all deterministic verification screens directly in docs/verification.
 & $shared -GameDir $gameDir -Prefix "OCCUPATIONAL_HAZARD" -Scenes $Scenes -Frames $Frames -OutputDir $OutputDir -MinBytes 10000 -SkipBuild:$SkipBuild
 

@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Cellar, Meet Sword", "client": "Bram / Copper Kettle Inn",
+    "brief": "Rats are eating the winter grain. Clear the cellar without setting fire to the inn. A fine first assignment for a fighter.",
+    "danger": "Low / rats", "specialty": "Fighter", "difficulty": 4,
+    "days": 1, "gold": 24, "xp": 20,
+    "report": "The grain is safe. Bram counted eleven rats and one very offended cellar cat. The client signed the reward envelope.",
+    "promotion": false, "bronze": false
+  },
+  {
+    "title": "Medicine Before Sundown", "client": "Sister Ada / Willowbank",
+    "brief": "Carry fever medicine across the marsh. A healer knows how to keep it dry; a ranger knows which stepping stones are real.",
+    "danger": "Low / marsh crossing", "specialty": "Healer", "difficulty": 5,
+    "days": 1, "gold": 30, "xp": 22,
+    "report": "The medicine arrived intact. Ada sends a thank-you letter, a clean bandage, and strict instructions to get some sleep.",
+    "promotion": false, "bronze": false
+  },
+  {
+    "title": "The Missing Beekeeper", "client": "Linn / Heatherwood",
+    "brief": "Find a beekeeper who followed his swarm into the woods. Tracks disappear at the stream. A ranger is strongly recommended.",
+    "danger": "Moderate / uncertain tracks", "specialty": "Ranger", "difficulty": 7,
+    "days": 2, "gold": 48, "xp": 28,
+    "report": "The beekeeper was found sheltering in a hollow oak. Fresh wolf tracks explain the delay. Heatherwood is less safe than the client believed.",
+    "promotion": false, "bronze": false
+  },
+  {
+    "title": "Something in the Well", "client": "Mayor Fen / Old Mill",
+    "brief": "Noises below the mill, missing chickens above it. The villagers suspect slimes. Send support: nobody has actually looked down the well.",
+    "danger": "Uncertain / possible ambush", "specialty": "Fighter", "difficulty": 12,
+    "days": 2, "gold": 65, "xp": 32,
+    "report": "Goblins, not slimes. A tunnel beneath the mill explains the stolen chickens. Your report corrects the village threat register.",
+    "promotion": false, "bronze": false
+  },
+  {
+    "title": "The Lantern Road Trial", "client": "Examiner Vale / Guild Headquarters",
+    "brief": "BRONZE ASSESSMENT. Escort the examiner through Lantern Road and recover the lost signal lamp. One candidate, unaided. Requires 60 XP and three successful contracts. Rest before dispatch.",
+    "danger": "Challenging / certification trial", "specialty": "Any", "difficulty": 8,
+    "days": 2, "gold": 80, "xp": 30,
+    "report": "The lamp burns again. The candidate held the crossing and brought everyone home. Vale's sealed recommendation authorizes Bronze certification. The final signature belongs to you.",
+    "promotion": true, "bronze": false
+  },
+  {
+    "title": "A Bridge Worth Keeping", "client": "Caravan Master Orra / North Bridge",
+    "brief": "Your first Bronze commission: protect a repair crew on the north bridge. At least one Bronze adventurer must lead. A balanced party will make the road safe again.",
+    "danger": "High / organised raiders", "specialty": "Fighter", "difficulty": 16,
+    "days": 3, "gold": 120, "xp": 40,
+    "report": "The bridge is open. The repair crew raised a small guild banner on the parapet. Your branch is now trusted with the road beyond the village.",
+    "promotion": false, "bronze": true
+  }
+]
