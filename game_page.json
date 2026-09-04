@@ -1,0 +1,50 @@
+{
+  "title": "Occupational Hazard",
+  "wasm": "occupational_hazard",
+  "roost_slug": "rust_occupational_hazard",
+  "status": {
+    "text": "In Development",
+    "class": "development"
+  },
+  "canvas_rendering": "pixelated",
+  "about": [
+    "A fantasy management simulation about running the front desk of an Adventurers' Guild and deciding who to send on each quest.",
+    "Initial development scaffold. The current build demonstrates template systems; guild gameplay is still in development."
+  ],
+  "controls": [
+    {
+      "key": "Arrow Keys",
+      "desc": "Move selected tile"
+    },
+    {
+      "key": "Right Mouse",
+      "desc": "Drag camera"
+    },
+    {
+      "key": "+ / -",
+      "desc": "Zoom camera"
+    },
+    {
+      "key": "Space",
+      "desc": "Run first data action"
+    },
+    {
+      "key": "S / L",
+      "desc": "Save / load toolkit slot"
+    }
+  ],
+  "details": [
+    {
+      "label": "Genre",
+      "value": "Fantasy Guild Management"
+    },
+    {
+      "label": "Engine",
+      "value": "Macroquad + Toolkit"
+    },
+    {
+      "label": "Platform",
+      "value": "Browser, Windows"
+    }
+  ]
+}
