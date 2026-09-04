@@ -11,6 +11,8 @@ const GOLD: Color = Color::new(0.78, 0.64, 0.38, 1.0);
 
 pub enum UiAction {
     Start,
+    #[cfg(target_os = "windows")]
+    Exit,
     Settings,
     CloseSettings,
     Title,

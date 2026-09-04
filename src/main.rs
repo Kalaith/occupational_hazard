@@ -38,6 +38,10 @@ async fn main() {
         let dt = get_frame_time().min(0.1);
         game.update(dt);
         game.draw();
+        #[cfg(target_os = "windows")]
+        if game.exit_requested {
+            return;
+        }
         next_frame().await;
     }
 }

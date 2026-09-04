@@ -8,3 +8,5 @@
 - Native configuration opens fullscreen outside screenshot capture. UI layout uses the current screen dimensions.
 - No-argument `publish.ps1` builds and packages Windows/WebGL and deploys the local preview with exit code 0. Optional Project Roost tracking still warns that localhost:80 is unavailable.
 - The GDD is unchanged. Existing on-disk demo saves are not deleted; the game no longer loads them.
+
+- Windows title screen now includes Exit Game below Start; the button and exit action are excluded from WebGL at compile time. The Windows capture was inspected, formatting/Clippy passed, and both publish builds succeeded.

@@ -4,6 +4,8 @@ use crate::ui::{self, UiAction};
 use macroquad::prelude::*;
 
 pub struct Game {
+    #[cfg(target_os = "windows")]
+    pub exit_requested: bool,
     in_title: bool,
     settings_open: bool,
 }
@@ -11,6 +13,8 @@ pub struct Game {
 impl Game {
     pub async fn new() -> Self {
         Self {
+            #[cfg(target_os = "windows")]
+            exit_requested: false,
             in_title: true,
             settings_open: false,
         }
@@ -30,6 +34,8 @@ impl Game {
             ui::draw_game(self.settings_open)
         };
         match action {
+            #[cfg(target_os = "windows")]
+            Some(UiAction::Exit) => self.exit_requested = true,
             Some(UiAction::Start) => self.in_title = false,
             Some(UiAction::Settings) => self.settings_open = true,
             Some(UiAction::CloseSettings) => self.settings_open = false,

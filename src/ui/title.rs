@@ -36,8 +36,19 @@ pub fn draw_title() -> Option<UiAction> {
         ),
         "Start",
     ) {
-        Some(UiAction::Start)
-    } else {
-        None
+        return Some(UiAction::Start);
     }
+    #[cfg(target_os = "windows")]
+    if button(
+        Rect::new(
+            (width - button_width) / 2.0,
+            middle + 156.0,
+            button_width,
+            56.0,
+        ),
+        "Exit Game",
+    ) {
+        return Some(UiAction::Exit);
+    }
+    None
 }
