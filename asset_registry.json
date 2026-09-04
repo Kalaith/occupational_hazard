@@ -1,1 +1,10 @@
-{"version":1,"assets":["assets/portraits/mira.png","assets/portraits/elowen.png","assets/data/contracts.json"]}
+{
+  "version": 1,
+  "assets": [
+    "assets/portraits/mira.png",
+    "assets/portraits/elowen.png",
+    "assets/data/contracts.json",
+    "assets/portraits/tomas.png",
+    "assets/portraits/pip.png"
+  ]
+}

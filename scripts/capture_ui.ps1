@@ -14,8 +14,8 @@
     ./scripts/capture_ui.ps1 -Frames 60 -SkipBuild
 #>
 param(
-    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "victory")]
-    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "victory"),
+    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip")]
+    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "victory", "tomas", "pip"),
     [int]$Frames = 150,
     [string]$OutputDir = "docs\verification",
     [switch]$SkipBuild

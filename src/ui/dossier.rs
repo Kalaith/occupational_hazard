@@ -21,17 +21,7 @@ pub fn draw_dossier(g: &Game, r: Rect) -> Option<UiAction> {
         64.0
     };
     let art = Rect::new(r.x, r.y + 56.0, size, size);
-    if g.dossier == 0 {
-        portrait(g, "mira", art);
-    } else {
-        panel(art, PANEL);
-        label(
-            if g.dossier == 1 { "TR" } else { "PF" },
-            art,
-            size * 0.35,
-            GOLD,
-        );
-    }
+    portrait(g, ["mira", "tomas", "pip"][g.dossier], art);
     let x = if wide { art.x + size + 24.0 } else { r.x };
     let y = if wide { r.y + 56.0 } else { r.y + 132.0 };
     let width = r.x + r.w - x;

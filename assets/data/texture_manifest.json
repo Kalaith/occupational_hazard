@@ -1,1 +1,18 @@
-[{"key":"mira","path":"assets/portraits/mira.png"},{"key":"elowen","path":"assets/portraits/elowen.png"}]
+[
+  {
+    "key": "mira",
+    "path": "assets/portraits/mira.png"
+  },
+  {
+    "key": "elowen",
+    "path": "assets/portraits/elowen.png"
+  },
+  {
+    "path": "assets/portraits/tomas.png",
+    "key": "tomas"
+  },
+  {
+    "path": "assets/portraits/pip.png",
+    "key": "pip"
+  }
+]

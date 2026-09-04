@@ -35,6 +35,8 @@ impl Game {
         assets.set_default_filter(FilterMode::Linear);
         for (key, path) in [
             ("mira", "assets/portraits/mira.png"),
+            ("tomas", "assets/portraits/tomas.png"),
+            ("pip", "assets/portraits/pip.png"),
             ("elowen", "assets/portraits/elowen.png"),
         ] {
             assets
@@ -227,6 +229,14 @@ impl Game {
         self.victory = false;
         self.notice.clear();
         self.pending = None;
+        self.dossier = match scene {
+            "tomas" => 1,
+            "pip" => 2,
+            _ => 0,
+        };
+        if matches!(scene, "tomas" | "pip") {
+            self.tab = 1;
+        }
         self.selected = if scene == "mobile_contract" { 4 } else { 0 };
         self.choosing_party = scene == "mobile_party";
         if scene == "promotion" || scene == "mobile_promotion" {

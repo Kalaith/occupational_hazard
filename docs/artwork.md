@@ -20,5 +20,21 @@ Final prompt:
 
 > Use case: stylized-concept. Asset type: fantasy management game receptionist portrait. Polished painterly storybook portrait of an adult female human guild receptionist named Elowen, dark curly hair pinned into a bun, round brass spectacles, warm brown skin, cream blouse and burgundy waistcoat, ink-stained fingers holding a quill over a ledger at a wooden desk. Friendly shrewd smile. Waist-up centered square composition, head fully visible. Warm guild lamplight, muted teal and ochre palette, textured brushwork, readable silhouette, simple dark teal shelves background. No text, lettering or watermark. Artwork for Occupational Hazard, cozy fantasy bureaucracy.
 
-Tomas and Pip use dossier monograms in this slice. The catalog thumbnail is a
+All three adventurers now have painted dossier portraits. The catalog thumbnail is a
 capture of the actual title screen featuring Mira and Elowen.
+
+## Tomas Reed
+
+File: `assets/portraits/tomas.png`
+
+Final prompt (built-in image_gen):
+
+> Use case: stylized-concept. Asset type: fantasy management game character portrait. Create a polished painterly storybook portrait of Tomas Reed, an adult male human ranger with sandy brown hair tied loosely back, light weathered skin, short beard, observant hazel eyes and a cautious thoughtful expression. Practical moss-green hooded cloak with hood down, worn brown leather armour, bow and a small quiver visible, one hand holding a folded woodland map. Waist-up centered square composition, head fully visible. Warm guild lamplight, muted teal and ochre palette, textured brushwork, rich readable silhouette. Simple dark teal guild interior background. No text, lettering or watermark. Match the cozy fantasy, grounded painterly portrait aesthetic of Occupational Hazard's Mira Ashford and receptionist Elowen.
+
+## Pip Fenwick
+
+File: `assets/portraits/pip.png`
+
+Final prompt (built-in image_gen):
+
+> Use case: stylized-concept. Asset type: fantasy management game character portrait. Create a polished painterly storybook portrait of Pip Fenwick, a young adult male human healer with tousled copper curls, freckles, kind green eyes and a dependable reassuring smile. Cream linen tunic, muted blue-teal travelling vest and short wool shoulder cape, practical healer's satchel with clean rolled bandages and herbal sprigs. Hands gently holding a small ceramic medicine jar; a simple wooden sun-shaped pendant at his collar. Waist-up centered square composition, head fully visible. Warm guild lamplight, muted teal and ochre palette, textured brushwork, rich readable silhouette. Simple dark teal guild interior background. No text, lettering or watermark. Match the cozy fantasy, grounded painterly portrait aesthetic of Occupational Hazard's Mira Ashford and receptionist Elowen.
