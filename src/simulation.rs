@@ -31,6 +31,8 @@ impl Adventurer {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Expedition {
+    #[serde(default)]
+    pub instance: String,
     pub contract: usize,
     pub party: Vec<usize>,
     pub returns: u32,
@@ -48,6 +50,8 @@ pub struct Report {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Guild {
+    #[serde(default)]
+    pub board: crate::board::Board,
     #[serde(default)]
     pub tutorial: crate::tutorial::Tutorial,
     #[serde(default)]
@@ -85,6 +89,7 @@ impl Guild {
         })
         .collect();
         Self {
+            board: crate::board::Board::default(),
             tutorial: crate::tutorial::Tutorial::default(),
             month: crate::review::Month::default(),
             services: crate::services::Services::default(),
@@ -111,6 +116,7 @@ impl Guild {
 
     pub fn validate(&self, contracts: &[Contract]) -> Result<(), String> {
         self.validate_month()?;
+        self.validate_board(contracts)?;
         let mut scouted = self.services.scouted.clone();
         scouted.sort_unstable();
         scouted.dedup();
@@ -188,7 +194,9 @@ impl Guild {
             return Some("Select a contract.".into());
         };
         if !self.contract_open(id, qs) {
-            return Some("This request is complete. Choose another contract.".into());
+            return Some(
+                "This offer is unavailable or already accepted. Choose another contract.".into(),
+            );
         }
         if self.expeditions.iter().any(|e| e.contract == id) {
             return Some("This contract already has an expedition.".into());
@@ -229,7 +237,17 @@ impl Guild {
         if let Some(reason) = self.dispatch_problem(id, party, qs) {
             return Err(reason);
         }
+        if self.board.definition_order.is_empty() {
+            self.board.definition_order = qs.iter().map(|q| q.id.clone()).collect();
+        }
+        let instance = if qs[id].promotion {
+            format!("{}@{}-{}", qs[id].id, self.day, party[0])
+        } else {
+            qs[id].offer(self.day).ok_or("Offer expired")?.id
+        };
+        self.board.accepted.insert(instance.clone());
         self.expeditions.push(Expedition {
+            instance,
             contract: id,
             party: party.to_vec(),
             returns: self.day + qs[id].days,
@@ -305,6 +323,9 @@ impl Guild {
                 self.gold += q.gold;
                 self.reputation += if q.promotion { 5 } else { 2 };
                 self.completed[e.contract] += 1;
+                if q.service && self.day <= crate::review::REVIEW_DAY {
+                    self.board.service_credit.insert(q.id.clone());
+                }
             }
             self.reports.insert(0, Report { read: false,
                 title: format!("Day {} / {} / {}", self.day, if success { "SUCCESS" } else { "RETREAT" }, q.title),

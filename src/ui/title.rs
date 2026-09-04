@@ -36,7 +36,7 @@ pub fn draw_title(game: &Game) -> Option<UiAction> {
         38.0,
         WHITE,
     );
-    paragraph("Head office visits on day 30. Certify a Bronze adventurer and complete a Bronze commission before the review.",
+    paragraph("Head office visits on day 30. Certify a Bronze adventurer, complete a Bronze commission and 6 different service jobs.",
         Rect::new(x + 24.0, y + 120.0, width - 48.0, 76.0), 21.0, MUTED);
     let bw = width - 48.0;
     if game.confirm_new {

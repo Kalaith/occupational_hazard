@@ -161,8 +161,10 @@ impl Game {
             UiAction::Continue => {
                 match persistence::load_from_slot::<Guild>("occupational_hazard", "guild") {
                     Ok(mut guild) => {
-                        guild.migrate_board(&self.contracts);
-                        match guild.validate(&self.contracts) {
+                        let validation = guild
+                            .migrate_board(&self.contracts)
+                            .and_then(|()| guild.validate(&self.contracts));
+                        match validation {
                             Ok(()) => {
                                 self.confirm_day = false;
                                 self.guild = guild;
@@ -330,6 +332,10 @@ impl Game {
         if self.capture {
             return;
         }
+        if let Err(e) = self.guild.migrate_board(&self.contracts) {
+            self.notice = format!("Ledger could not be saved: {e}");
+            return;
+        }
         match persistence::save_to_slot("occupational_hazard", "guild", &self.guild) {
             Ok(()) => {
                 self.has_save = true;
@@ -397,6 +403,13 @@ impl Game {
                 self.guild.roster[0].xp = 135;
                 self.guild.roster[0].successes = 5;
                 self.guild.completed[5] = 1;
+                self.guild.board.service_credit = self
+                    .contracts
+                    .iter()
+                    .filter(|q| q.service)
+                    .take(6)
+                    .map(|q| q.id.clone())
+                    .collect();
                 self.guild.gold = 352;
             }
             self.guild.day = 30;

@@ -17,8 +17,10 @@ pub fn draw_desk(g: &Game) -> Option<UiAction> {
         "SANDBOX".into()
     } else {
         format!(
-            "D30: {}/2",
-            usize::from(certs > 0) + usize::from(commissions > 0)
+            "D30: {}/3",
+            usize::from(certs > 0)
+                + usize::from(commissions > 0)
+                + usize::from(g.guild.board.service_credit.len() >= crate::review::SERVICE_QUOTA)
         )
     };
     if guided_button(g, Rect::new(w - 212.0, 8.0, 114.0, 42.0), &objective, false) {
@@ -93,7 +95,7 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     let open = g.guild.open_contracts(&g.contracts);
     if open.is_empty() {
         panel(area, PAPER);
-        paragraph("All requests fulfilled. Completed jobs are filed in REPORTS. Tap NEXT DAY to reach the review, or MENU to start another guild.",
+        paragraph("No offers available today. Tap NEXT DAY for returns and new postings. Daily cellar work always returns; no fee is required.",
             Rect::new(area.x + 20.0, area.y + 30.0, area.w - 40.0, area.h - 60.0), 24.0, INK);
         return None;
     }
@@ -208,7 +210,7 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     );
     let brief_height = (r.h - 348.0).clamp(40.0, 130.0);
     paragraph(
-        &format!("{}\n{}", q.client, q.brief),
+        &format!("{}\n{}\n{}", q.client, q.brief, g.guild.offer_notice(q)),
         Rect::new(x, r.y + 84.0, width, brief_height),
         20.0,
         INK,
@@ -254,7 +256,7 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
             action = Some(UiAction::Party(i));
         }
     }
-    let cutoff = g.guild.cutoff_notice(q.days);
+    let cutoff = g.guild.offer_notice(q);
     let problem = g.guild.dispatch_problem(g.selected, &g.party, &g.contracts);
     let assessment = if g.party.is_empty() {
         "Select your party above."
@@ -265,13 +267,14 @@ fn contracts(g: &Game, area: Rect) -> Option<UiAction> {
     } else {
         "Outmatched. Bring support or rest first."
     };
+    let dispatch_note = problem.as_deref().unwrap_or(assessment);
     let bottom = r.y + r.h;
     // The compact screen keeps the exact dispatch requirement visible above its button.
     paragraph(
         if g.guild.day + q.days > 30 && !g.guild.month.sandbox {
             &cutoff
         } else {
-            problem.as_deref().unwrap_or(assessment)
+            dispatch_note
         },
         Rect::new(x, bottom - 81.0, width, 32.0),
         16.0,
@@ -312,7 +315,7 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
                 return Some(UiAction::Party(id));
             }
         }
-        let cutoff = g.guild.cutoff_notice(q.days);
+        let cutoff = g.guild.offer_notice(q);
         let problem = g.guild.dispatch_problem(g.selected, &g.party, &g.contracts);
         let assessment = if g.guild.prepared_strength(g.selected, q, &g.party) >= q.difficulty + 2 {
             "Well prepared. Tap DISPATCH to send this party."
@@ -321,11 +324,12 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
         } else {
             "Outmatched. Select more support, or tap NEXT DAY to rest."
         };
+        let dispatch_note = format!("{} {}", problem.as_deref().unwrap_or(assessment), cutoff);
         paragraph(
             if g.guild.day + q.days > 30 && !g.guild.month.sandbox {
                 &cutoff
             } else {
-                problem.as_deref().unwrap_or(assessment)
+                &dispatch_note
             },
             Rect::new(x, r.y + 210.0, w, r.h - 272.0),
             20.0,
@@ -392,7 +396,7 @@ fn compact_contract(g: &Game, r: Rect) -> Option<UiAction> {
             INK,
         );
         paragraph(
-            &format!("{}\n{}", q.client, q.brief),
+            &format!("{}\n{}\n{}", q.client, q.brief, g.guild.offer_notice(q)),
             Rect::new(x, r.y + 100.0, w, r.h - 220.0),
             22.0,
             INK,

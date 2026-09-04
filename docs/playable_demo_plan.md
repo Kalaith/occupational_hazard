@@ -2,7 +2,8 @@
 
 Status: Phase 1 complete, 2026-09-04. The unfamiliar player reached the ending
 and reported about five minutes of gameplay. Follow-up warning and personal-rank
-clarity fixes are verified. Phases 2-6 remain proposed work; the full demo's
+clarity fixes are verified. Phase 2 implementation and technical checks are complete; player observation
+of its assignment tradeoffs remains open. Phases 3-6 remain proposed work; the full demo's
 30-45 minute pacing target is not met by this introductory slice.
 See [Phase 1 evidence](phase1_verification.md).
 
@@ -86,24 +87,28 @@ before adding more systems.
 Depends on Phase 1. **Player outcome:** there are worthwhile reasons to split
 the party, rest someone, or let a contract go.
 
-- Separate authored contract definitions from dated contract instances. Give
+- [x] Separate authored contract definitions from dated contract instances. Give
   definitions and instances stable IDs; stop tying saved progress and active
   expeditions to positions in a six-item array.
-- Add a bounded rotating board with authored arrival schedules, expiry dates
+- [x] Add a bounded rotating board with authored arrival schedules, expiry dates
   and clear duration information. Begin with 10â€“12 authored definitions across
   the existing categories, including short safe jobs and overlapping demands.
-- Specify expiry as the last day to accept; accepted expeditions may return
+- [x] Specify expiry as the last day to accept; accepted expeditions may return
   later. Review credit requires return by the review cutoff. Show both rules
   where they affect dispatch.
-- Keep the promotion assessment available to eligible candidates. Provide a
+- [x] Keep the promotion assessment available to eligible candidates. Provide a
   low-risk earning route so a poor assignment does not make recovery impossible.
-- Introduce a simple service quota alongside certification. Count qualifying
+- [x] Introduce a simple service quota alongside certification. Count qualifying
   returns once and show remaining time and progress. Tune the quota only after
   the board schedule is playable; avoid rewards that make one repeatable job
   the best answer to every objective.
-- Preserve a slice-save migration path, including expeditions already away,
+- [x] Preserve a slice-save migration path, including expeditions already away,
   scouting, purchases and completed-contract records. Route content loading
   through the toolkit's data loader with project-owned schema validation.
+
+**Technical evidence:** [Phase 2 verification](phase2_verification.md). Two scripted
+month routes pass; three specific tradeoffs are exercised. Player observation
+of these choices and fresh-session duration are not yet established.
 
 **Exit gate:** a complete month contains at least three observed decisions
 between competing useful assignments. Verify expiry boundaries, one-time
@@ -229,6 +234,6 @@ first. Preserve the complete session, competing assignments, recruitment,
 recoverable consequences, persistence and touch controls. Do not add a new system
 to compensate for a failed pacing or comprehension gate.
 
-**Next implementation:** Phase 2, when requested. Use the observed five-minute
-baseline to test competing useful assignments; preserve the completed Phase 1
-flow. Do not claim the full demo duration or force services into the review.
+**Next gate:** observe a Phase 2 month and three assignment tradeoffs before
+expanding into Phase 3. Use the five-minute Phase 1 baseline; do not claim the
+full demo duration or force purchased services into the review.

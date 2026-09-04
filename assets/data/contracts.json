@@ -2,16 +2,21 @@
   {
     "title": "Cellar, Meet Sword",
     "client": "Bram / Copper Kettle Inn",
-    "brief": "Rats are eating the winter grain. Clear the cellar without setting fire to the inn. A fine first assignment for a fighter.",
+    "brief": "Rats are eating the winter grain. Clear the cellar without setting fire to the inn. A fine first assignment for a fighter. Daily recovery work: no service-quota credit. No fee to accept.",
     "danger": "Low / rats",
     "specialty": "Fighter",
-    "difficulty": 4,
+    "difficulty": 3,
     "days": 1,
     "gold": 24,
     "xp": 20,
     "report": "The grain is safe. Bram counted eleven rats and one very offended cellar cat. The client signed the reward envelope.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "cellar",
+    "arrival": 1,
+    "window": 1,
+    "interval": 1,
+    "service": false
   },
   {
     "title": "Medicine Before Sundown",
@@ -25,7 +30,12 @@
     "xp": 22,
     "report": "The medicine arrived intact. Ada sends a thank-you letter, a clean bandage, and strict instructions to get some sleep.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "medicine",
+    "arrival": 1,
+    "window": 5,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "The Missing Beekeeper",
@@ -39,7 +49,12 @@
     "xp": 28,
     "report": "The beekeeper was found sheltering in a hollow oak. Fresh wolf tracks explain the delay. Heatherwood is less safe than the client believed.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "beekeeper",
+    "arrival": 1,
+    "window": 3,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "Something in the Well",
@@ -53,7 +68,12 @@
     "xp": 32,
     "report": "Goblins, not slimes. A tunnel beneath the mill explains the stolen chickens. Your report corrects the village threat register.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "well",
+    "arrival": 1,
+    "window": 3,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "The Lantern Road Trial",
@@ -67,7 +87,12 @@
     "xp": 30,
     "report": "The lamp burns again. The candidate held the crossing and brought everyone home. Vale's sealed recommendation authorizes Bronze certification. The final signature belongs to you.",
     "promotion": true,
-    "bronze": false
+    "bronze": false,
+    "id": "lantern-trial",
+    "arrival": 1,
+    "window": 1,
+    "interval": 1,
+    "service": false
   },
   {
     "title": "A Bridge Worth Keeping",
@@ -81,7 +106,12 @@
     "xp": 40,
     "report": "The bridge is open. The repair crew raised a small guild banner on the parapet. Your branch is now trusted with the road beyond the village.",
     "promotion": false,
-    "bronze": true
+    "bronze": true,
+    "id": "north-bridge",
+    "arrival": 10,
+    "window": 20,
+    "interval": 30,
+    "service": false
   },
   {
     "title": "Shutters Before Nightfall",
@@ -95,7 +125,12 @@
     "xp": 20,
     "report": "The shutters hold. Bram keeps the cellar key and pays for a quiet night.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "shutters",
+    "arrival": 4,
+    "window": 2,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "The Quarry Handcart",
@@ -109,7 +144,12 @@
     "xp": 20,
     "report": "The cart is upright and the tools are accounted for. Nessa can put her crew back to work.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "quarry",
+    "arrival": 7,
+    "window": 2,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "Boundary Stones",
@@ -123,7 +163,12 @@
     "xp": 22,
     "report": "All three stones are marked. Sella redraws the safe boundary and keeps the woodcutters away from the nests.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "boundary",
+    "arrival": 5,
+    "window": 2,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "A Shepherd After Dark",
@@ -137,7 +182,12 @@
     "xp": 24,
     "report": "The flock reaches the lower gate before the fog closes in. Garron pays for every animal returned.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "shepherd",
+    "arrival": 9,
+    "window": 2,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "The Millhouse Fever",
@@ -151,7 +201,12 @@
     "xp": 20,
     "report": "The drinking barrels are replaced and the workers can rest. Ada thanks the guild for stopping a larger outbreak.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "fever",
+    "arrival": 4,
+    "window": 2,
+    "interval": 7,
+    "service": true
   },
   {
     "title": "Bandages for the Watch",
@@ -165,6 +220,11 @@
     "xp": 22,
     "report": "The watch changes its drills and keeps a stocked medical chest. Dain signs the guild invoice.",
     "promotion": false,
-    "bronze": false
+    "bronze": false,
+    "id": "bandages",
+    "arrival": 7,
+    "window": 2,
+    "interval": 7,
+    "service": true
   }
 ]

@@ -21,17 +21,23 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
     let (certs, commissions) = review
         .map(|r| (r.certifications, r.commissions))
         .unwrap_or_else(|| g.guild.objective_counts(&g.contracts));
+    let services = review
+        .map(|r| r.service_returns)
+        .unwrap_or(g.guild.board.service_credit.len());
+    let target = review
+        .map(|r| r.service_target)
+        .unwrap_or(crate::review::SERVICE_QUOTA);
     paragraph(
-        &format!("Bronze adventurers: {certs}/1\nSuccessful Bronze commission: {commissions}/1"),
-        Rect::new(x + 16.0, y + 55.0, w - 32.0, 62.0),
-        21.0,
+        &format!("Bronze adventurers: {certs}/1\nSuccessful Bronze commission: {commissions}/1\nService jobs: {services}/{target} / {} days left", 30u32.saturating_sub(g.guild.day)),
+        Rect::new(x + 16.0, y + 55.0, w - 32.0, 82.0),
+        19.0,
         WHITE,
     );
     let body = if let Some(r) = review {
         let result = if r.passed() {
             "TARGETS MET. Head office renews its confidence."
         } else {
-            "TARGETS MISSED. The branch needed both targets by the cutoff. Continue to develop the guild or restart."
+            "TARGETS MISSED. The branch needed all targets by the cutoff. Continue to develop the guild or restart."
         };
         let careers = r
             .careers
@@ -49,11 +55,11 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
             .join("\n");
         format!("{result}\n\nClosing treasury: {}g (opened with 80g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, i64::from(r.gold) - 80, r.reputation)
     } else {
-        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In ADVENTURERS, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO DESK to begin.".into()
+        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In ADVENTURERS, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader and 6 different service jobs. Each service job counts once; daily cellar work earns gold and XP only.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO DESK to begin.".into()
     };
     paragraph(
         &body,
-        Rect::new(x + 16.0, y + 127.0, w - 32.0, h - 305.0),
+        Rect::new(x + 16.0, y + 147.0, w - 32.0, h - 325.0),
         19.0,
         MUTED,
     );

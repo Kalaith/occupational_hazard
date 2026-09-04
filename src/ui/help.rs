@@ -32,7 +32,7 @@ pub fn draw_guidance(g: &Game, r: Rect) -> Option<UiAction> {
 
 fn tip(g: &Game, lesson: Lesson) -> &'static str {
     match lesson {
-        Lesson::Welcome => "By day 30: promote one adventurer to Bronze; complete a Bronze commission. Tap D30 for details.",
+        Lesson::Welcome => "By day 30: promote one Bronze, complete a Bronze commission and 6 distinct service jobs. Tap D30 for details.",
         Lesson::Selection if g.tab != 0 => "Tap CONTRACTS to choose an assignment. The outlined controls show the next step.",
         Lesson::Selection if g.choosing_party => "Tap Mira Ashford for the cellar job. Gold names join your party; tap again to remove.",
         Lesson::Selection => "Browse contracts. Tap CHOOSE PARTY, then an adventurer; gold names join the party.",

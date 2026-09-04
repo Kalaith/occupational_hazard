@@ -18,11 +18,21 @@ fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
             g.next_day(&qs);
         }
     }
+    // The other two recruits handle service work while Mira prepares her trial.
+    g.dispatch(9, &[1], &qs).unwrap();
+    g.next_day(&qs);
+    g.dispatch(10, &[2], &qs).unwrap();
+    g.next_day(&qs);
     g.dispatch(4, &[0], &qs).unwrap();
     g.next_day(&qs);
     g.next_day(&qs);
     g.promote(0).unwrap();
     assert!(g.month.review.is_none(), "promotion is intermediate");
+    while g.day < 15 {
+        g.next_day(&qs);
+    }
+    g.dispatch(1, &[2], &qs).unwrap();
+    g.dispatch(2, &[1], &qs).unwrap();
     while g.day < 27 {
         g.next_day(&qs);
     }
@@ -33,7 +43,8 @@ fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
     }
     let r = g.month.review.as_ref().unwrap();
     assert!(r.passed());
-    assert_eq!(r.gold, 362);
+    assert_eq!(r.gold, 510);
+    assert_eq!(r.service_returns, 6);
     assert_eq!(r.careers[0].successes, 5);
     let snapshot = serde_json::to_string(r).unwrap();
     g = reload(&g);
@@ -98,4 +109,23 @@ fn invalid_review_state_is_rejected() {
     let mut g = Guild::new();
     g.month.sandbox = true;
     assert!(g.validate_month().is_err());
+}
+
+#[test]
+fn phase_one_review_keeps_its_original_result_without_a_new_quota() {
+    let qs = crate::contracts::load().unwrap();
+    let mut g = Guild::new();
+    g.day = 30;
+    g.roster[0].bronze = true;
+    g.completed[5] = 1;
+    g.finish_review(&qs);
+    let mut value = serde_json::to_value(&g).unwrap();
+    let review = value["month"]["review"].as_object_mut().unwrap();
+    review.remove("service_returns");
+    review.remove("service_target");
+    let mut old: Guild = macroquad_toolkit::data_loader::parse_json(&value.to_string()).unwrap();
+    old.migrate_board(&qs).unwrap();
+    old.validate(&qs).unwrap();
+    assert!(old.month.review.as_ref().unwrap().passed());
+    assert_eq!(old.month.review.as_ref().unwrap().service_target, 0);
 }

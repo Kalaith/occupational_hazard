@@ -64,7 +64,7 @@ impl Guild {
                 if self.expeditions.iter().any(|e| e.contract == id) {
                     return Err("That expedition has already left. Scout before dispatch.".into());
                 }
-                (SCOUT_COST, "Scouts prepared the route. The next party on this contract gets a preparation advantage.")
+                (SCOUT_COST, "Scouts prepared the route. The next party on this route gets an advantage, even on a later posting.")
             }
         };
         if self.gold < cost {

@@ -6,6 +6,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 
 pub const REVIEW_DAY: u32 = 30;
+pub const SERVICE_QUOTA: usize = 6;
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Month {
@@ -15,6 +16,10 @@ pub struct Month {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Review {
+    #[serde(default)]
+    pub service_returns: usize,
+    #[serde(default)]
+    pub service_target: usize,
     pub day: u32,
     pub certifications: usize,
     pub commissions: u32,
@@ -25,7 +30,9 @@ pub struct Review {
 
 impl Review {
     pub fn passed(&self) -> bool {
-        self.certifications > 0 && self.commissions > 0
+        self.certifications > 0
+            && self.commissions > 0
+            && self.service_returns >= self.service_target
     }
 }
 
@@ -51,6 +58,8 @@ impl Guild {
         }
         let (certifications, commissions) = self.objective_counts(qs);
         self.month.review = Some(Review {
+            service_returns: self.board.service_credit.len(),
+            service_target: SERVICE_QUOTA,
             day: self.day,
             certifications,
             commissions,

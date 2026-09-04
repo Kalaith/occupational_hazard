@@ -908,7 +908,7 @@ It unlocks a Bronze commission, increases capability and celebrates an intermedi
 
 The implemented first-month review closes on day 30 after returning expeditions,
 XP and rewards resolve. Its targets are one Bronze certification and one successful
-Bronze commission. The saved review records both targets, each recruit's rank, XP
+Bronze commission, plus six distinct service-job successes. The saved review records all targets, each recruit's rank, XP
 and successes, and closing treasury with net change from the opening 80g.
 Unsuccessful reviews explain the missed targets. Visible controls continue into
 a labelled sandbox or restart through replacement confirmation. The objective
@@ -921,13 +921,13 @@ with outlined next controls; normal play advances steps without closing a modal.
 
 Class suitability, experience, rank, party support and fatigue drive deterministic
 outcomes. Healers reduce injury risk. Retreats grant limited experience but no gold;
-medical leave and fatigue recover on days spent at the guild. Failed jobs can be
-retried, while successful requests leave the board. Distinct class-suitable jobs
+medical leave and fatigue recover on days spent at the guild. Each dated offer is
+accepted once; new postings allow later attempts after success or retreat. Distinct class-suitable jobs
 provide the experience and successes needed for promotion. Autosaves preserve
 the roster, expeditions, reports, completed contracts and certifications.
 
 This milestone deliberately excludes the larger prototype's recruitment, permanent
-death, monthly closure quotas, relationship simulation and procedural contracts.
+death, relationship simulation and procedural contracts.
 Personality labels currently establish identity; their behavioural simulation remains
 future work. The working slice proves assignment, consequences and certification first.
 
@@ -967,5 +967,31 @@ prices remain unchanged. Phase 1's observation gate is complete, with an observe
 five-minute introductory slice. This does not satisfy the full demo's 30-45
 minute ambition. Keep one Bronze adventurer and one Bronze commission as its
 introductory goals; meaningful longer pacing belongs to later assignment/roster
-work. Phase 2's dated arrivals, expiry and stable instance identities remain
-unimplemented. Do not equate additional waits or required purchases with depth.
+work. Phase 2 now adds dated arrivals, expiry and stable instance identities as
+specified below. Do not equate additional waits or required purchases with depth.
+
+## Phase 2: Competing assignments
+
+Twelve stable authored definitions produce dated offers. Weekly local requests
+have overlapping 2-5 day acceptance windows; the bridge opens on day 10 through
+29, recurring every 30 days in sandbox. The trial remains a standing appointment.
+Daily cellar work is the free, low-risk earning fallback for any rested recruit.
+The authored schedule presents at most ten offers. Accepting claims an offer once;
+expiry never cancels an expedition already away. Rewards resolve once on return.
+
+Six distinct service definitions must succeed by day 30 alongside certification
+and the Bronze commission. Repeated postings still pay gold and XP, but never
+increase that definition's service credit. Cellar work, trials and the bridge do
+not count toward service; the quota therefore encourages broader assignments.
+The objective panel shows progress and remaining days. The provisional quota is
+supported by two deterministic complete-month routes, not a player balance study.
+
+Saved definition names remap numerical UI caches, including completions, scouts
+and away missions. Expeditions and accepted offers retain stable dated identities.
+Six-slot and twelve-slot ledgers migrate without discarding purchases or records;
+already-filed reviews retain their original targets. Scout preparation survives
+an expired posting until the next dispatch on that route. Content remains loaded
+and parsed by the toolkit with project-owned schema checks.
+
+See docs/phase2_verification.md for boundary tests, browser evidence, scripted
+assignment tradeoffs and the still-unmeasured fresh-player pacing gate.

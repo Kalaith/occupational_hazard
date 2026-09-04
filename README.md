@@ -6,7 +6,9 @@ The [playable demo roadmap](docs/playable_demo_plan.md) sets out six gated phase
 from this slice to a complete first-month guild-management demo. Phase 1 is
 complete: after initial blockers were fixed, the unfamiliar player reached the
 ending and reported about five minutes of gameplay. This introductory slice
-does not meet the full roadmap's 30-45 minute target.
+does not meet the full roadmap's 30-45 minute target. Phase 2 now adds dated
+rotating offers and a six-job service quota; see [verification](docs/phase2_verification.md).
+Fresh-player pacing and assignment-choice observation remain to be collected.
 
 ## The first Bronze licence
 
@@ -16,7 +18,8 @@ unassigned staff trigger a warning: BACK TO DESK preserves the day, while
 ADVANCE DAY confirms it. Returning reports
 record rewards, experience, fatigue and medical leave in a separate inbox entry
 for every expedition. REPORTS shows the unread count; reading never pays twice.
-Completed jobs leave the board permanently. Failed jobs remain available.
+Accepted offers leave the board. Later postings are new requests, even after a
+success or retreat. Expiry is the last day to accept; accepted work can return later.
 
 Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
 for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
@@ -24,7 +27,8 @@ assessment, then open ADVENTURERS and tap APPROVE BRONZE. Promotion unlocks the
 North Bridge commission and an intermediate promotion celebration.
 
 The first month ends with a day-30 head-office review: certify one Bronze
-adventurer and complete one Bronze commission. Tap the D30 objective control
+adventurer, complete one Bronze commission, and succeed at six different service
+jobs. Repeat successes earn rewards but each service definition counts only once. Tap the D30 objective control
 for details. Returns and rewards on day 30 count before evaluation; later
 returns wait for sandbox continuation. The review saves its career, objective
 and treasury snapshot. CONTINUE SANDBOX resumes play; RESTART opens a
@@ -39,11 +43,17 @@ Twelve authored contracts provide ten distinct Iron jobs, a candidate-specific
 promotion assessment and a Bronze commission. Each class has three suitable
 Iron jobs, so promotion does not require repeating completed requests. The
 assessment remains available for other candidates until everyone has passed.
-Desktop MORE JOBS and compact < / > controls browse unfinished requests.
-Original six-contract saves retain their missions, purchases and completions;
-the six new jobs are added on load.
+Desktop MORE JOBS and compact < / > controls browse currently available offers.
+The board contains at most ten offers with this schedule. Local work rotates weekly;
+the bridge accepts on days 10-29 and recurs in sandbox. Cellar work renews daily,
+costs nothing to accept, and is safe for any rested recruit. It earns gold/XP but
+no service credit. Offer briefs show acceptance dates, return day and review cutoff.
+Original six- and twelve-contract saves retain missions, purchases and completions.
+Stable definition names resolve saved index caches even when content is reordered;
+accepted offers have dated IDs, and scouting carries to the next posting of its route.
+Already-filed Phase 1 reviews keep their original targets and result.
 This slice uses deterministic resolution and recoverable injuries. Personality
-labels are character flavour here; recruitment, death, quotas, procedural quests
+labels are character flavour here; recruitment, death, procedural quests
 and relationship simulation remain beyond this milestone.
 
 ## Controls and persistence

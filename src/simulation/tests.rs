@@ -93,6 +93,7 @@ fn save_round_trip_preserves_expedition_and_certification() {
     assert!(loaded.roster[0].bronze);
     assert_eq!(loaded.completed[2], 1);
     loaded.expeditions.push(Expedition {
+        instance: "invalid".into(),
         contract: 100,
         party: vec![0],
         returns: 9,
