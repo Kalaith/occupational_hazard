@@ -14,5 +14,21 @@
   {
     "path": "assets/portraits/pip.png",
     "key": "pip"
+  },
+  {
+    "key": "building",
+    "path": "assets/headquarters/building.png"
+  },
+  {
+    "key": "people",
+    "path": "assets/headquarters/people-keyed.png"
+  },
+  {
+    "key": "route",
+    "path": "assets/headquarters/route.png"
+  },
+  {
+    "key": "facilities",
+    "path": "assets/headquarters/facilities-keyed.png"
   }
 ]

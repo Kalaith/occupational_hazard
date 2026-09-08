@@ -1,0 +1,4 @@
+
+thread 'main' (18152) panicked at occupational_hazard\src\game.rs:485:59:
+called `Result::unwrap()` on an `Err` value: "This offer is unavailable or already accepted. Choose another contract."
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

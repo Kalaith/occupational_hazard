@@ -3,7 +3,7 @@ use crate::game::Game;
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod day;
-mod desk;
+mod headquarters;
 mod dossier;
 mod help;
 mod month;
@@ -12,13 +12,19 @@ mod services;
 mod title;
 
 pub const BACKGROUND: Color = Color::new(0.055, 0.095, 0.10, 1.0);
-const PANEL: Color = Color::new(0.09, 0.15, 0.16, 1.0);
+const PANEL: Color = Color::new(0.065, 0.09, 0.11, 0.98);
 const GOLD: Color = Color::new(0.83, 0.66, 0.39, 1.0);
-const INK: Color = Color::new(0.20, 0.19, 0.15, 1.0);
-const PAPER: Color = Color::new(0.87, 0.82, 0.69, 1.0);
+const INK: Color = Color::new(0.90, 0.89, 0.85, 1.0);
+const PAPER: Color = PANEL;
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    Overview,
+    Room(crate::headquarters::Room),
+    SheetPage(usize),
+    Journey(usize),
+    ReducedMotion,
+    SkipMotion,
     BoardPage(usize),
     ReportList,
     ReportPage(usize),
@@ -74,7 +80,7 @@ pub fn draw(game: &Game) -> Option<UiAction> {
     if game.confirm_day {
         return day::draw_warning(game);
     }
-    desk::draw_desk(game)
+    headquarters::draw(game)
 }
 
 fn menu(game: &Game) -> Option<UiAction> {

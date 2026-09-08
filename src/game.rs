@@ -8,6 +8,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::{assets::AssetManager, persistence};
 
 pub struct Game {
+    pub hq: crate::headquarters::Headquarters,
     #[cfg(target_os = "windows")]
     pub exit_requested: bool,
     pub in_title: bool,
@@ -40,6 +41,8 @@ impl Game {
         let mut assets = AssetManager::new();
         assets.set_default_filter(FilterMode::Linear);
         for (key, path) in [
+            ("building", "assets/headquarters/building.png"),
+            ("route", "assets/headquarters/route.png"),
             ("mira", "assets/portraits/mira.png"),
             ("tomas", "assets/portraits/tomas.png"),
             ("pip", "assets/portraits/pip.png"),
@@ -50,7 +53,10 @@ impl Game {
                 .await
                 .unwrap_or_else(|e| panic!("Required portrait {path}: {e}"));
         }
+        assets.load_texture_keyed("people", "assets/headquarters/people-keyed.png", [255, 0, 255], 90, 75).await.expect("Required headquarters people atlas");
+        assets.load_texture_keyed("facilities", "assets/headquarters/facilities-keyed.png", [255, 0, 255], 90, 75).await.expect("Required headquarters facility atlas");
         Self {
+            hq: Default::default(),
             #[cfg(target_os = "windows")]
             exit_requested: false,
             in_title: true,
@@ -80,6 +86,7 @@ impl Game {
     }
 
     pub fn update(&mut self, _dt: f32) {
+        self.hq.tick(_dt);
         if !self.in_title && is_key_pressed(KeyCode::Escape) {
             self.settings_open = !self.settings_open;
         }
@@ -87,6 +94,16 @@ impl Game {
             return;
         };
         match action {
+            UiAction::Overview => { self.hq.open(crate::headquarters::Sheet::None); self.hq.focus = None; }
+            UiAction::Room(room) => {
+                use crate::headquarters::{Room, Sheet};
+                self.hq.focus = Some(room);
+                self.hq.open(match room { Room::Common => Sheet::Career, Room::Assignments => Sheet::Jobs, Room::Gate => Sheet::Returns, Room::Recovery | Room::Training => Sheet::Facility(room), Room::Records => { self.month_open = true; Sheet::None } });
+            }
+            UiAction::SheetPage(page) => self.hq.page = page,
+            UiAction::Journey(id) => { self.hq.open(crate::headquarters::Sheet::Jobs); self.hq.journey = Some(id); }
+            UiAction::ReducedMotion => { self.hq.reduced_motion = !self.hq.reduced_motion; self.hq.transition = None; }
+            UiAction::SkipMotion => self.hq.transition = None,
             UiAction::BoardPage(page) => self.board_page = page,
             UiAction::ReportList => {
                 self.report_detail = false;
@@ -140,6 +157,7 @@ impl Game {
                 }
                 self.confirm_day = false;
                 self.guild = Guild::new();
+                self.hq = Default::default();
                 self.help_page = None;
                 self.month_open = false;
                 self.victory = false;
@@ -188,6 +206,8 @@ impl Game {
                 self.settings_open = false;
             }
             UiAction::Tab(tab) => {
+                use crate::headquarters::{Sheet, Room};
+                self.hq.open(match tab { 0 => Sheet::Jobs, 1 => Sheet::Career, 2 => Sheet::Returns, _ => Sheet::Facility(Room::Recovery) });
                 self.tab = tab;
                 if tab == 2 {
                     self.report_detail = false;
@@ -202,6 +222,7 @@ impl Game {
                 self.notice.clear();
             }
             UiAction::Quest(id) => {
+                self.hq.open(crate::headquarters::Sheet::Jobs);
                 self.selected = id;
                 self.notice.clear();
             }
@@ -225,6 +246,8 @@ impl Game {
                     .dispatch(self.selected, &self.party, &self.contracts)
                 {
                     Ok(()) => {
+                        self.hq.transition = Some(crate::headquarters::Transition { people: self.party.clone(), arriving: false, elapsed: 0.0 });
+                        self.hq.open(crate::headquarters::Sheet::None);
                         self.guild.tutorial.dispatched = true;
                         self.guild
                             .tutorial
@@ -255,8 +278,9 @@ impl Game {
                 }
             }
             UiAction::CancelDay => self.confirm_day = false,
-            UiAction::Dossier(id) => self.dossier = id,
+            UiAction::Dossier(id) => { self.dossier = id; self.hq.open(crate::headquarters::Sheet::Career); }
             UiAction::Report(id) => {
+                self.hq.open(crate::headquarters::Sheet::Returns);
                 if self.guild.read_report(id) {
                     self.report = id;
                     self.report_detail = true;
@@ -310,6 +334,7 @@ impl Game {
             .iter()
             .filter(|e| e.returns == self.guild.day + 1)
             .count();
+        let arrivals = self.guild.expeditions.iter().filter(|e| e.returns == self.guild.day + 1).flat_map(|e| e.party.iter().copied()).collect();
         self.guild.next_day(&self.contracts);
         self.notice = if returning > 0 {
             format!(
@@ -320,6 +345,8 @@ impl Game {
             "A new day. Adventurers at the guild have rested.".into()
         };
         if returning > 0 {
+            self.hq.open(crate::headquarters::Sheet::Returns);
+            self.hq.transition = Some(crate::headquarters::Transition { people: arrivals, arriving: true, elapsed: 0.0 });
             self.tab = 2;
             self.report = 0;
             self.report_detail = false;
@@ -380,6 +407,7 @@ impl Game {
     }
 
     pub fn begin_capture_scene(&mut self, scene: &str) {
+        self.hq = Default::default();
         self.capture = true;
         self.guild = Guild::new();
         self.guild.tutorial.skipped = scene != "tutorial";
@@ -446,6 +474,19 @@ impl Game {
             self.tab = 3;
             self.guild.gold = 180;
             self.selected = 3;
+        }
+        use crate::headquarters::{Room, Sheet};
+        self.hq.sheet = match self.tab { 1 => Sheet::Career, 2 => Sheet::Returns, 3 => Sheet::Facility(Room::Recovery), _ => Sheet::None };
+        if matches!(scene, "planning" | "mobile_party" | "mobile_contract") { self.hq.sheet = Sheet::Jobs; }
+        if matches!(scene, "gameplay" | "planning" | "recovery") {
+            self.guild.day = 9;
+            self.guild.gold = 182;
+            self.guild.roster[2].fatigue = 3;
+            self.guild.migrate_board(&self.contracts).unwrap();
+            self.guild.dispatch(2, &[1], &self.contracts).unwrap();
+            self.selected = 3;
+            self.party = if scene == "planning" { vec![0, 2] } else { vec![] };
+            if scene == "recovery" { self.guild.roster[2].injury = 2; }
         }
     }
 }

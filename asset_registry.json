@@ -5,6 +5,10 @@
     "assets/portraits/elowen.png",
     "assets/data/contracts.json",
     "assets/portraits/tomas.png",
-    "assets/portraits/pip.png"
+    "assets/portraits/pip.png",
+    "assets/headquarters/building.png",
+    "assets/headquarters/people-keyed.png",
+    "assets/headquarters/route.png",
+    "assets/headquarters/facilities-keyed.png"
   ]
 }

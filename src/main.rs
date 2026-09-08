@@ -6,6 +6,7 @@ use macroquad_toolkit::capture;
 mod board;
 mod contracts;
 mod game;
+mod headquarters;
 mod reports;
 mod review;
 mod services;
