@@ -124,7 +124,11 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
         INK,
     );
     let short = r.h < 400.;
-    let body = if short && recovery {
+    let body = if purchased && recovery {
+        "Infirmary open. Medical leave recovers twice as quickly. Basic fatigue recovery continues each day at home. Beds have no capacity limit."
+    } else if purchased {
+        "Training yard open. Fully rested Iron staff at home gain 5 XP per day, up to 60 XP. Training never awards successful-contract credit."
+    } else if short && recovery {
         "Basic rest is free. An infirmary doubles medical-leave recovery. It adds equipment, with no bed limit."
     } else if short {
         "Equip the yard: rested Iron staff gain 5 XP/day, capped at 60 XP. No successful-contract credit."

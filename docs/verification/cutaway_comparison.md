@@ -17,7 +17,8 @@ Visual estimate: headquarters 75–80%, planning and returns 70–75% similar to
 their respective mockups. This is a qualitative review, not an objective pixel
 metric or unfamiliar-player result. The 70% gate is provisionally reached for
 these three desktop compositions, so publishing and meaningful regression checks
-can now begin. Responsive captures and actual published-browser input remain open.
+began only after this gate. Final responsive captures and published-browser input
+are recorded below.
 
 The first capture attempt caught an invalid dated-offer fixture on day 12. The
 fixture now uses day 9, when the expedition is legally dispatchable. No gameplay
@@ -27,3 +28,69 @@ person labels below their feet to avoid colliding with room labels.
 The old comparison images remain available in git history at b1b3b1e and earlier.
 The former UI used three broad tabs, parchment contracts, text-row party selection
 and a permanent Elowen guidance strip. The new composition changes all four.
+
+## Final published verification
+
+The no-argument publish script passed on 2026-09-09 for Windows and WebGL,
+including Preview deployment, all 10 registered assets, catalog thumbnail and
+Project Roost tracking. Strict Clippy passed; 31 unit tests, one asset registry
+test and one source-size test passed. Two shared chroma-key tests also passed
+during the artwork milestone.
+
+Live target: http://127.0.0.1/games/occupational_hazard/ in the Codex in-app
+Chromium browser on this Windows host. No local development server was substituted.
+The existing browser save continued at day 5, 182g, one unread report and tired
+staff. Using only visible pointer targets, the agent:
+
+- Selected Mira, closed planning, reopened it with selection retained, dispatched
+  Cellar, Meet Sword, and observed her departure.
+- Advanced to day 6, observed arrival and two unread reports, opened Mira's report,
+  and verified 206g (+24g) and a single remaining unread report.
+- Resized to 390×844, read the report, navigated to Training, purchased the yard
+  for 140g, observed new dummies and saved from the visible Menu.
+- Resized to 844×390, opened Jobs and Details, browsed a dated offer and scouted
+  it for 20g. The control became Route scouted and gold became 46g.
+- Reloaded the final published build, tapped Continue and verified day 6, 46g,
+  the purchased yard and one unread report. The updated facility description
+  correctly explained its active benefit.
+- Resized to 1024×768, tapped Tomas's actual recovery-room sprite, inspected his
+  career, and prepared his trial. Missing XP/successes were explained and dispatch
+  remained disabled.
+
+This is agent-operated pointer evidence, not an unfamiliar-player study or a
+physical touchscreen result. Native deterministic captures cover 1280×720,
+1024×768, 390×844 and 844×390. A complete month is covered by deterministic rule
+tests; a complete independent manual month at every viewport is not claimed.
+
+Live review caught overlapping character plaques, stale purchased-facility copy,
+and missing job names in short Details. These are corrected. Short journey views
+now remain explicitly read-only, and accepted return dates drive their review label.
+
+## Capture scenarios
+
+All paths below are directly in docs/verification. Prefixes phone_, tablet_ and
+landscape_ after ui_ identify their respective target viewport sizes above.
+
+| Capture | Setup and expected visible outcome |
+| --- | --- |
+| ui_gameplay / ui_planning | Day 9; Mira ready, Pip tired, Tomas away; planning selects Mira and Pip for the well job |
+| ui_everyone_away | Three separately accepted journeys; home adventurers absent; Elowen and next-return shortcut remain |
+| ui_report / ui_reports | Two day-2 returns; Pip's medicine success, recovery advice and already-applied reward; separate inbox entries |
+| ui_injured_return | Unsupported Pip retreats from the well; medical leave precedes reward information |
+| ui_facilities | Both facilities purchased; new medical trolley and training dummies; Pip injured, Mira and Tomas training |
+| ui_blocked_trial | New recruit lacks trial prerequisites; explicit blocker and disabled dispatch |
+| ui_promotion | Fixture candidate has passed unaided trial; career requirements and Approve Bronze visible |
+| ui_review / ui_review_missed | Day-30 met/missed objective fixtures; sandbox continuation and restart remain visible |
+| ui_arrival / ui_departure | Brief travel poses at the gate; skip control; simulation has already applied the transition |
+| ui_title / catalog_thumbnail | Delivered cutaway title artwork and start/continue controls |
+| ui_browser_landscape | Actual published day-6 save, purchased training yard after reload at 844×390 |
+
+## Open evidence
+
+Desktop spot measurements using the shared toolkit frame-time overlay showed 60 FPS / 16.6 ms in headquarters and planning at 1280×720. Host: Windows, AMD Ryzen 7 5800X, NVIDIA RTX 4080 SUPER; browser: Codex in-app Chromium. See ui_browser_performance.png. This is a smoothed frame-time spot check, not a sustained benchmark. The F3 developer overlay was used only after the pointer-only gameplay checks. Physical touch
+hardware was unavailable. The plan's three unfamiliar-player sessions and timed
+discoverability observations remain open unless explicitly deferred by the owner.
+For each participant record device, viewport, task duration, misclicks, uncoached
+dispatch/return completion and their explanation of fatigue or return timing.
+Targets are three completed loops and two correct tradeoff explanations.
+

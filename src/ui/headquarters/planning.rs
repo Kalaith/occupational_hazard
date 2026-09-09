@@ -54,6 +54,18 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         if let Some(next) = cards(g, Rect::new(r.x, card_y, r.w, 80.)) {
             action = Some(next);
         }
+        if let Some(id) = g.hq.journey {
+            text(
+                &format!(
+                    "ON THE ROAD · Returns day {}",
+                    g.guild.expeditions[id].returns
+                ),
+                Rect::new(r.x, r.bottom() - 46., r.w, 44.),
+                19.,
+                GOLD,
+            );
+            return action;
+        }
         if primary(
             Rect::new(r.x, r.bottom() - 46., r.w, 44.),
             "REVIEW DISPATCH",
@@ -138,7 +150,11 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             "Returns day {}  ·  {}",
             g.hq.journey
                 .map_or(g.guild.day + q.days, |id| g.guild.expeditions[id].returns),
-            if g.guild.day + q.days <= 30 {
+            if g.hq
+                .journey
+                .map_or(g.guild.day + q.days, |id| g.guild.expeditions[id].returns)
+                <= 30
+            {
                 "Before review"
             } else {
                 "After review"
@@ -264,8 +280,8 @@ fn details(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     let scouted = g.guild.services.scouted.contains(&id);
     let content = if r.h < 420. {
         format!(
-            "{}\n{}\nScout: 20g; route-specific, consumed on next dispatch. Trial must be unaided.",
-            q.client,
+            "{}\n{}\nScout: 20g; this route's next dispatch only. No scouts on trials.",
+            q.title,
             g.guild.offer_notice(q)
         )
     } else {

@@ -167,7 +167,14 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         } else {
             figure(g, id, resting, vec2(feet.x, feet.y), height, WHITE);
         }
-        let rw = if phone { 112. } else { 118. };
+        // Keep each person's plaque inside their projected slot, even with a sheet open.
+        let spacing = match room {
+            Room::Recovery => 145.,
+            Room::Training => 70.,
+            _ => 115.,
+        } * stage.w
+            / view.w;
+        let rw = spacing.clamp(44., 118.);
         let tag_y = if resting {
             feet.y + 2.
         } else {
@@ -181,8 +188,13 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         );
         if !short {
             panel(tag, PANEL);
+            let caption = if rw < 100. {
+                first(g, id).to_string()
+            } else {
+                format!("{} · {}", first(g, id), state.label())
+            };
             label(
-                &format!("{} · {}", first(g, id), state.label()),
+                &caption,
                 tag,
                 14.,
                 if state == Activity::Ready {

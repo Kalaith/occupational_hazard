@@ -1,12 +1,9 @@
-# Clean game shell verification
+# Verification record
 
-- The asset registry and source size tests pass. Tests for the removed demo systems were removed with those systems.
-- Formatting and Clippy with warnings denied pass.
-- Title, empty workspace, and settings screenshots were captured and visually inspected at 1280x720.
-- The intentionally empty workspace compresses to about 20 KB; the project capture wrapper uses a 10 KB threshold instead of the shared 40 KB demo threshold.
-- The generated browser page contains `body class="viewport-game"`; shared CSS gives its canvas the full viewport and hides external page chrome.
-- Native configuration opens fullscreen outside screenshot capture. UI layout uses the current screen dimensions.
-- No-argument `publish.ps1` builds and packages Windows/WebGL and deploys the local preview with exit code 0. Optional Project Roost tracking still warns that localhost:80 is unavailable.
-- The GDD is unchanged. Existing on-disk demo saves are not deleted; the game no longer loads them.
+The current cutaway implementation is documented in [cutaway_comparison.md](cutaway_comparison.md), with per-goal status in [the requirement ledger](../cutaway_requirement_ledger.md).
 
-- Windows title screen now includes Exit Game below Start; the button and exit action are excluded from WebGL at compile time. The Windows capture was inspected, formatting/Clippy passed, and both publish builds succeeded.
+`ui_*.png` captures show the delivered UI. `ui_browser_landscape.png` is an actual published-browser capture; other `ui_` images use deterministic native fixtures. Phone is 390×844, landscape 844×390, tablet 1024×768 and unprefixed desktop captures 1280×720. Existing `ui_mobile_` paths were refreshed too.
+
+Older `browser_*.png` and `phase2_*.png` files are historical evidence from the prior UI, not current cutaway verification. Their original observations remain in git history. The earlier clean-shell record is superseded: the game now loads compatible guild saves and provides a complete deterministic management loop.
+
+Publishing builds Windows and WebGL, packages all registered assets and updates Preview plus its catalog. The latest no-argument run passed, including Project Roost tracking. See the comparison document for exact live actions, limitations and the outstanding unfamiliar-player protocol.

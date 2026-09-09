@@ -42,10 +42,17 @@ async fn main() {
         return;
     }
 
+    let mut performance = macroquad_toolkit::debug::DebugOverlay::new();
     loop {
+        // Developer-only measurement; no gameplay action depends on this key.
+        performance.record_frame(get_frame_time());
+        if is_key_pressed(KeyCode::F3) {
+            performance.toggle();
+        }
         let dt = get_frame_time().min(0.1);
         game.update(dt);
         game.draw();
+        performance.draw(&[]);
         #[cfg(target_os = "windows")]
         if game.exit_requested {
             return;

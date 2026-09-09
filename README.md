@@ -117,3 +117,5 @@ See [design and action map](docs/cutaway_design.md),
 [requirement ledger](docs/cutaway_requirement_ledger.md). The redesign retains the
 existing deterministic first-month rules and guild save schema. Recruitment,
 relationships, death and procedural contracts remain roadmap work.
+
+Developer frame timing: F3 toggles the shared toolkit overlay. This diagnostic is optional; gameplay remains fully available through visible pointer controls. See docs/verification/cutaway_comparison.md for the measured host and limitations.
