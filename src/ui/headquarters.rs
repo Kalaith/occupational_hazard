@@ -49,9 +49,10 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         if phone { 16. } else { 20. },
         GOLD,
     );
-    if button(
+    if guided_button(
+        g,
         Rect::new(
-            w - if phone { 158. } else { 282. },
+            w - if phone { 182. } else { 282. },
             4.,
             if phone { 86. } else { 188. },
             44.,
@@ -228,8 +229,12 @@ fn footer(g: &Game, r: Rect, phone: bool) -> Option<UiAction> {
         }
     }
     let x = start + 3. * (bw + 5.);
-    if primary(Rect::new(x, y, r.w - x - 12., 48.), "ADVANCE DAY", true) {
+    let advance = Rect::new(x, y, r.w - x - 12., 48.);
+    if primary(advance, "ADVANCE DAY", true) {
         action = Some(UiAction::NextDay);
+    }
+    if help::is_target(g, "ADVANCE DAY") {
+        draw_rectangle_lines(advance.x, advance.y, advance.w, advance.h, 3., GOLD);
     }
     action
 }

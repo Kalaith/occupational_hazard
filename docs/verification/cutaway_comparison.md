@@ -94,3 +94,19 @@ For each participant record device, viewport, task duration, misclicks, uncoache
 dispatch/return completion and their explanation of fatigue or return timing.
 Targets are three completed loops and two correct tradeoff explanations.
 
+
+## Follow-up accessibility audit
+
+A code and capture audit found a 16-pixel overlap between phone Review and Menu.
+Review now ends 8 pixels before Menu begins; both retain at least 44-pixel height.
+The welcome and day-advance tutorial targets now receive visible outlines, and the
+trial tip explicitly names Staff, Prepare Solo Trial and Dispatch Party. Compact
+person plaques retain separate name and activity lines, including Injured, so the
+absence of space no longer removes activity text. Updated phone tutorial and
+injured-return captures were inspected. The ledger now incorporates the published
+pointer observations already recorded above; its previous bulk status update had
+not changed the corresponding table cells.
+
+Remaining validation is deliberately narrower than the implemented feature list:
+complete manual loops at every viewport, exhaustive navigation/guidance and motion
+coverage, and the three unfamiliar-player sessions still require further evidence.

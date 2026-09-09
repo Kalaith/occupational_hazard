@@ -195,14 +195,30 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             };
             label(
                 &caption,
-                tag,
-                14.,
+                if rw < 100. {
+                    Rect::new(tag.x, tag.y, tag.w, 14.)
+                } else {
+                    tag
+                },
+                if rw < 100. { 12. } else { 14. },
                 if state == Activity::Ready {
                     Color::new(0.68, 0.82, 0.58, 1.)
                 } else {
                     GOLD
                 },
             );
+            if rw < 100. {
+                label(
+                    if state == Activity::Recovering {
+                        "Injured"
+                    } else {
+                        state.label()
+                    },
+                    Rect::new(tag.x, tag.y + 14., tag.w, 14.),
+                    12.,
+                    MUTED,
+                );
+            }
         }
         let target = Rect::new(feet.x - 26., feet.y - height - 31., 52., height + 36.);
         if interactive && !g.hq.dragged && (activated(target) || activated(tag)) {

@@ -40,7 +40,7 @@ fn tip(g: &Game, lesson: Lesson) -> &'static str {
         Lesson::Time => "Tap ADVANCE DAY to advance journeys. People at home recover while others travel.",
         Lesson::Reports => "Tap Returns to read every return. Each expedition has its own report and automatic rewards.",
         Lesson::Recovery => "Leave tired or injured people at home and tap ADVANCE DAY. Typical fatigue clears in two days.",
-        Lesson::Trial => "Rest the eligible candidate. In Jobs select The Lantern Road Trial; DISPATCH that person alone.",
+        Lesson::Trial => "Tap Staff, select the rested candidate and tap PREPARE SOLO TRIAL. In Jobs, check readiness and tap DISPATCH PARTY.",
         Lesson::Promotion => "Tap Staff, select the passed candidate, then APPROVE BRONZE to promote that person.",
     }
 }
@@ -52,7 +52,7 @@ pub fn is_target(g: &Game, text: &str) -> bool {
         Some(Lesson::Dispatch) => text == "Jobs" || text == "DISPATCH PARTY",
         Some(Lesson::Time | Lesson::Recovery) => text == "ADVANCE DAY",
         Some(Lesson::Reports) => text.starts_with("Returns"),
-        Some(Lesson::Trial) => text == "Jobs" || text.contains("The Lantern Road Trial"),
+        Some(Lesson::Trial) => text == "Staff",
         Some(Lesson::Promotion) => text == "Staff" || text == "APPROVE BRONZE",
         _ => false,
     }
