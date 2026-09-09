@@ -130,6 +130,8 @@ impl Game {
             return;
         };
         match action {
+            UiAction::CommissionList => self.hq.open(crate::headquarters::Sheet::Commissions),
+            UiAction::CommissionPage(page) => self.board_page = page,
             UiAction::Overview => {
                 self.hq.open(crate::headquarters::Sheet::None);
             }
@@ -145,7 +147,7 @@ impl Game {
                 self.hq.focus = Some(room);
                 self.hq.open(match room {
                     Room::Common => Sheet::Career,
-                    Room::Assignments => Sheet::Jobs,
+                    Room::Assignments => Sheet::Commissions,
                     Room::Gate => Sheet::Returns,
                     Room::Recovery | Room::Training => Sheet::Facility(room),
                     Room::Records => {
@@ -280,7 +282,7 @@ impl Game {
             UiAction::Tab(tab) => {
                 use crate::headquarters::{Room, Sheet};
                 self.hq.open(match tab {
-                    0 => Sheet::Jobs,
+                    0 => Sheet::Commissions,
                     1 => Sheet::Career,
                     2 => Sheet::Returns,
                     _ => Sheet::Facility(Room::Recovery),
@@ -299,7 +301,11 @@ impl Game {
                 self.notice.clear();
             }
             UiAction::Quest(id) => {
-                let page = self.hq.page;
+                let page = if self.hq.sheet == crate::headquarters::Sheet::Jobs {
+                    self.hq.page
+                } else {
+                    0
+                };
                 self.hq.open(crate::headquarters::Sheet::Jobs);
                 self.hq.page = page;
                 self.selected = id;
@@ -601,7 +607,7 @@ impl Game {
         if matches!(scene, "planning" | "mobile_party" | "mobile_contract") {
             self.hq.sheet = Sheet::Jobs;
         }
-        if matches!(scene, "gameplay" | "planning" | "recovery") {
+        if matches!(scene, "gameplay" | "planning" | "recovery" | "commissions") {
             self.guild.day = 9;
             self.guild.gold = 182;
             self.guild.roster[2].fatigue = 3;
@@ -616,6 +622,15 @@ impl Game {
             if scene == "recovery" {
                 self.guild.roster[2].injury = 2;
             }
+        }
+        if scene == "commissions" {
+            self.hq.sheet = Sheet::Commissions;
+        }
+        if scene == "pending_returns" {
+            self.guild.dispatch(0, &[0], &self.contracts).unwrap();
+            self.guild.next_day(&self.contracts);
+            self.guild.dispatch(2, &[1], &self.contracts).unwrap();
+            self.party.clear();
         }
         if scene == "everyone_away" {
             self.guild.dispatch(0, &[0], &self.contracts).unwrap();

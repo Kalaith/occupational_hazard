@@ -82,19 +82,33 @@ pub fn hud(g: &Game) -> Option<UiAction> {
         .enumerate()
         .min_by_key(|(_, e)| e.returns)
     {
-        let r = Rect::new(12., h - 78., (w - advance.w - 48.).min(390.), 62.);
+        let r = Rect::new(
+            12.,
+            h - 156.,
+            if phone { w - 24. } else { (w - 260.).min(600.) },
+            76.,
+        );
         panel(r, PANEL);
-        let name = first(g, e.party[0]);
+        let names = e
+            .party
+            .iter()
+            .map(|&id| first(g, id))
+            .collect::<Vec<_>>()
+            .join(" + ");
         text(
-            &format!("{} · ON THE ROAD\nReturns day {}", name, e.returns),
-            Rect::new(r.x + 12., r.y + 9., r.w - 24., 44.),
+            &format!(
+                "{} · {}\n{} · Returns day {}",
+                g.contracts[e.contract].title, g.contracts[e.contract].client, names, e.returns
+            ),
+            Rect::new(r.x + 12., r.y + 9., r.w - 24., 60.),
             16.,
             INK,
         );
         if activated(r) {
             action = Some(UiAction::Journey(id));
         }
-    } else if g.guild.unread_reports() > 0 {
+    }
+    if g.guild.unread_reports() > 0 {
         if button(
             Rect::new(12., h - 66., (w - advance.w - 48.).min(252.), 50.),
             &format!("Returns · {} unread", g.guild.unread_reports()),

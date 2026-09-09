@@ -2,6 +2,7 @@
 use super::*;
 use crate::headquarters::{activity, Activity, Room, Sheet};
 mod chrome;
+mod commissions;
 mod management;
 mod planning;
 mod quest;
@@ -20,15 +21,25 @@ pub fn draw(g: &Game) -> Option<UiAction> {
     if has_window {
         // Opening work never compresses or rearranges the headquarters behind it.
         draw_rectangle(0., 0., w, h, Color::new(0.015, 0.025, 0.035, 0.48));
-        let wide = g.hq.sheet == Sheet::Jobs && w >= 900. && h >= 700.;
+        let wide = matches!(g.hq.sheet, Sheet::Jobs | Sheet::Commissions) && w >= 900. && h >= 700.;
         let ww = if wide { 940.0_f32 } else { 580.0_f32 }.min(w - 24.);
         let wh = (h - if short { 16. } else { 80. }).min(620.);
         let r = Rect::new((w - ww) / 2., (h - wh) / 2., ww, wh);
         chrome::window(r);
-        if button(Rect::new(r.x + 20., r.y + 14., 104., 44.), "< Guild", false) {
-            action = Some(UiAction::Overview);
+        let planning = g.hq.sheet == Sheet::Jobs && g.hq.journey.is_none();
+        if button(
+            Rect::new(r.x + 20., r.y + 14., 104., 44.),
+            if planning { "< Offers" } else { "< Guild" },
+            false,
+        ) {
+            action = Some(if planning {
+                UiAction::CommissionList
+            } else {
+                UiAction::Overview
+            });
         }
         let title = match g.hq.sheet {
+            Sheet::Commissions => "COMMISSION BOARD",
             Sheet::Jobs => "GUILD COMMISSION",
             Sheet::Returns => "EXPEDITION JOURNAL",
             Sheet::Career => "GUILD REGISTER",
@@ -45,6 +56,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         }
         let area = Rect::new(r.x + 24., r.y + 74., ww - 48., wh - 98.);
         let inner = match g.hq.sheet {
+            Sheet::Commissions => commissions::draw(g, area),
             Sheet::Jobs if wide => quest::draw(g, area),
             Sheet::Jobs => planning::draw(g, area),
             Sheet::Returns => returns::draw(g, area),

@@ -89,6 +89,7 @@ impl Activity {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Sheet {
     None,
+    Commissions,
     Jobs,
     Career,
     Returns,

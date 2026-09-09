@@ -16,6 +16,8 @@ const INK: Color = Color::new(0.90, 0.89, 0.85, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
+    CommissionList,
+    CommissionPage(usize),
     Overview,
     Room(crate::headquarters::Room),
     PrepareTrial(usize),
