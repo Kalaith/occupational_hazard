@@ -62,7 +62,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         }
     }
     if g.guild.reports.is_empty() {
-        text("No returns yet. Tap Jobs to dispatch a party, then ADVANCE DAY to follow their journey.", Rect::new(r.x, y, r.w, r.bottom() - y), 20., MUTED);
+        text("No returns yet. Tap < Guild, then Assignments to dispatch a party. Tap ADVANCE DAY to follow their journey.", Rect::new(r.x, y, r.w, r.bottom() - y), 20., MUTED);
     }
     if pages > 1
         && button(

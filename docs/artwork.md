@@ -79,3 +79,34 @@ never decoded or reloaded during interaction. `scene.rs` records exact atlas
 crops, feet anchors and display scales. Figures precede labels; upgrade props
 appear only after purchase. All paths are in the texture manifest and registry.
 
+
+## Owner-requested artwork replacement (2026-09-09)
+
+The owner rejected the earlier room/figure presentation as placeholder quality.
+Three replacement images were generated with the built-in imagegen tool and
+copied into the registered project paths. Original generations remain under
+C:/Users/Kalai/.codex/generated_images/01a08353-17cb-77f3-ba07-5ae283708fd4/.
+
+- building.png: exec-200d9a9b-c797-4f02-ba48-4f8939f3edc9.png. Edit retained the
+  exact architecture and floor geometry. Prompt specified three distinct recovery
+  beds with linen and bandages, a working records library, furnished common room,
+  posted commissions and maps, travel supplies at the gate and an empty courtyard
+  until equipment is purchased. No people or interface were baked into the art.
+- people-keyed.png: exec-02c159f4-814c-4c22-8697-4344400a2340.png. Four columns,
+  two rows. Upper row: Mira checks her satchel, Tomas adjusts travel equipment,
+  Pip checks medicine and Elowen works seated at her ledger. Lower row: the three
+  adventurers rest on stools; Elowen reads a scroll. Prompt requested natural
+  adult proportions, matte worn clothing and warm room lighting rather than
+  frontal hero poses. Full figures are preserved in explicit atlas crops.
+- activity-keyed.png: exec-f2b692fd-2d06-405a-90a5-10a4bb815782.png. Three columns,
+  two rows. Side-facing travel and sword/bow/bandage practice match the replacement
+  people atlas. Prompt retained all weapons and feet inside their cells, natural
+  adult proportions, worn clothing and a flat magenta key with no floor.
+
+Room figures now occupy about 19% of the viewport height when standing and 15%
+when resting, with floor contact shadows. Elowen occupies 18%. Travel figures use
+19%. Original portraits, route vignette and purchased equipment remain authored
+assets; no geometric stand-in figures are used. The earlier atlas pose descriptions
+above refer to the superseded versions preserved in git history.
+
+The replacements ship as building-v2.png, people-v2-keyed.png and activity-v2-keyed.png so browser caches cannot retain the superseded art. The texture manifest and asset registry use these versioned paths.

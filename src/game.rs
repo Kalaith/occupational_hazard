@@ -41,7 +41,7 @@ impl Game {
         let mut assets = AssetManager::new();
         assets.set_default_filter(FilterMode::Linear);
         for (key, path) in [
-            ("building", "assets/headquarters/building.png"),
+            ("building", "assets/headquarters/building-v2.png"),
             ("route", "assets/headquarters/route.png"),
             ("mira", "assets/portraits/mira.png"),
             ("tomas", "assets/portraits/tomas.png"),
@@ -56,7 +56,7 @@ impl Game {
         assets
             .load_texture_keyed(
                 "people",
-                "assets/headquarters/people-keyed.png",
+                "assets/headquarters/people-v2-keyed.png",
                 [255, 0, 255],
                 90,
                 75,
@@ -76,7 +76,7 @@ impl Game {
         assets
             .load_texture_keyed(
                 "activity",
-                "assets/headquarters/activity-keyed.png",
+                "assets/headquarters/activity-v2-keyed.png",
                 [255, 0, 255],
                 90,
                 75,

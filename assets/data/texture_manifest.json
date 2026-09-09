@@ -17,11 +17,11 @@
   },
   {
     "key": "building",
-    "path": "assets/headquarters/building.png"
+    "path": "assets/headquarters/building-v2.png"
   },
   {
     "key": "people",
-    "path": "assets/headquarters/people-keyed.png"
+    "path": "assets/headquarters/people-v2-keyed.png"
   },
   {
     "key": "route",
@@ -33,6 +33,6 @@
   },
   {
     "key": "activity",
-    "path": "assets/headquarters/activity-keyed.png"
+    "path": "assets/headquarters/activity-v2-keyed.png"
   }
 ]

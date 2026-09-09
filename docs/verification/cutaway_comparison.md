@@ -1,3 +1,59 @@
+# Owner-requested visual revision — 2026-09-09
+
+The owner rejected the prior 70–80% estimate: the interface still felt like old
+panels over a building, and room/figure art was not accepted. That estimate and
+the earlier acceptance statement below are withdrawn. Player feedback is deferred
+by the owner and is not a release blocker for this stage.
+
+## Current visual comparison
+
+Current desktop images: ui_gameplay.png, ui_planning.png and ui_report.png, at
+1280×720. Compare with mockups 01, 02 and 03. The owner's later instruction takes
+precedence over their title bars and right-hand panels.
+
+| Area | Current revision |
+| --- | --- |
+| Default composition | Full-screen two-storey headquarters; no game-name header, tab bar or permanent side panel |
+| Work windows | Centered framed commission, career, improvement and expedition journal; the building stays at its original scale behind a dim scrim |
+| Navigation | Select rooms and people directly; Assignments has a live open-job count; only day, money, review, menu, journey/unread report and Advance Day float over the scene |
+| Room art | Regenerated recovery beds, records library, furnished common room, posted commissions, maps, travel supplies and bare courtyard |
+| People | Regenerated working, seated, walking and practice poses; smaller scale and floor shadows; Elowen writes at her desk |
+| Planning | Two-column commission: route, client, brief and terms opposite portrait selection, readiness, deadline, scouting and dispatch |
+| Return | Centered journal leads with people and outcome, then recovery advice, account and acknowledgement |
+| Responsive layout | 390×844 portrait and 844×390 landscape use a centered window; landscape pages preserve full-size controls |
+
+The architecture, warm interiors/cool vista, room arrangement, character scale,
+slate/copper materials, portrait cards and people-first return hierarchy follow
+the references. Centered windows and the absence of a game-name header are
+intentional owner-directed differences. This is a qualitative comparison; no
+pixel-derived percentage or owner approval is claimed for the new revision.
+
+The initial desktop and mobile visual pass preceded publication and the existing
+regression suite. Live publication caught stale browser image caches, so replacement
+building, people and activity atlases now use versioned filenames in both manifests.
+
+Updated files replace existing screenshots directly in docs/verification. Other
+captures below describe the earlier milestone unless explicitly refreshed for this
+revision; they are retained as gameplay evidence, not current visual acceptance.
+
+## Current revision validation
+
+The no-argument publish.ps1 passed after versioning the replacement images:
+Windows and WebGL builds, ten registered assets, Preview deployment, refreshed
+catalog thumbnail and Project Roost tracking. The existing 32 unit tests plus
+asset-registry and source-size tests passed (34 total). Every Rust file remains
+within the 800-line limit. No new tests were added for cosmetic layout details.
+
+At http://127.0.0.1/games/occupational_hazard/, the saved day-16 guild loaded the
+new working/seated figures and new rooms. Clicking the Assignments posting opened
+the centered commission; selecting Mira enabled dispatch and showed readiness.
+Closing the window returned to the unchanged full-size headquarters. Departure
+opened the centered journal and a previously read report displayed correctly.
+Day 16 and 222g were unchanged. ui_browser_desktop.png records the new live art.
+This focused pointer check did not repeat the earlier full-month playthrough.
+
+## Earlier milestone record (superseded visual assessment)
+
 # Cutaway visual comparison — 2026-09-09
 
 First integrated captures at 1280×720: ui_gameplay.png, ui_planning.png,

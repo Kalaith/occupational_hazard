@@ -12,7 +12,7 @@ Fresh-player pacing and assignment-choice observation remain to be collected.
 
 ## The first Bronze licence
 
-Open NEW GUILD, tap Jobs, select portrait cards and tap DISPATCH PARTY. ADVANCE DAY
+Open NEW GUILD, tap Assignments, select portrait cards and tap DISPATCH PARTY. ADVANCE DAY
 advances expeditions and lets people at the guild recover. Fully rested,
 unassigned staff trigger a warning: BACK TO HEADQUARTERS preserves the day, while
 ADVANCE DAY confirms it. Returning reports
@@ -23,7 +23,7 @@ success or retreat. Expiry is the last day to accept; accepted work can return l
 
 Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
 for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
-assessment, then open Staff and tap APPROVE BRONZE. Promotion unlocks the
+assessment, then open Common room and tap APPROVE BRONZE. Promotion unlocks the
 North Bridge commission and an intermediate promotion celebration.
 
 The first month ends with a day-30 head-office review: certify one Bronze
@@ -43,7 +43,7 @@ Twelve authored contracts provide ten distinct Iron jobs, a candidate-specific
 promotion assessment and a Bronze commission. Each class has three suitable
 Iron jobs, so promotion does not require repeating completed requests. The
 assessment remains available for other candidates until everyone has passed.
-Tap Details in Jobs, then Previous job or Next job to browse dated offers.
+Open Assignments and use Previous job or Next job (open Details first on narrow screens) to browse dated offers.
 The board contains at most ten offers with this schedule. Local work rotates weekly;
 the bridge accepts on days 10-29 and recurs in sandbox. Cellar work renews daily,
 costs nothing to accept, and is safe for any rested recruit. It earns gold/XP but
@@ -59,7 +59,7 @@ and relationship simulation remain beyond this milestone.
 ## Controls and persistence
 
 Services are optional; the review can be passed without purchasing any.
-Tap Recovery or Training to purchase facilities; open Jobs > Details for scouting:
+Tap Recovery or Training to purchase facilities; open Assignments for scouting (Details on narrow screens):
 the 100g infirmary clears two medical-leave days per day at home, and the 140g
 training yard grants fully rested Iron recruits 5 XP daily up to 60 XP. Training
 does not grant successful contracts. For 20g, scouts prepare the selected route,
@@ -107,7 +107,7 @@ prompts and provenance are in [docs/artwork.md](docs/artwork.md).
 
 The primary play surface is now a two-storey headquarters with generated room,
 character, travel, training and facility artwork. Tap people for careers and rooms
-for their work. Jobs, Staff, Returns and Advance Day remain visible shortcuts.
+for their work. Assignments opens a centered commission window; Departure opens the expedition journal. Advance Day remains visible at the lower right. There is no permanent tab bar or in-game title header.
 Planning is separate from dispatch. Away staff leave the building; medical leave
 and fatigue move people upstairs; equipped training appears in the courtyard.
 Menu includes saved reduced-motion and larger-text preferences.

@@ -1,6 +1,6 @@
 # Cutaway headquarters redesign
 
-Status: implementation delivered; release evidence in progress. See cutaway_requirement_ledger.md and verification/cutaway_comparison.md for verified outcomes and remaining validation.
+Status: owner-requested visual revision. The earlier visual acceptance estimate was rejected. See the updated comparison for the new full-screen headquarters, centered quest windows and replacement artwork. Player feedback is deferred by the owner; it is not a blocker at this stage.
 Created: 2026-09-09.
 
 ## 1. Product contract and boundaries
@@ -88,7 +88,7 @@ Created: 2026-09-09.
 
 - [x] **7.1 Design phone composition explicitly.** On narrow screens, show a legible portion of the building with labelled room navigation and a visible overview control. Use a focused bottom sheet or full-height planning view where needed; do not shrink the entire desktop scene to fit.
 - [x] **7.2 Provide reliable touch targets.** Target at least 44 x 44 logical screen pixels for required controls. Tiny characters get larger non-overlapping selection bounds or a nearby labelled selector. Essential explanations cannot rely on hover.
-- [x] **7.3 Keep essential shortcuts available.** Jobs, staff, returns and Advance Day remain reachable without repeatedly navigating between rooms. Shortcuts focus the relevant scene/function; they must not recreate the original dashboard as a competing default interface.
+- [x] **7.3 Keep essential shortcuts available.** Assignments, Common room, Departure and Advance Day remain directly reachable from headquarters. Shortcuts focus the relevant scene/function; they must not recreate the original dashboard as a competing default interface.
 - [x] **7.4 Make state readable without colour alone.** Combine activity icons with text, visibly distinguish selection from unavailability, and provide readable contrast and scalable text. Keep decorative type out of dense body copy.
 - [x] **7.5 Rewrite contextual guidance.** Teach selecting a room, inspecting a person, choosing a job, assigning, dispatching, advancing, reviewing a return, resting and approving promotion. Every prompt names its exact visible control or gesture. Highlight the target without covering it.
 - [x] **7.6 Cover navigation and interruption.** Back, close, skip guidance, settings, help, save and title are reachable by touch. Test resizing during planning and closing/reopening overlays without losing or silently committing selection.
@@ -120,7 +120,7 @@ Complete, validate and commit each independently useful milestone before startin
 | C. Complete assignment loop | 4.1-4.7, 5.1-5.7, relevant 7 and 8 goals | Jobs through dispatch, day advancement and reports operate in the new interface with persistent consequences |
 | D. Complete management coverage | 6.1-6.6; full tutorial and navigation work in 7.5-7.6 | Facilities, scouting, careers, trial, promotion, review and sandbox use the new design |
 | E. Finished visual and responsive experience | Complete 2.6, 7.1-7.6, performance and packaging work | Final art replaces placeholders; all target sizes and motion settings support the full loop |
-| F. Release and player evidence | Complete 8.1-8.7 and section 10 | Published build, regression evidence, usability results, refreshed documentation and catalog image |
+| F. Release evidence | Complete 8.1-8.7 and section 10 | Published build, regression evidence, refreshed documentation and catalog image |
 
 Do not mark the overall redesign complete at B or C. If delivery stops at an intermediate milestone, name it and enumerate the remaining goals. Do not replace missing behaviour with a promise in the handoff.
 
@@ -130,8 +130,6 @@ Do not mark the overall redesign complete at B or C. If delivery stops at an int
 
 - [x] **10.1 Maintain a requirement ledger.** For every numbered goal, record status, implementation location, verification scenario and evidence. Use Planned, Implemented/unverified, Verified, or Blocked. Only mark a checkbox complete when its stated outcome is verified.
 - [x] **10.2 Capture representative states.** Include ordinary headquarters, everyone away, an injured return, party planning, a blocked trial, purchased facilities, promotion, multiple reports, passed/missed review and mobile planning. Keep captions with scenario setup and expected result in a verification document.
-- [ ] **10.3 Collect unfamiliar-player evidence.** Observe at least three unfamiliar players on the published build, including a touch session. Without coaching, ask them to identify available/injured/away staff, dispatch a suitable party, find its return, and explain one fatigue or timing tradeoff. Target all three completing the core loop and at least two explaining the tradeoff correctly. Record failures and iterate; these are targets, not claimed results.
-- [ ] **10.4 Check discoverability.** After a short look at a representative headquarters state, players should identify where to find jobs, where recovering staff are, and which party returns next. Record task times and misclicks to expose confusing room layouts; do not invent baseline improvements without measurement.
 - [x] **10.5 Demonstrate visual differentiation.** Compare final headquarters, assignment and report screens against the supplied reference and the old game. Document changes in viewpoint, dominant composition, navigation, character scale, materials and interaction. Palette changes alone cannot satisfy this requirement.
 - [x] **10.6 Close the delivery record.** Update README/control descriptions and relevant GDD/UI documentation, record publication and test results, stage all project changes under the repository rules, and report milestone commit hashes and any remaining limitations.
 

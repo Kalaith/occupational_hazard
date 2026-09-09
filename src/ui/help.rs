@@ -33,27 +33,27 @@ pub fn draw_guidance(g: &Game, r: Rect) -> Option<UiAction> {
 fn tip(g: &Game, lesson: Lesson) -> &'static str {
     match lesson {
         Lesson::Welcome => "By day 30: promote one Bronze, complete a Bronze commission and 6 distinct service jobs. Tap Review for details.",
-        Lesson::Selection if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap the Assignments room or Jobs to inspect work. Tap a person or Staff to inspect their career.",
+        Lesson::Selection if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Assignments to inspect work. Tap a person or Common room to inspect their career.",
         Lesson::Selection => "Tap a portrait card to add that person. A copper ring marks selection. Tap Details to browse jobs or scout.",
-        Lesson::Dispatch if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Jobs to review your selected party and send the expedition.",
+        Lesson::Dispatch if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Assignments to review your selected party and send the expedition.",
         Lesson::Dispatch => "Check readiness and return day, then tap DISPATCH PARTY. Tap Details for the deadline and preparation.",
         Lesson::Time => "Tap ADVANCE DAY to advance journeys. People at home recover while others travel.",
-        Lesson::Reports => "Tap Returns to read every return. Each expedition has its own report and automatic rewards.",
+        Lesson::Reports => "Tap Departure to read every return. Each expedition has its own report and automatic rewards.",
         Lesson::Recovery => "Leave tired or injured people at home and tap ADVANCE DAY. Typical fatigue clears in two days.",
-        Lesson::Trial => "Tap Staff, select the rested candidate and tap PREPARE SOLO TRIAL. In Jobs, check readiness and tap DISPATCH PARTY.",
-        Lesson::Promotion => "Tap Staff, select the passed candidate, then APPROVE BRONZE to promote that person.",
+        Lesson::Trial => "Tap Common room, select the rested candidate and tap PREPARE SOLO TRIAL. Check readiness, then tap DISPATCH PARTY.",
+        Lesson::Promotion => "Tap Common room, select the passed candidate, then APPROVE BRONZE to promote that person.",
     }
 }
 
 pub fn is_target(g: &Game, text: &str) -> bool {
     match g.lesson() {
         Some(Lesson::Welcome) => text.starts_with("Review"),
-        Some(Lesson::Selection) => text == "Jobs" || text.contains("Mira"),
-        Some(Lesson::Dispatch) => text == "Jobs" || text == "DISPATCH PARTY",
+        Some(Lesson::Selection) => text == "Assignments" || text.contains("Mira"),
+        Some(Lesson::Dispatch) => text == "Assignments" || text == "DISPATCH PARTY",
         Some(Lesson::Time | Lesson::Recovery) => text == "ADVANCE DAY",
-        Some(Lesson::Reports) => text.starts_with("Returns"),
-        Some(Lesson::Trial) => text == "Staff",
-        Some(Lesson::Promotion) => text == "Staff" || text == "APPROVE BRONZE",
+        Some(Lesson::Reports) => text == "Departure" || text.starts_with("Returns"),
+        Some(Lesson::Trial) => text == "Common room",
+        Some(Lesson::Promotion) => text == "Common room" || text == "APPROVE BRONZE",
         _ => false,
     }
 }

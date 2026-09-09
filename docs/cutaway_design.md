@@ -6,34 +6,36 @@ Study A places recovery and records upstairs, common room and assignments below,
 with a ground-floor gate and adjacent ground-level yard. Study B puts the yard
 above the gate, as in mockup 02. A is selected: it preserves the broad composition
 of mockup 01 and makes the bare courtyard and purchased equipment visible without
-suggesting that the guild can construct a second floor. Planning and returns use
-a slate right-hand sheet occupying roughly 30–35% of desktop width, as in 02/03.
+suggesting that the guild can construct a second floor. The owner's later revision
+replaces right-hand sheets with centered commission and journal windows. The
+building stays full-screen behind a dim scrim. No in-game title header or permanent
+Jobs/Staff/Returns bar remains.
 
 ```
 A — selected                       B — rejected
 RECOVERY | RECORDS | dusk sky       RECOVERY | RECORDS | TRAINING
 COMMON   | JOBS    | GATE | YARD    COMMON   | JOBS    | GATE
-journey / Jobs / Staff / Returns / Advance Day
+floating journey card                     Advance Day
 ```
 
 Typical workday: ready figures downstairs, resting figures upstairs, the next
-expedition named in the footer. Everyone away: empty rooms, occupied timeline,
+expedition named in a floating journey card. Everyone away: empty rooms, occupied timeline,
 visible Advance Day. Injured return: recovery figures upstairs, people-first
-report beside the building. Portrait phone: a cropped room at readable scale,
-labelled room controls and Overview; a focused full-width sheet for planning.
-Landscape phone: a split view with paged sheet content, never miniature controls.
+report in a centered journal. Portrait phone: a cropped room at readable scale,
+labelled room controls and a centered window with a < Guild return control.
+Landscape phone: a centered window with paged content and full-size controls.
 
 ## Existing action map
 
 | Existing action | Headquarters entry and focused control |
 | --- | --- |
-| Browse dated offers / pages | Assignments room or Jobs, previous/next offer |
+| Browse dated offers / pages | Assignments room, previous/next offer |
 | Inspect job, danger, expiry, reward | Planning sheet with route illustration |
 | Add/remove staff, dispatch | Portrait cards, Dispatch Party |
 | Scout | Planning preparation, Scout Route / Purchased |
-| Inspect careers, trial, Approve Bronze | Person or Staff, career sheet |
+| Inspect careers, trial, Approve Bronze | Person or Common room, career sheet |
 | Infirmary / training purchase | Recovery / Training room, facility sheet |
-| Active expedition / return reports | Gate, Returns and next journey footer |
+| Active expedition / return reports | Departure, unread Returns and next journey card |
 | Advance / cancel idle warning | Advance Day, return or advance confirmation |
 | Review objectives / results / sandbox | Review reminder, records, review sheet |
 | Tutorial, help, save, title, restart | Contextual guidance and Menu |
@@ -53,8 +55,8 @@ new offers are derived from the resulting day. No animation controls these steps
 
 | Layer | Asset / size | Anchor / use |
 | --- | --- | --- |
-| Building | headquarters/building.png, 1536×1024 | Full frame; room geometry uses image coordinates |
-| People | headquarters/people-keyed.png, 1536×1024 | Explicit atlas crops; feet anchor; standing/resting poses |
+| Building | headquarters/building-v2.png, 1536×1024 | Full frame; room geometry uses image coordinates |
+| People | headquarters/people-v2-keyed.png, 1536×1024 | Explicit atlas crops; feet anchor; standing/resting poses |
 | Portraits | Existing four 1254×1254 portraits | Square cards and career/report faces |
 | Facilities | Separate generated equipment sprites | Recovery foreground / courtyard; only after purchase |
 | Route | Generated landscape vignette | Cover crop within planning sheet |

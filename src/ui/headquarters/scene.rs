@@ -88,9 +88,26 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             let target = Rect::new(r.x, r.y, r.w.max(90.), 44.);
             panel(Rect::new(target.x, target.y + 7., target.w, 30.), PANEL);
             label(room.name(), target, 15., GOLD);
+            if interactive && help::is_target(g, room.name()) {
+                draw_rectangle_lines(target.x, target.y + 7., target.w, 30., 2., GOLD);
+            }
             if interactive && !g.hq.dragged && activated(target) {
                 action = Some(UiAction::Room(room));
             }
+        }
+    }
+    if interactive && !phone && !short {
+        let posting = project(stage, view, Rect::new(780., 568., 0., 0.));
+        let badge = Rect::new(posting.x - 65., posting.y, 130., 44.);
+        panel(badge, PANEL);
+        label(
+            &format!("{} open jobs", g.guild.open_contracts(&g.contracts).len()),
+            badge,
+            16.,
+            GOLD,
+        );
+        if activated(badge) {
+            action = Some(UiAction::Room(Room::Assignments));
         }
     }
     for (enabled, source, world) in [
@@ -158,7 +175,15 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         {
             continue;
         }
-        let height = (stage.h * if resting { 0.22 } else { 0.27 }).max(92.);
+        let height = (stage.h * if resting { 0.15 } else { 0.19 }).max(82.);
+        draw_ellipse(
+            feet.x,
+            feet.y - 2.,
+            height * 0.23,
+            5.,
+            0.,
+            Color::new(0., 0., 0., 0.32),
+        );
         if g.hq.sheet == Sheet::Jobs && g.party.contains(&id) {
             draw_ellipse_lines(feet.x, feet.y, height * 0.26, 7., 0., 2., GOLD);
         }
@@ -231,7 +256,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
     }
     let elowen = project(stage, view, Rect::new(832., 816., 0., 0.));
     if elowen.x > stage.x && elowen.x < stage.right() {
-        figure(g, 3, false, vec2(elowen.x, elowen.y), stage.h * 0.25, WHITE);
+        figure(g, 3, false, vec2(elowen.x, elowen.y), stage.h * 0.18, WHITE);
     }
     if let Some(t) = &g.hq.transition {
         let p = project(stage, view, Rect::new(1130., 820., 0., 0.));
@@ -245,7 +270,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
                     id,
                     false,
                     vec2(x, p.y),
-                    stage.h * 0.25,
+                    stage.h * 0.19,
                     Color::new(
                         1.,
                         1.,
@@ -266,7 +291,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             GOLD,
         );
         if button(
-            Rect::new(stage.x + 14., stage.bottom() - 52., 132., 44.),
+            Rect::new(stage.x + 14., stage.bottom() - 130., 132., 44.),
             "Skip motion",
             false,
         ) {
@@ -299,16 +324,16 @@ fn active_figure(g: &Game, id: usize, training: bool, feet: Vec2, height: f32, t
 }
 
 pub fn figure(g: &Game, id: usize, resting: bool, feet: Vec2, height: f32, tint: Color) {
-    // Explicit crops accommodate the artist's hand-spaced atlas, including bows.
+    // Crops retain each complete working pose and its contact with the floor.
     let source = if resting {
         match id {
-            0 => Rect::new(24., 544., 350., 446.),
-            1 => Rect::new(350., 544., 435., 446.),
-            2 => Rect::new(800., 544., 350., 452.),
-            _ => Rect::new(1200., 530., 280., 490.),
+            0 => Rect::new(40., 550., 330., 420.),
+            1 => Rect::new(404., 550., 338., 420.),
+            2 => Rect::new(800., 550., 318., 420.),
+            _ => Rect::new(1180., 512., 340., 480.),
         }
     } else {
-        Rect::new(id as f32 * 384. + 35., 0., 340., 535.)
+        Rect::new(id as f32 * 384. + 28., 12., 338., 502.)
     };
     let width = height * source.w / source.h;
     draw_texture_ex(

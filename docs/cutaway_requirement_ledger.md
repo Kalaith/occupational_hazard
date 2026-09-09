@@ -1,6 +1,6 @@
 # Cutaway requirement ledger
 
-2026-09-09. Implementation is delivered through milestone E; milestone F is in progress. Verified means the stated evidence exists, not that an unfamiliar player has approved it.
+2026-09-09 owner revision: the previous visual acceptance estimate was rejected. Current screenshots show the replacement art and centered quest windows. Verified below describes implementation evidence, not owner sign-off on visual similarity. Unfamiliar-player feedback and discoverability sessions are deferred by explicit owner instruction and are no longer blockers.
 
 | Goal | Status | Implementation | Verification scenario / evidence |
 | --- | --- | --- | --- |
@@ -21,13 +21,13 @@
 | 3.4 Make camera and input agree. | Verified | src/headquarters.rs; ui/headquarters/scene.rs; shared assets/chroma.rs | Placement/reload/interruption tests; published direct selection and retained-party checks in cutaway_comparison.md |
 | 3.5 Separate presentation from authority. | Verified | src/headquarters.rs; ui/headquarters/scene.rs; shared assets/chroma.rs | Placement/reload/interruption tests; published direct selection and retained-party checks in cutaway_comparison.md |
 | 3.6 Audit toolkit support first. | Verified | src/headquarters.rs; ui/headquarters/scene.rs; shared assets/chroma.rs | Placement/reload/interruption tests; published direct selection and retained-party checks in cutaway_comparison.md |
-| 4.1 Build a compact offer browser. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.2 Design a focused planning surface. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.3 Keep people visible while assigning. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.4 Explain relevant tradeoffs. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.5 Show time before commitment. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.6 Handle special and blocked assignments. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
-| 4.7 Make dispatch tangible and immediate. | Verified | src/ui/headquarters/planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.1 Build a compact offer browser. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.2 Design a focused planning surface. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.3 Keep people visible while assigning. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.4 Explain relevant tradeoffs. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.5 Show time before commitment. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.6 Handle special and blocked assignments. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
+| 4.7 Make dispatch tangible and immediate. | Verified | src/ui/headquarters/quest.rs; planning.rs; src/game.rs | ui_planning, ui_blocked_trial; published pointer sequence in cutaway_comparison.md |
 | 5.1 Add an expedition timeline. | Verified | src/ui/headquarters/returns.rs; src/game.rs; src/simulation.rs | Two-journey reload test; full-month cutoff test; ui_report/arrival/departure |
 | 5.2 Design the day control. | Verified | src/ui/headquarters/returns.rs; src/game.rs; src/simulation.rs | Two-journey reload test; full-month cutoff test; ui_report/arrival/departure |
 | 5.3 Present departure and arrival sequences. | Verified | src/ui/headquarters/returns.rs; src/game.rs; src/simulation.rs | Two-journey reload test; full-month cutoff test; ui_report/arrival/departure |
@@ -56,9 +56,6 @@
 | 8.7 Run the required validation path. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
 | 10.1 Maintain a requirement ledger. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
 | 10.2 Capture representative states. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
-| 10.3 Collect unfamiliar-player evidence. | Blocked | docs/verification/cutaway_comparison.md; this ledger | Needs three real unfamiliar participants, including touch; no observations fabricated. |
-| 10.4 Check discoverability. | Blocked | docs/verification/cutaway_comparison.md; this ledger | Needs three real unfamiliar participants, including touch; no observations fabricated. |
 | 10.5 Demonstrate visual differentiation. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
 | 10.6 Close the delivery record. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
-
 

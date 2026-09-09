@@ -51,7 +51,10 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             GOLD,
         );
         let card_y = r.y + 64.;
-        if let Some(next) = cards(g, Rect::new(r.x, card_y, r.w, 80.)) {
+        if let Some(next) = cards(
+            g,
+            Rect::new(r.x, card_y, r.w, (r.h - 126.).clamp(80., 140.)),
+        ) {
             action = Some(next);
         }
         if let Some(id) = g.hq.journey {
@@ -182,7 +185,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     action
 }
 
-fn cards(g: &Game, r: Rect) -> Option<UiAction> {
+pub(super) fn cards(g: &Game, r: Rect) -> Option<UiAction> {
     let mut action = None;
     let cw = (r.w - 20.) / 3.;
     let size = cw.min(r.h - 42.).max(44.);
@@ -246,7 +249,7 @@ fn cards(g: &Game, r: Rect) -> Option<UiAction> {
     action
 }
 
-fn readiness(g: &Game, id: usize) -> &'static str {
+pub(super) fn readiness(g: &Game, id: usize) -> &'static str {
     let q = &g.contracts[id];
     let power = g.guild.prepared_strength(id, q, &g.party);
     if power >= q.difficulty + 2 {

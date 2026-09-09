@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn room_bounds_and_art_share_the_same_projection_at_every_target_size() {
     for (width, height) in [(1280., 720.), (1024., 768.), (390., 844.), (844., 390.)] {
-        let stage = Rect::new(0., 62., width, height - 178.);
+        let stage = Rect::new(0., 0., width, height);
         let view = if width < 650. {
             Rect::new(0., 0., 620., 900.)
         } else {
