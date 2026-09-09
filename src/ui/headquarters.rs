@@ -141,21 +141,7 @@ pub fn first(g: &Game, id: usize) -> &str {
 }
 
 pub fn primary(r: Rect, title: &str, enabled: bool) -> bool {
-    panel(
-        r,
-        if enabled {
-            Color::new(0.58, 0.36, 0.14, 1.)
-        } else {
-            Color::new(0.13, 0.15, 0.16, 1.)
-        },
-    );
-    label(
-        title,
-        r,
-        if r.w < 150. { 15. } else { 20. },
-        if enabled { WHITE } else { MUTED },
-    );
-    enabled && activated(r)
+    theme::button(r, title, false, true, enabled)
 }
 
 pub fn crest(p: Vec2, size: f32) {
@@ -175,5 +161,6 @@ pub fn crest(p: Vec2, size: f32) {
 }
 
 pub fn rule(r: Rect, y: f32) {
-    draw_line(r.x, y, r.x + r.w, y, 1., Color::new(0.30, 0.31, 0.30, 1.));
+    draw_line(r.x, y, r.x + r.w, y, 1., Color::new(0.45, 0.34, 0.21, 1.));
+    draw_poly(r.x + r.w / 2., y, 4, 3., 0., GOLD);
 }

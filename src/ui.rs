@@ -7,10 +7,11 @@ mod dossier;
 mod headquarters;
 mod help;
 mod month;
+mod theme;
 mod title;
 
 pub const BACKGROUND: Color = Color::new(0.055, 0.095, 0.10, 1.0);
-const PANEL: Color = Color::new(0.065, 0.09, 0.11, 0.98);
+const PANEL: Color = Color::new(0.12, 0.105, 0.085, 0.99);
 const GOLD: Color = Color::new(0.83, 0.66, 0.39, 1.0);
 const INK: Color = Color::new(0.90, 0.89, 0.85, 1.0);
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
@@ -159,10 +160,7 @@ fn activated(rect: Rect) -> bool {
 }
 
 fn panel(rect: Rect, color: Color) {
-    draw_surface(
-        rect,
-        &SurfaceStyle::new(color).with_border(1.0, Color::new(0.44, 0.39, 0.27, 1.0)),
-    );
+    theme::panel(rect, color);
 }
 
 fn label(text: &str, rect: Rect, size: f32, color: Color) {
@@ -173,26 +171,7 @@ fn paragraph(text: &str, rect: Rect, size: f32, color: Color) {
     draw_text_block(text, rect.x, rect.y, rect.w, rect.h, size, 3.0, color);
 }
 fn button(rect: Rect, text: &str, selected: bool) -> bool {
-    let hover = macroquad_toolkit::ui::Pointer::read(|p| p).hovering_over(rect);
-    panel(
-        rect,
-        if selected {
-            Color::new(0.27, 0.36, 0.31, 1.0)
-        } else if hover {
-            Color::new(0.18, 0.25, 0.24, 1.0)
-        } else {
-            PANEL
-        },
-    );
-    let measured = measure_text_size(text, TextStyle::new(19.0, WHITE)).width;
-    let size = (19.0 * ((rect.w - 14.0) / measured.max(1.0)).min(1.0)).max(12.0);
-    label(
-        text,
-        Rect::new(rect.x + 5.0, rect.y, rect.w - 10.0, rect.h),
-        size,
-        if selected { GOLD } else { WHITE },
-    );
-    activated(rect)
+    theme::button(rect, text, selected, false, true)
 }
 
 fn portrait(game: &Game, key: &str, rect: Rect) {

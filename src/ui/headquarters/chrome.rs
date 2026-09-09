@@ -2,7 +2,14 @@ use super::*;
 
 pub fn window(r: Rect) {
     draw_rectangle(r.x + 8., r.y + 10., r.w, r.h, Color::new(0., 0., 0., 0.5));
-    panel(r, Color::new(0.075, 0.095, 0.105, 1.));
+    panel(r, PANEL);
+    draw_rectangle(
+        r.x + 8.,
+        r.y + 8.,
+        r.w - 16.,
+        55.,
+        Color::new(0.27, 0.19, 0.11, 0.5),
+    );
     draw_rectangle_lines(
         r.x + 5.,
         r.y + 5.,
@@ -11,14 +18,9 @@ pub fn window(r: Rect) {
         1.,
         Color::new(0.34, 0.29, 0.21, 1.),
     );
-    draw_line(r.x + 18., r.y + 64., r.right() - 18., r.y + 64., 1., GOLD);
-    for (x, y) in [
-        (r.x, r.y),
-        (r.right(), r.y),
-        (r.x, r.bottom()),
-        (r.right(), r.bottom()),
-    ] {
-        draw_circle(x, y, 4., GOLD);
+    rule(Rect::new(r.x + 18., r.y, r.w - 36., r.h), r.y + 64.);
+    if r.w > 500. {
+        crest(vec2(r.right() - 44., r.y + 36.), 17.);
     }
 }
 

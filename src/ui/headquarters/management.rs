@@ -49,9 +49,28 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
         panel(Rect::new(r.x, y, r.w, r.h - 52.), PANEL);
     }
     let stats = format!("{}  Experience: {} / 60 XP\n{}  Successful contracts: {} / 3\n{}  Unaided assessment\nFatigue {}/6 · Medical leave {} day(s)", if a.xp >= 60 { "+" } else { "-" }, a.xp, if a.successes >= 3 { "+" } else { "-" }, a.successes, if a.trial_passed { "+ Passed" } else { "- Required" }, a.fatigue, a.injury);
-    text(&stats, Rect::new(r.x, y, r.w, 104.), 19., INK);
+    if short {
+        text(&stats, Rect::new(r.x, y, r.w, 104.), 19., INK);
+    } else {
+        theme::parchment(Rect::new(r.x, y, r.w, 116.));
+        text(
+            &stats,
+            Rect::new(r.x + 12., y + 7., r.w - 24., 94.),
+            18.,
+            theme::PAPER_INK,
+        );
+        let track_width = (r.w - 36.) / 2.;
+        theme::progress(
+            Rect::new(r.x + 12., y + 102., track_width, 5.),
+            a.xp as f32 / 60.,
+        );
+        theme::progress(
+            Rect::new(r.x + 24. + track_width, y + 102., track_width, 5.),
+            a.successes as f32 / 3.,
+        );
+    }
     if !short {
-        rule(r, y + 116.);
+        rule(r, y + 128.);
         text(
             if a.bronze {
                 "BRONZE CERTIFIED\nThis adventurer can lead Bronze commissions."
@@ -62,7 +81,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
             } else {
                 "Build this person's experience and successful-contract record. The trial unlocks at 60 XP and 3 successes."
             },
-            Rect::new(r.x, y + 131., r.w, (r.bottom() - y - 237.).max(42.)),
+            Rect::new(r.x, y + 143., r.w, (r.bottom() - y - 249.).max(42.)),
             18.,
             GOLD,
         );
