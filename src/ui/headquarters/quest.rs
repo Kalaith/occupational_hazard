@@ -14,6 +14,9 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     let journey = g.hq.journey.and_then(|id| g.guild.expeditions.get(id));
     let id = journey.map_or(g.selected, |e| e.contract);
     let q = &g.contracts[id];
+    if g.hq.page == 3 {
+        return phone::terms(g, r, id);
+    }
     let left = Rect::new(r.x, r.y, r.w * 0.49, r.h);
     let right = Rect::new(left.right() + 30., r.y, r.right() - left.right() - 30., r.h);
     draw_line(
@@ -31,22 +34,8 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         28.,
         INK,
     );
-    let art = g
-        .assets
-        .get_texture("route")
-        .expect("Required route illustration");
     let picture = Rect::new(left.x, left.y + 64., left.w, 155.);
-    draw_texture_ex(
-        art,
-        picture.x,
-        picture.y,
-        WHITE,
-        DrawTextureParams {
-            dest_size: Some(picture.size()),
-            source: Some(Rect::new(0., 210., 1536., 700.)),
-            ..Default::default()
-        },
-    );
+    phone::destination(g, id, picture);
     draw_rectangle_lines(picture.x, picture.y, picture.w, picture.h, 1., GOLD);
     text(
         &q.client,
@@ -84,18 +73,26 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         INK,
     );
     if journey.is_none() {
-        let half = (left.w - 12.) / 2.;
-        for (forward, name, x) in [
-            (false, "< Previous job", left.x),
-            (true, "Next job >", left.x + half + 12.),
-        ] {
-            if button(Rect::new(x, left.bottom() - 46., half, 44.), name, false) {
-                action = Some(UiAction::Quest(g.guild.adjacent_contract(
-                    id,
-                    forward,
-                    &g.contracts,
-                )));
-            }
+        let expiry = if q.promotion {
+            "Standing trial".into()
+        } else {
+            format!(
+                "Accept by day {}",
+                q.offer(g.guild.day).map_or(g.guild.day, |o| o.expires)
+            )
+        };
+        text(
+            &expiry,
+            Rect::new(left.x, left.bottom() - 162., left.w, 26.),
+            18.,
+            GOLD,
+        );
+        if button(
+            Rect::new(left.x, left.bottom() - 46., left.w, 44.),
+            "Acceptance & service terms",
+            false,
+        ) {
+            action = Some(UiAction::SheetPage(3));
         }
     }
     text(
@@ -108,53 +105,33 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         19.,
         GOLD,
     );
-    if let Some(next) = planning::cards(g, Rect::new(right.x, right.y + 47., right.w, 170.)) {
+    if let Some(next) =
+        preparation::members(g, Rect::new(right.x, right.y + 40., right.w, 255.), id)
+    {
         action = Some(next);
     }
     let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
     text(
-        if journey.is_some() {
-            "Accepted commission. These adventurers are on the road."
-        } else {
-            problem
-                .as_deref()
-                .unwrap_or_else(|| planning::readiness(g, id))
-        },
-        Rect::new(right.x, right.y + 218., right.w, 50.),
+        &preparation::summary(g, id),
+        Rect::new(right.x, right.y + 300., right.w, 55.),
         18.,
-        INK,
+        GOLD,
     );
-    text(
-        &g.guild.offer_notice(q),
-        Rect::new(right.x, right.y + 276., right.w, 57.),
-        16.,
-        MUTED,
-    );
-    let scouted = g.guild.services.scouted.contains(&id);
-    if journey.is_none() {
-        let can_scout = !q.promotion && !scouted && g.guild.gold >= 20;
-        if primary(
-            Rect::new(right.x, right.bottom() - 145., right.w, 44.),
-            if q.promotion {
-                "Unaided trial · no scouting"
-            } else if scouted {
-                "Route scouted for next dispatch"
-            } else if g.guild.gold < 20 {
-                "Scouting needs 20g"
-            } else {
-                "Scout this route · 20g"
-            },
-            can_scout,
-        ) {
-            action = Some(UiAction::Purchase(crate::services::Purchase::Scout(id)));
-        }
+    {
+        let reason = preparation::advice(g, id);
         text(
-            "Scouting applies to this route's next dispatch only.",
-            Rect::new(right.x, right.bottom() - 96., right.w, 24.),
-            14.,
-            MUTED,
+            &reason,
+            Rect::new(right.x, right.y + 354., right.w, 38.),
+            17.,
+            INK,
         );
     }
+    action = preparation::scout(
+        g,
+        Rect::new(right.x, right.bottom() - 122., right.w, 44.),
+        id,
+    )
+    .or(action);
     let day = journey.map_or(g.guild.day + q.days, |e| e.returns);
     text(
         &format!(

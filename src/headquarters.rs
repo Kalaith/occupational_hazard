@@ -90,6 +90,7 @@ impl Activity {
 pub enum Sheet {
     None,
     Commissions,
+    Rooms,
     Jobs,
     Career,
     Returns,

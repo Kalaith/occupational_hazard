@@ -17,7 +17,11 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
     let phone = screen_width() < 650.;
     let mut view = Rect::new(0., 0., 1536., 900.);
     let short = screen_height() < 500.;
-    if phone || short {
+    if phone && g.hq.focus.is_none() {
+        view.h = (1536. * stage.h / stage.w).min(1024.);
+        view.y = (900. - view.h).max(0.);
+    }
+    if (phone && g.hq.focus.is_some()) || short {
         let (cx, _) = g.hq.focus.unwrap_or(Room::Common).center();
         view.x = (cx - 310.).clamp(0., 916.);
         view.w = 620.;
@@ -71,7 +75,10 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             }
         }
     }
-    for room in Room::ALL {
+    for room in Room::ALL
+        .into_iter()
+        .filter(|_| !phone || g.hq.focus.is_some())
+    {
         let (cx, _) = room.center();
         let y = match room {
             Room::Recovery | Room::Records => 138.,
@@ -175,7 +182,12 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         {
             continue;
         }
-        let height = (stage.h * if resting { 0.15 } else { 0.19 }).max(82.);
+        let height =
+            (stage.h * if resting { 0.15 } else { 0.19 }).max(if phone && g.hq.focus.is_none() {
+                28.
+            } else {
+                82.
+            });
         draw_ellipse(
             feet.x,
             feet.y - 2.,
@@ -187,10 +199,28 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         if g.hq.sheet == Sheet::Jobs && g.party.contains(&id) {
             draw_ellipse_lines(feet.x, feet.y, height * 0.26, 7., 0., 2., GOLD);
         }
-        if state == Activity::Training {
-            active_figure(g, id, true, vec2(feet.x, feet.y), height, WHITE);
+        let room_light = Color::new(0.80, 0.75, 0.65, 1.);
+        if resting {
+            let bed = project(
+                stage,
+                view,
+                Rect::new([178., 337., 493.][id % 3] - 76., 254., 152., 148.),
+            );
+            draw_texture_ex(
+                g.assets.get_texture("rest_beds").expect("occupied bed"),
+                bed.x,
+                bed.y,
+                room_light,
+                DrawTextureParams {
+                    source: Some(Rect::new(id as f32 * 512. + 14., 30., 484., 464.)),
+                    dest_size: Some(bed.size()),
+                    ..Default::default()
+                },
+            );
+        } else if state == Activity::Training {
+            active_figure(g, id, true, vec2(feet.x, feet.y), height, room_light);
         } else {
-            figure(g, id, resting, vec2(feet.x, feet.y), height, WHITE);
+            figure(g, id, false, vec2(feet.x, feet.y), height, room_light);
         }
         // Keep each person's plaque inside their projected slot, even with a sheet open.
         let spacing = match room {
@@ -201,7 +231,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             / view.w;
         let rw = spacing.clamp(44., 118.);
         let tag_y = if resting {
-            feet.y + 2.
+            feet.y - height - 47.
         } else {
             feet.y - height - 31.
         };
@@ -211,7 +241,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             rw,
             28.,
         );
-        if !short {
+        if !short && (!phone || g.hq.focus.is_some()) {
             panel(tag, PANEL);
             let caption = if rw < 100. {
                 first(g, id).to_string()
@@ -256,7 +286,33 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
     }
     let elowen = project(stage, view, Rect::new(832., 816., 0., 0.));
     if elowen.x > stage.x && elowen.x < stage.right() {
-        figure(g, 3, false, vec2(elowen.x, elowen.y), stage.h * 0.18, WHITE);
+        figure(
+            g,
+            3,
+            false,
+            vec2(elowen.x, elowen.y),
+            stage.h * 0.18,
+            Color::new(0.80, 0.75, 0.65, 1.),
+        );
+    }
+    // Restore real foreground surfaces after occupants: feet disappear behind the
+    // floor beam and the clerk's lower body behind the desk apron.
+    for world in [
+        Rect::new(86., 402., 976., 22.),
+        Rect::new(684., 743., 211., 55.),
+    ] {
+        let dest = project(stage, view, world);
+        draw_texture_ex(
+            art,
+            dest.x,
+            dest.y,
+            WHITE,
+            DrawTextureParams {
+                source: Some(world),
+                dest_size: Some(dest.size()),
+                ..Default::default()
+            },
+        );
     }
     if let Some(t) = &g.hq.transition {
         let p = project(stage, view, Rect::new(1130., 820., 0., 0.));

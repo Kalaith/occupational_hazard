@@ -69,15 +69,6 @@ impl Guild {
             .collect()
     }
 
-    pub fn adjacent_contract(&self, current: usize, forward: bool, qs: &[Contract]) -> usize {
-        let ids = self.open_contracts(qs);
-        if ids.is_empty() {
-            return current;
-        }
-        let index = ids.iter().position(|&id| id == current).unwrap_or(0);
-        ids[(index + if forward { 1 } else { ids.len() - 1 }) % ids.len()]
-    }
-
     pub fn offer_notice(&self, q: &Contract) -> String {
         let acceptance = if q.promotion {
             "Standing trial.".to_string()

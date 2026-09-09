@@ -43,7 +43,7 @@ Twelve authored contracts provide ten distinct Iron jobs, a candidate-specific
 promotion assessment and a Bronze commission. Each class has three suitable
 Iron jobs, so promotion does not require repeating completed requests. The
 assessment remains available for other candidates until everyone has passed.
-Open Assignments and use Previous job or Next job (open Details first on narrow screens) to browse dated offers.
+Open Assignments to compare dated offers side by side, then tap a commission. < Offers returns to the list.
 The board contains at most ten offers with this schedule. Local work rotates weekly;
 the bridge accepts on days 10-29 and recurs in sandbox. Cellar work renews daily,
 costs nothing to accept, and is safe for any rested recruit. It earns gold/XP but
@@ -59,7 +59,7 @@ and relationship simulation remain beyond this milestone.
 ## Controls and persistence
 
 Services are optional; the review can be passed without purchasing any.
-Tap Recovery or Training to purchase facilities; open Assignments for scouting (Details on narrow screens):
+Tap Recovery or Training to purchase facilities; open a commission for scouting (CHOOSE PARTY on phones):
 the 100g infirmary clears two medical-leave days per day at home, and the 140g
 training yard grants fully rested Iron recruits 5 XP daily up to 60 XP. Training
 does not grant successful contracts. For 20g, scouts prepare the selected route,
@@ -75,7 +75,7 @@ it automatically; NEXT TIP advances manually and SKIP TUTORIAL is saved.
 MENU > HELP opens the full handbook.
 
 All actions have visible tap/click targets. Phones use a focused planning sheet;
-short landscape screens add REVIEW DISPATCH. MENU offers SAVE and RETURN TO
+short landscape screens add READINESS & DISPATCH. MENU offers SAVE and RETURN TO
 TITLE. Starting a new guild asks before replacing an existing ledger.
 
 The toolkit stores an autosave after dispatch, day progression, promotion and purchases.

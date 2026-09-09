@@ -110,3 +110,32 @@ assets; no geometric stand-in figures are used. The earlier atlas pose descripti
 above refer to the superseded versions preserved in git history.
 
 The replacements ship as building-v2.png, people-v2-keyed.png and activity-v2-keyed.png so browser caches cannot retain the superseded art. The texture manifest and asset registry use these versioned paths.
+
+## Feedback-driven destination and furniture art
+
+Built-in imagegen produced two 1536x1024 atlases. No external API was used.
+Source originals remain in the same generated_images thread directory as above.
+
+- destinations.png: exec-1fd06c50-f7d4-4032-aa9f-00cdf6a27394.png. Three columns,
+  four rows of distinct 2:1 destination paintings in contract order (cellar,
+  medicine marsh, beekeeper apiary, well, lantern trial, bridge, shutters, quarry,
+  boundary stones, shepherd, millhouse fever, watchtower bandages). Prompt required
+  matching matte dusk environments, no text, independent compositions in each cell.
+  The renderer maps stable contract IDs to cells and excludes divider pixels.
+- rest-beds-keyed.png: exec-cdfdd26c-4b7c-4df5-8e6b-4e406ffcbefb.png. Three columns,
+  two rows. Upper row: Mira, Tomas and Pip reclining inside occupied oak beds with
+  pillows and green blankets, including naturally overlapping footboards. Lower
+  row contains matching bedside table, desk and archery target props (reserved,
+  not presented as new gameplay). Prompt used the building and people atlases as
+  references and explicitly forbade perching beside beds, armor, stools and weapons.
+  Only the three occupied beds are integrated; existing authored foreground surfaces
+  provide additional occlusion in the scene.
+
+- people-v3-keyed.png: exec-0549ab41-c51b-4f40-8680-26fa86cd8fa6.png.
+- activity-v3-keyed.png: exec-4d6095ce-429e-4dcd-9a3d-ae3ac397af5e.png.
+
+Both final edits retained atlas dimensions, silhouettes and poses, but requested
+soft blended shading, broad matte brushwork, reduced microcontrast and saturation,
+removal of etched clothing/hair details and studio highlights. The room painting
+provided the lighting reference. Flat magenta keys remain untouched. Versioned
+paths ensure the softened figures replace cached assets in existing browsers.

@@ -17,6 +17,7 @@ const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
     CommissionList,
+    Rooms,
     CommissionPage(usize),
     Overview,
     Room(crate::headquarters::Room),

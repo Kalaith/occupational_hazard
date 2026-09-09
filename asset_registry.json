@@ -7,9 +7,11 @@
     "assets/portraits/tomas.png",
     "assets/portraits/pip.png",
     "assets/headquarters/building-v2.png",
-    "assets/headquarters/people-v2-keyed.png",
+    "assets/headquarters/people-v3-keyed.png",
     "assets/headquarters/route.png",
     "assets/headquarters/facilities-keyed.png",
-    "assets/headquarters/activity-v2-keyed.png"
+    "assets/headquarters/activity-v3-keyed.png",
+    "assets/headquarters/destinations.png",
+    "assets/headquarters/rest-beds-keyed.png"
   ]
 }

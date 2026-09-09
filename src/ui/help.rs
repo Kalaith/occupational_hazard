@@ -33,10 +33,10 @@ pub fn draw_guidance(g: &Game, r: Rect) -> Option<UiAction> {
 fn tip(g: &Game, lesson: Lesson) -> &'static str {
     match lesson {
         Lesson::Welcome => "By day 30: promote one Bronze, complete a Bronze commission and 6 distinct service jobs. Tap Review for details.",
-        Lesson::Selection if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Assignments to inspect work. Tap a person or Common room to inspect their career.",
-        Lesson::Selection => "Tap a portrait card to add that person. A copper ring marks selection. Tap Details to browse jobs or scout.",
+        Lesson::Selection if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Assignments (Rooms > Assignments on a phone), then choose an offer. Tap a person for their career.",
+        Lesson::Selection => "Tap a member to select them. Checkmarks mark selection. On a phone tap CHOOSE PARTY first.",
         Lesson::Dispatch if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Assignments to review your selected party and send the expedition.",
-        Lesson::Dispatch => "Check readiness and return day, then tap DISPATCH PARTY. Tap Details for the deadline and preparation.",
+        Lesson::Dispatch => "Check readiness and return day, then tap DISPATCH PARTY. Compare class match, fatigue and scouting contributions.",
         Lesson::Time => "Tap ADVANCE DAY to advance journeys. People at home recover while others travel.",
         Lesson::Reports => "Tap Departure to read every return. Each expedition has its own report and automatic rewards.",
         Lesson::Recovery => "Leave tired or injured people at home and tap ADVANCE DAY. Typical fatigue clears in two days.",

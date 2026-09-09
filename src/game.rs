@@ -43,6 +43,7 @@ impl Game {
         for (key, path) in [
             ("building", "assets/headquarters/building-v2.png"),
             ("route", "assets/headquarters/route.png"),
+            ("destinations", "assets/headquarters/destinations.png"),
             ("mira", "assets/portraits/mira.png"),
             ("tomas", "assets/portraits/tomas.png"),
             ("pip", "assets/portraits/pip.png"),
@@ -56,7 +57,7 @@ impl Game {
         assets
             .load_texture_keyed(
                 "people",
-                "assets/headquarters/people-v2-keyed.png",
+                "assets/headquarters/people-v3-keyed.png",
                 [255, 0, 255],
                 90,
                 75,
@@ -76,13 +77,23 @@ impl Game {
         assets
             .load_texture_keyed(
                 "activity",
-                "assets/headquarters/activity-v2-keyed.png",
+                "assets/headquarters/activity-v3-keyed.png",
                 [255, 0, 255],
                 90,
                 75,
             )
             .await
             .expect("Required activity atlas");
+        assets
+            .load_texture_keyed(
+                "rest_beds",
+                "assets/headquarters/rest-beds-keyed.png",
+                [255, 0, 255],
+                90,
+                75,
+            )
+            .await
+            .expect("Required occupied beds");
         let (reduced_motion, large_text) =
             persistence::load_from_slot::<(bool, bool)>("occupational_hazard", "preferences")
                 .unwrap_or_default();
@@ -130,10 +141,12 @@ impl Game {
             return;
         };
         match action {
+            UiAction::Rooms => self.hq.open(crate::headquarters::Sheet::Rooms),
             UiAction::CommissionList => self.hq.open(crate::headquarters::Sheet::Commissions),
             UiAction::CommissionPage(page) => self.board_page = page,
             UiAction::Overview => {
                 self.hq.open(crate::headquarters::Sheet::None);
+                self.hq.focus = None;
             }
             UiAction::PrepareTrial(id) => {
                 if let Some(quest) = self.contracts.iter().position(|q| q.promotion) {
@@ -604,17 +617,32 @@ impl Game {
             3 => Sheet::Facility(Room::Recovery),
             _ => Sheet::None,
         };
-        if matches!(scene, "planning" | "mobile_party" | "mobile_contract") {
+        if matches!(
+            scene,
+            "planning"
+                | "mobile_party"
+                | "mobile_contract"
+                | "party_readiness"
+                | "dispatch_readiness"
+        ) {
             self.hq.sheet = Sheet::Jobs;
         }
-        if matches!(scene, "gameplay" | "planning" | "recovery" | "commissions") {
+        if matches!(
+            scene,
+            "gameplay"
+                | "planning"
+                | "recovery"
+                | "commissions"
+                | "party_readiness"
+                | "dispatch_readiness"
+        ) {
             self.guild.day = 9;
             self.guild.gold = 182;
             self.guild.roster[2].fatigue = 3;
             self.guild.migrate_board(&self.contracts).unwrap();
             self.guild.dispatch(2, &[1], &self.contracts).unwrap();
             self.selected = 3;
-            self.party = if scene == "planning" {
+            self.party = if matches!(scene, "planning" | "party_readiness" | "dispatch_readiness") {
                 vec![0, 2]
             } else {
                 vec![]
@@ -622,6 +650,12 @@ impl Game {
             if scene == "recovery" {
                 self.guild.roster[2].injury = 2;
             }
+        }
+        if scene == "party_readiness" {
+            self.hq.page = 1;
+        }
+        if scene == "dispatch_readiness" {
+            self.hq.page = 2;
         }
         if scene == "commissions" {
             self.hq.sheet = Sheet::Commissions;

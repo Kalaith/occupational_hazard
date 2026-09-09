@@ -26,6 +26,7 @@ pub fn hud(g: &Game) -> Option<UiAction> {
     let w = screen_width();
     let h = screen_height();
     let phone = w < 650.;
+    let stack = w < 900.;
     let mut action = None;
     let resources = Rect::new(
         12.,
@@ -84,9 +85,9 @@ pub fn hud(g: &Game) -> Option<UiAction> {
     {
         let r = Rect::new(
             12.,
-            h - 156.,
-            if phone { w - 24. } else { (w - 260.).min(600.) },
-            76.,
+            h - if stack { 156. } else { 82. },
+            if stack { w - 24. } else { (w - 580.).min(600.) },
+            if stack { 76. } else { 66. },
         );
         panel(r, PANEL);
         let names = e
@@ -100,7 +101,7 @@ pub fn hud(g: &Game) -> Option<UiAction> {
                 "{} · {}\n{} · Returns day {}",
                 g.contracts[e.contract].title, g.contracts[e.contract].client, names, e.returns
             ),
-            Rect::new(r.x + 12., r.y + 9., r.w - 24., 60.),
+            Rect::new(r.x + 12., r.y + 7., r.w - 24., r.h - 14.),
             16.,
             INK,
         );
@@ -108,14 +109,24 @@ pub fn hud(g: &Game) -> Option<UiAction> {
             action = Some(UiAction::Journey(id));
         }
     }
-    if g.guild.unread_reports() > 0 {
-        if button(
-            Rect::new(12., h - 66., (w - advance.w - 48.).min(252.), 50.),
+    let returns_x = if !stack && !g.guild.expeditions.is_empty() {
+        24. + (w - 580.).min(600.)
+    } else {
+        12.
+    };
+    if g.guild.unread_reports() > 0
+        && button(
+            Rect::new(
+                returns_x,
+                h - 66.,
+                (w - advance.w - returns_x - 36.).min(252.),
+                50.,
+            ),
             &format!("Returns · {} unread", g.guild.unread_reports()),
             false,
-        ) {
-            action = Some(UiAction::Tab(2));
-        }
+        )
+    {
+        action = Some(UiAction::Tab(2));
     }
     action
 }

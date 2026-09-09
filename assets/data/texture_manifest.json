@@ -21,7 +21,7 @@
   },
   {
     "key": "people",
-    "path": "assets/headquarters/people-v2-keyed.png"
+    "path": "assets/headquarters/people-v3-keyed.png"
   },
   {
     "key": "route",
@@ -33,6 +33,14 @@
   },
   {
     "key": "activity",
-    "path": "assets/headquarters/activity-v2-keyed.png"
+    "path": "assets/headquarters/activity-v3-keyed.png"
+  },
+  {
+    "path": "assets/headquarters/destinations.png",
+    "key": "destinations"
+  },
+  {
+    "path": "assets/headquarters/rest-beds-keyed.png",
+    "key": "rest_beds"
   }
 ]

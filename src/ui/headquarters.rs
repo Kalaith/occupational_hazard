@@ -4,7 +4,9 @@ use crate::headquarters::{activity, Activity, Room, Sheet};
 mod chrome;
 mod commissions;
 mod management;
+mod phone;
 mod planning;
+mod preparation;
 mod quest;
 mod returns;
 mod scene;
@@ -15,7 +17,12 @@ pub fn draw(g: &Game) -> Option<UiAction> {
     let phone = w < 650.;
     let short = h < 500.;
     let has_window = g.hq.sheet != Sheet::None;
-    let stage = Rect::new(0., 0., w, h);
+    let overview = phone && g.hq.focus.is_none();
+    let stage = if overview {
+        Rect::new(0., 124., w, (h - 560.).clamp(64., w * 0.66))
+    } else {
+        Rect::new(0., 0., w, h)
+    };
     let scene_action = scene::draw(g, stage, !has_window);
     let mut action = if has_window { None } else { scene_action };
     if has_window {
@@ -23,7 +30,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         draw_rectangle(0., 0., w, h, Color::new(0.015, 0.025, 0.035, 0.48));
         let wide = matches!(g.hq.sheet, Sheet::Jobs | Sheet::Commissions) && w >= 900. && h >= 700.;
         let ww = if wide { 940.0_f32 } else { 580.0_f32 }.min(w - 24.);
-        let wh = (h - if short { 16. } else { 80. }).min(620.);
+        let wh = (h - if short || phone { 16. } else { 80. }).min(if phone { 820. } else { 620. });
         let r = Rect::new((w - ww) / 2., (h - wh) / 2., ww, wh);
         chrome::window(r);
         let planning = g.hq.sheet == Sheet::Jobs && g.hq.journey.is_none();
@@ -39,6 +46,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
             });
         }
         let title = match g.hq.sheet {
+            Sheet::Rooms => "HEADQUARTERS ROOMS",
             Sheet::Commissions => "COMMISSION BOARD",
             Sheet::Jobs => "GUILD COMMISSION",
             Sheet::Returns => "EXPEDITION JOURNAL",
@@ -56,9 +64,10 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         }
         let area = Rect::new(r.x + 24., r.y + 74., ww - 48., wh - 98.);
         let inner = match g.hq.sheet {
+            Sheet::Rooms => phone::rooms(g, area),
             Sheet::Commissions => commissions::draw(g, area),
             Sheet::Jobs if wide => quest::draw(g, area),
-            Sheet::Jobs => planning::draw(g, area),
+            Sheet::Jobs => phone::planning(g, area),
             Sheet::Returns => returns::draw(g, area),
             Sheet::Career => management::career(g, area),
             Sheet::Facility(room) => management::facility(g, area, room),
@@ -70,26 +79,24 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         action = Some(next);
     }
     if phone || short {
-        for (i, room) in Room::ALL.iter().enumerate() {
-            let bw = (w - 24.) / 3.;
-            if button(
-                Rect::new(
-                    12. + (i % 3) as f32 * bw,
-                    68. + (i / 3) as f32 * 48.,
-                    bw - 4.,
-                    44.,
-                ),
-                room.name(),
-                g.hq.focus == Some(*room),
-            ) {
-                action = Some(UiAction::Room(*room));
-            }
+        if button(Rect::new(12., 68., (w - 32.) / 2., 44.), "Overview", false) {
+            action = Some(UiAction::Overview);
+        }
+        if button(
+            Rect::new(w / 2. + 4., 68., (w - 32.) / 2., 44.),
+            "Rooms >",
+            false,
+        ) {
+            action = Some(UiAction::Rooms);
+        }
+        if overview {
+            action = phone::overview(g, stage.bottom() + 14.).or(action);
         }
     }
     if g.lesson().is_some() {
         let r = Rect::new(
             16.,
-            if phone || short { 174. } else { 74. },
+            if phone || short { h - 282. } else { 74. },
             (w - 32.).min(440.),
             116.,
         );
@@ -102,7 +109,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
     } else if !g.notice.is_empty() {
         let r = Rect::new(
             16.,
-            if phone || short { 174. } else { 74. },
+            if phone || short { h - 226. } else { 74. },
             (w - 32.).min(440.),
             60.,
         );
