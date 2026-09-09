@@ -995,3 +995,14 @@ and parsed by the toolkit with project-owned schema checks.
 
 See docs/phase2_verification.md for boundary tests, browser evidence, scripted
 assignment tradeoffs and the still-unmeasured fresh-player pacing gate.
+
+## Delivered headquarters presentation (2026-09-09)
+
+The cutaway redesign supersedes the front-desk viewpoint and primary three-tab
+navigation in this document. Its current interaction contract is recorded in
+`docs/cutaway_design.md`. It preserves the first-month rules; broader systems in
+this GDD remain long-term design intentions. The new building communicates actual
+availability, recovery and purchased training. Portrait cards support party
+planning, while departures and returns connect the decision to the people.
+Validation and remaining evidence are tracked requirement by requirement in
+`docs/cutaway_requirement_ledger.md`.

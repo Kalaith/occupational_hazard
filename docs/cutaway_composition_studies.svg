@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="880" viewBox="0 0 1440 880">
+<style>text{font-family:Arial,sans-serif;fill:#e9e1d2;font-size:20px}.small{font-size:16px;fill:#aebabc}.title{font-size:28px;fill:#dbad69}.room{fill:#293638;stroke:#9c7951;stroke-width:2}.road{fill:#182a3c;stroke:#546878;stroke-width:2}.person{fill:#cdab76}.rest{fill:#77a8ba}.away{fill:#a6b796}</style>
+<rect width="1440" height="880" fill="#10171d"/>
+<text x="30" y="44" class="title">CUTAWAY COMPOSITION STUDIES</text>
+<text x="30" y="77" class="small">Architectural studies, not final artwork. Choice: A keeps the gate and yard on the ground.</text>
+<g transform="translate(30 115)"><text class="title">A · selected</text>
+<rect class="room" y="25" width="230" height="135"/><text x="60" y="64">Recovery</text>
+<rect class="room" x="235" y="25" width="230" height="135"/><text x="305" y="64">Records</text>
+<rect class="road" x="470" y="25" width="170" height="135"/><text x="515" y="90">Dusk sky</text>
+<rect class="room" y="165" width="230" height="145"/><text x="48" y="205">Common room</text>
+<rect class="room" x="235" y="165" width="230" height="145"/><text x="288" y="205">Assignments</text>
+<rect class="road" x="470" y="165" width="80" height="145"/><text x="486" y="249">Gate</text>
+<rect class="road" x="555" y="165" width="85" height="145"/><text x="574" y="249">Yard</text>
+<circle class="rest" cx="80" cy="124" r="16"/><circle class="person" cx="90" cy="268" r="16"/>
+<text y="345" class="small">Clear upstairs recovery; common room beside assignment desk.</text></g>
+<g transform="translate(755 115)"><text class="title">B · compared</text>
+<rect class="room" y="25" width="205" height="135"/><text x="50" y="64">Recovery</text>
+<rect class="room" x="210" y="25" width="205" height="135"/><text x="260" y="64">Records</text>
+<rect class="road" x="420" y="25" width="220" height="135"/><text x="465" y="90">Raised yard</text>
+<rect class="room" y="165" width="205" height="145"/><text x="30" y="205">Common room</text>
+<rect class="room" x="210" y="165" width="205" height="145"/><text x="245" y="205">Assignments</text>
+<rect class="road" x="420" y="165" width="220" height="145"/><text x="495" y="249">Gate</text>
+<text y="345" class="small">Stronger vertical gate silhouette; less honest bare-yard read.</text></g>
+<g transform="translate(30 525)"><text class="title">Typical day</text><rect class="room" y="25" width="300" height="90"/><rect class="room" y="120" width="300" height="90"/><circle class="rest" cx="68" cy="76" r="17"/><circle class="person" cx="92" cy="171" r="17"/><text x="16" y="252" class="small">Resting upstairs; ready downstairs.</text></g>
+<g transform="translate(385 525)"><text class="title">Everyone away</text><rect class="room" y="25" width="300" height="90"/><rect class="room" y="120" width="300" height="90"/><text x="45" y="83" class="small">Empty rooms are intentional</text><rect class="road" y="223" width="300" height="48"/><text x="14" y="253" class="small">3 journeys · Advance Day remains</text></g>
+<g transform="translate(740 525)"><text class="title">Injured return</text><rect class="room" y="25" width="180" height="185"/><circle class="rest" cx="78" cy="73" r="18"/><rect class="road" x="185" y="25" width="115" height="185"/><text x="201" y="69" class="small">People</text><text x="201" y="102" class="small">Outcome</text><text x="201" y="135" class="small">Recovery</text><text x="12" y="252" class="small">People first, then the return account.</text></g>
+<g transform="translate(1100 525)"><text class="title">Portrait phone</text><rect class="road" x="25" y="25" width="180" height="270"/><text x="42" y="57" class="small">Room navigation</text><rect class="room" x="35" y="70" width="160" height="157"/><circle class="person" cx="114" cy="174" r="18"/><text x="45" y="254" class="small">Focused sheet</text><text x="41" y="282" class="small">Jobs · Staff · Day</text></g>
+</svg>

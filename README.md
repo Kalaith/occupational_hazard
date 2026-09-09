@@ -12,23 +12,23 @@ Fresh-player pacing and assignment-choice observation remain to be collected.
 
 ## The first Bronze licence
 
-Open NEW GUILD, review a contract, select adventurers and tap DISPATCH. NEXT DAY
+Open NEW GUILD, tap Jobs, select portrait cards and tap DISPATCH PARTY. ADVANCE DAY
 advances expeditions and lets people at the guild recover. Fully rested,
-unassigned staff trigger a warning: BACK TO DESK preserves the day, while
+unassigned staff trigger a warning: BACK TO HEADQUARTERS preserves the day, while
 ADVANCE DAY confirms it. Returning reports
 record rewards, experience, fatigue and medical leave in a separate inbox entry
-for every expedition. REPORTS shows the unread count; reading never pays twice.
+for every expedition. Returns shows the unread count; reading never pays twice.
 Accepted offers leave the board. Later postings are new requests, even after a
 success or retreat. Expiry is the last day to accept; accepted work can return later.
 
 Every recruit starts at Iron. Earn 60 XP and three successful contracts to qualify
 for The Lantern Road Trial. Send one rested candidate alone, wait two days for the
-assessment, then open ADVENTURERS and tap APPROVE BRONZE. Promotion unlocks the
+assessment, then open Staff and tap APPROVE BRONZE. Promotion unlocks the
 North Bridge commission and an intermediate promotion celebration.
 
 The first month ends with a day-30 head-office review: certify one Bronze
 adventurer, complete one Bronze commission, and succeed at six different service
-jobs. Repeat successes earn rewards but each service definition counts only once. Tap the D30 objective control
+jobs. Repeat successes earn rewards but each service definition counts only once. Tap the Review control
 for details. Returns and rewards on day 30 count before evaluation; later
 returns wait for sandbox continuation. The review saves its career, objective
 and treasury snapshot. CONTINUE SANDBOX resumes play; RESTART opens a
@@ -43,7 +43,7 @@ Twelve authored contracts provide ten distinct Iron jobs, a candidate-specific
 promotion assessment and a Bronze commission. Each class has three suitable
 Iron jobs, so promotion does not require repeating completed requests. The
 assessment remains available for other candidates until everyone has passed.
-Desktop MORE JOBS and compact < / > controls browse currently available offers.
+Tap Details in Jobs, then Previous job or Next job to browse dated offers.
 The board contains at most ten offers with this schedule. Local work rotates weekly;
 the bridge accepts on days 10-29 and recurs in sandbox. Cellar work renews daily,
 costs nothing to accept, and is safe for any rested recruit. It earns gold/XP but
@@ -59,7 +59,7 @@ and relationship simulation remain beyond this milestone.
 ## Controls and persistence
 
 Services are optional; the review can be passed without purchasing any.
-GUILD SERVICES spends contract earnings on permanent facilities and preparation:
+Tap Recovery or Training to purchase facilities; open Jobs > Details for scouting:
 the 100g infirmary clears two medical-leave days per day at home, and the 140g
 training yard grants fully rested Iron recruits 5 XP daily up to 60 XP. Training
 does not grant successful contracts. For 20g, scouts prepare the selected route,
@@ -68,20 +68,20 @@ consumed only on dispatch and is forbidden for the unaided promotion trial.
 Readiness assessments include purchased scouting. Existing ledgers load with
 facilities unpurchased; new purchases persist in the autosave.
 
-New guilds receive contextual lessons for selection, DISPATCH, NEXT DAY,
+New guilds receive contextual lessons for selection, DISPATCH PARTY, ADVANCE DAY,
 reports, recovery, the solo trial and APPROVE BRONZE. Guidance stays in a small
-desk panel while the outlined controls remain usable. Following a step advances
+headquarters panel while the outlined controls remain usable. Following a step advances
 it automatically; NEXT TIP advances manually and SKIP TUTORIAL is saved.
 MENU > HELP opens the full handbook.
 
-All actions have visible tap/click targets. Smaller windows use CHOOSE PARTY and
-BACK to separate contract reading from dispatch. MENU offers SAVE and RETURN TO
+All actions have visible tap/click targets. Phones use a focused planning sheet;
+short landscape screens add REVIEW DISPATCH. MENU offers SAVE and RETURN TO
 TITLE. Starting a new guild asks before replacing an existing ledger.
 
 The toolkit stores an autosave after dispatch, day progression, promotion and purchases.
 CONTINUE restores it, including expeditions in progress. Native saves use the
 application data directory; browsers use local storage. Save errors appear in the
-receptionist's notice. Progress is per browser/device, without cloud sync.
+headquarters notice. Progress is per browser/device, without cloud sync.
 
 ## Development and validation
 
@@ -101,3 +101,19 @@ Captures do not write the player's save.
 through the toolkit, `src/game.rs` handles actions and persistence, and `src/ui/`
 contains responsive views. Artwork is packaged from assets/portraits; generation
 prompts and provenance are in [docs/artwork.md](docs/artwork.md).
+
+
+## Cutaway headquarters redesign
+
+The primary play surface is now a two-storey headquarters with generated room,
+character, travel, training and facility artwork. Tap people for careers and rooms
+for their work. Jobs, Staff, Returns and Advance Day remain visible shortcuts.
+Planning is separate from dispatch. Away staff leave the building; medical leave
+and fatigue move people upstairs; equipped training appears in the courtyard.
+Menu includes saved reduced-motion and larger-text preferences.
+
+See [design and action map](docs/cutaway_design.md),
+[visual comparisons](docs/verification/cutaway_comparison.md), and the
+[requirement ledger](docs/cutaway_requirement_ledger.md). The redesign retains the
+existing deterministic first-month rules and guild save schema. Recruitment,
+relationships, death and procedural contracts remain roadmap work.

@@ -3,29 +3,27 @@ use crate::game::Game;
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod day;
-mod headquarters;
 mod dossier;
+mod headquarters;
 mod help;
 mod month;
-mod reports;
-mod services;
 mod title;
 
 pub const BACKGROUND: Color = Color::new(0.055, 0.095, 0.10, 1.0);
 const PANEL: Color = Color::new(0.065, 0.09, 0.11, 0.98);
 const GOLD: Color = Color::new(0.83, 0.66, 0.39, 1.0);
 const INK: Color = Color::new(0.90, 0.89, 0.85, 1.0);
-const PAPER: Color = PANEL;
 const MUTED: Color = Color::new(0.66, 0.73, 0.70, 1.0);
 
 pub enum UiAction {
     Overview,
     Room(crate::headquarters::Room),
+    PrepareTrial(usize),
     SheetPage(usize),
     Journey(usize),
     ReducedMotion,
+    TextSize,
     SkipMotion,
-    BoardPage(usize),
     ReportList,
     ReportPage(usize),
     Help(usize),
@@ -37,7 +35,6 @@ pub enum UiAction {
     Sandbox,
     Restart,
     Purchase(crate::services::Purchase),
-    ChooseParty(bool),
     Start,
     Continue,
     Cancel,
@@ -86,31 +83,59 @@ pub fn draw(game: &Game) -> Option<UiAction> {
 fn menu(game: &Game) -> Option<UiAction> {
     let w = (screen_width() - 32.0).min(440.0);
     let x = (screen_width() - w) / 2.0;
-    let y = (screen_height() - 420.0).max(0.0) / 2.0;
-    panel(Rect::new(x, y, w, 420.0), PANEL);
+    let height = (screen_height() - 24.).min(490.);
+    let y = (screen_height() - height) / 2.0;
+    panel(Rect::new(x, y, w, height), PANEL);
     label(
         "THE GUILD LEDGER",
         Rect::new(x, y + 14.0, w, 44.0),
         26.0,
         GOLD,
     );
-    paragraph(
-        "Progress saves after dispatch, day changes, promotions and purchases.",
-        Rect::new(x + 20.0, y + 65.0, w - 40.0, 50.0),
-        18.0,
-        MUTED,
-    );
+    if height > 420. {
+        paragraph(
+            "Progress saves after dispatch, day changes, promotions and purchases.",
+            Rect::new(x + 20.0, y + 65.0, w - 40.0, 50.0),
+            18.0,
+            MUTED,
+        );
+    }
     for (i, (text, action)) in [
         ("SAVE", UiAction::Save),
         ("HELP", UiAction::Help(0)),
         ("RETURN TO TITLE", UiAction::Title),
+        (
+            if game.hq.reduced_motion {
+                "MOTION: REDUCED"
+            } else {
+                "MOTION: FULL"
+            },
+            UiAction::ReducedMotion,
+        ),
         ("CLOSE", UiAction::CloseSettings),
+        (
+            if game.hq.large_text {
+                "TEXT: LARGE"
+            } else {
+                "TEXT: STANDARD"
+            },
+            UiAction::TextSize,
+        ),
     ]
     .into_iter()
     .enumerate()
     {
         if button(
-            Rect::new(x + 20.0, y + 125.0 + i as f32 * 60.0, w - 40.0, 48.0),
+            if height < 450. {
+                Rect::new(
+                    x + 20. + (i % 2) as f32 * ((w - 32.) / 2.),
+                    y + 104. + (i / 2) as f32 * 54.,
+                    (w - 48.) / 2.,
+                    48.,
+                )
+            } else {
+                Rect::new(x + 20., y + 152. + i as f32 * 52., w - 40., 46.)
+            },
             text,
             false,
         ) {

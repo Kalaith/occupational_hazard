@@ -32,31 +32,28 @@ pub fn draw_guidance(g: &Game, r: Rect) -> Option<UiAction> {
 
 fn tip(g: &Game, lesson: Lesson) -> &'static str {
     match lesson {
-        Lesson::Welcome => "By day 30: promote one Bronze, complete a Bronze commission and 6 distinct service jobs. Tap D30 for details.",
-        Lesson::Selection if g.tab != 0 => "Tap CONTRACTS to choose an assignment. The outlined controls show the next step.",
-        Lesson::Selection if g.choosing_party => "Tap Mira Ashford for the cellar job. Gold names join your party; tap again to remove.",
-        Lesson::Selection => "Browse contracts. Tap CHOOSE PARTY, then an adventurer; gold names join the party.",
-        Lesson::Dispatch if g.tab != 0 => "Tap CONTRACTS to review your selected party and send the expedition.",
-        Lesson::Dispatch => "Check readiness, then tap DISPATCH. Every control remains available while this tip is open.",
-        Lesson::Time => "Tap NEXT DAY to advance journeys. People at home recover while others travel.",
-        Lesson::Reports => "Tap REPORTS to read every return. Each expedition has its own report and automatic rewards.",
-        Lesson::Recovery => "Leave tired or injured people at home and tap NEXT DAY. Typical fatigue clears in two days.",
-        Lesson::Trial => "Rest the eligible candidate. In CONTRACTS select The Lantern Road Trial; DISPATCH that person alone.",
-        Lesson::Promotion => "Tap ADVENTURERS, select the passed candidate, then APPROVE BRONZE to promote that person.",
+        Lesson::Welcome => "By day 30: promote one Bronze, complete a Bronze commission and 6 distinct service jobs. Tap Review for details.",
+        Lesson::Selection if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap the Assignments room or Jobs to inspect work. Tap a person or Staff to inspect their career.",
+        Lesson::Selection => "Tap a portrait card to add that person. A copper ring marks selection. Tap Details to browse jobs or scout.",
+        Lesson::Dispatch if g.hq.sheet != crate::headquarters::Sheet::Jobs => "Tap Jobs to review your selected party and send the expedition.",
+        Lesson::Dispatch => "Check readiness and return day, then tap DISPATCH PARTY. Tap Details for the deadline and preparation.",
+        Lesson::Time => "Tap ADVANCE DAY to advance journeys. People at home recover while others travel.",
+        Lesson::Reports => "Tap Returns to read every return. Each expedition has its own report and automatic rewards.",
+        Lesson::Recovery => "Leave tired or injured people at home and tap ADVANCE DAY. Typical fatigue clears in two days.",
+        Lesson::Trial => "Rest the eligible candidate. In Jobs select The Lantern Road Trial; DISPATCH that person alone.",
+        Lesson::Promotion => "Tap Staff, select the passed candidate, then APPROVE BRONZE to promote that person.",
     }
 }
 
 pub fn is_target(g: &Game, text: &str) -> bool {
     match g.lesson() {
-        Some(Lesson::Welcome) => text.starts_with("D30:"),
-        Some(Lesson::Selection) if g.tab != 0 => text == "CONTRACTS",
-        Some(Lesson::Selection) => text == "CHOOSE PARTY" || text.contains("Mira Ashford"),
-        Some(Lesson::Dispatch) if g.tab != 0 => text == "CONTRACTS",
-        Some(Lesson::Dispatch) => text == "DISPATCH" || text == "CHOOSE PARTY",
-        Some(Lesson::Time | Lesson::Recovery) => text == "NEXT DAY",
-        Some(Lesson::Reports) => text.starts_with("REPORTS"),
-        Some(Lesson::Trial) => text == "CONTRACTS" || text.contains("The Lantern Road Trial"),
-        Some(Lesson::Promotion) => text == "ADVENTURERS" || text == "APPROVE BRONZE",
+        Some(Lesson::Welcome) => text.starts_with("Review"),
+        Some(Lesson::Selection) => text == "Jobs" || text.contains("Mira"),
+        Some(Lesson::Dispatch) => text == "Jobs" || text == "DISPATCH PARTY",
+        Some(Lesson::Time | Lesson::Recovery) => text == "ADVANCE DAY",
+        Some(Lesson::Reports) => text.starts_with("Returns"),
+        Some(Lesson::Trial) => text == "Jobs" || text.contains("The Lantern Road Trial"),
+        Some(Lesson::Promotion) => text == "Staff" || text == "APPROVE BRONZE",
         _ => false,
     }
 }
@@ -101,7 +98,7 @@ pub fn draw_help(g: &Game) -> Option<UiAction> {
     }
     if button(
         Rect::new(x + 20.0, y + h - 66.0, w - 40.0, 46.0),
-        "BACK TO DESK",
+        "BACK TO HEADQUARTERS",
         true,
     ) {
         return Some(if g.help_page.is_some() {

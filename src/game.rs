@@ -53,10 +53,46 @@ impl Game {
                 .await
                 .unwrap_or_else(|e| panic!("Required portrait {path}: {e}"));
         }
-        assets.load_texture_keyed("people", "assets/headquarters/people-keyed.png", [255, 0, 255], 90, 75).await.expect("Required headquarters people atlas");
-        assets.load_texture_keyed("facilities", "assets/headquarters/facilities-keyed.png", [255, 0, 255], 90, 75).await.expect("Required headquarters facility atlas");
+        assets
+            .load_texture_keyed(
+                "people",
+                "assets/headquarters/people-keyed.png",
+                [255, 0, 255],
+                90,
+                75,
+            )
+            .await
+            .expect("Required headquarters people atlas");
+        assets
+            .load_texture_keyed(
+                "facilities",
+                "assets/headquarters/facilities-keyed.png",
+                [255, 0, 255],
+                90,
+                75,
+            )
+            .await
+            .expect("Required headquarters facility atlas");
+        assets
+            .load_texture_keyed(
+                "activity",
+                "assets/headquarters/activity-keyed.png",
+                [255, 0, 255],
+                90,
+                75,
+            )
+            .await
+            .expect("Required activity atlas");
+        let (reduced_motion, large_text) =
+            persistence::load_from_slot::<(bool, bool)>("occupational_hazard", "preferences")
+                .unwrap_or_default();
+        macroquad_toolkit::ui::set_ui_text_scale(if large_text { 1.15 } else { 1.0 });
         Self {
-            hq: Default::default(),
+            hq: crate::headquarters::Headquarters {
+                reduced_motion,
+                large_text,
+                ..Default::default()
+            },
             #[cfg(target_os = "windows")]
             exit_requested: false,
             in_title: true,
@@ -94,17 +130,50 @@ impl Game {
             return;
         };
         match action {
-            UiAction::Overview => { self.hq.open(crate::headquarters::Sheet::None); self.hq.focus = None; }
+            UiAction::Overview => {
+                self.hq.open(crate::headquarters::Sheet::None);
+            }
+            UiAction::PrepareTrial(id) => {
+                if let Some(quest) = self.contracts.iter().position(|q| q.promotion) {
+                    self.selected = quest;
+                    self.party = vec![id];
+                    self.hq.open(crate::headquarters::Sheet::Jobs);
+                }
+            }
             UiAction::Room(room) => {
                 use crate::headquarters::{Room, Sheet};
                 self.hq.focus = Some(room);
-                self.hq.open(match room { Room::Common => Sheet::Career, Room::Assignments => Sheet::Jobs, Room::Gate => Sheet::Returns, Room::Recovery | Room::Training => Sheet::Facility(room), Room::Records => { self.month_open = true; Sheet::None } });
+                self.hq.open(match room {
+                    Room::Common => Sheet::Career,
+                    Room::Assignments => Sheet::Jobs,
+                    Room::Gate => Sheet::Returns,
+                    Room::Recovery | Room::Training => Sheet::Facility(room),
+                    Room::Records => {
+                        self.month_open = true;
+                        Sheet::None
+                    }
+                });
             }
             UiAction::SheetPage(page) => self.hq.page = page,
-            UiAction::Journey(id) => { self.hq.open(crate::headquarters::Sheet::Jobs); self.hq.journey = Some(id); }
-            UiAction::ReducedMotion => { self.hq.reduced_motion = !self.hq.reduced_motion; self.hq.transition = None; }
+            UiAction::Journey(id) => {
+                self.hq.open(crate::headquarters::Sheet::Jobs);
+                self.hq.journey = Some(id);
+            }
+            UiAction::ReducedMotion => {
+                self.hq.reduced_motion = !self.hq.reduced_motion;
+                self.hq.transition = None;
+                self.save_preferences();
+            }
+            UiAction::TextSize => {
+                self.hq.large_text = !self.hq.large_text;
+                macroquad_toolkit::ui::set_ui_text_scale(if self.hq.large_text {
+                    1.15
+                } else {
+                    1.0
+                });
+                self.save_preferences();
+            }
             UiAction::SkipMotion => self.hq.transition = None,
-            UiAction::BoardPage(page) => self.board_page = page,
             UiAction::ReportList => {
                 self.report_detail = false;
             }
@@ -147,7 +216,6 @@ impl Game {
                 }
                 Err(error) => self.notice = error,
             },
-            UiAction::ChooseParty(value) => self.choosing_party = value,
             #[cfg(target_os = "windows")]
             UiAction::Exit => self.exit_requested = true,
             UiAction::Start => {
@@ -157,7 +225,11 @@ impl Game {
                 }
                 self.confirm_day = false;
                 self.guild = Guild::new();
-                self.hq = Default::default();
+                self.hq = crate::headquarters::Headquarters {
+                    reduced_motion: self.hq.reduced_motion,
+                    large_text: self.hq.large_text,
+                    ..Default::default()
+                };
                 self.help_page = None;
                 self.month_open = false;
                 self.victory = false;
@@ -206,8 +278,13 @@ impl Game {
                 self.settings_open = false;
             }
             UiAction::Tab(tab) => {
-                use crate::headquarters::{Sheet, Room};
-                self.hq.open(match tab { 0 => Sheet::Jobs, 1 => Sheet::Career, 2 => Sheet::Returns, _ => Sheet::Facility(Room::Recovery) });
+                use crate::headquarters::{Room, Sheet};
+                self.hq.open(match tab {
+                    0 => Sheet::Jobs,
+                    1 => Sheet::Career,
+                    2 => Sheet::Returns,
+                    _ => Sheet::Facility(Room::Recovery),
+                });
                 self.tab = tab;
                 if tab == 2 {
                     self.report_detail = false;
@@ -222,7 +299,9 @@ impl Game {
                 self.notice.clear();
             }
             UiAction::Quest(id) => {
+                let page = self.hq.page;
                 self.hq.open(crate::headquarters::Sheet::Jobs);
+                self.hq.page = page;
                 self.selected = id;
                 self.notice.clear();
             }
@@ -246,7 +325,11 @@ impl Game {
                     .dispatch(self.selected, &self.party, &self.contracts)
                 {
                     Ok(()) => {
-                        self.hq.transition = Some(crate::headquarters::Transition { people: self.party.clone(), arriving: false, elapsed: 0.0 });
+                        self.hq.transition = Some(crate::headquarters::Transition {
+                            people: self.party.clone(),
+                            arriving: false,
+                            elapsed: 0.0,
+                        });
                         self.hq.open(crate::headquarters::Sheet::None);
                         self.guild.tutorial.dispatched = true;
                         self.guild
@@ -257,7 +340,8 @@ impl Game {
                                 .tutorial
                                 .acknowledge(crate::tutorial::Lesson::Trial);
                         }
-                        self.notice = "Dispatched. Tap NEXT DAY to advance their journey.".into();
+                        self.notice =
+                            "Dispatched. Tap ADVANCE DAY to advance their journey.".into();
                         self.party.clear();
                         self.save();
                     }
@@ -278,7 +362,10 @@ impl Game {
                 }
             }
             UiAction::CancelDay => self.confirm_day = false,
-            UiAction::Dossier(id) => { self.dossier = id; self.hq.open(crate::headquarters::Sheet::Career); }
+            UiAction::Dossier(id) => {
+                self.dossier = id;
+                self.hq.open(crate::headquarters::Sheet::Career);
+            }
             UiAction::Report(id) => {
                 self.hq.open(crate::headquarters::Sheet::Returns);
                 if self.guild.read_report(id) {
@@ -334,11 +421,17 @@ impl Game {
             .iter()
             .filter(|e| e.returns == self.guild.day + 1)
             .count();
-        let arrivals = self.guild.expeditions.iter().filter(|e| e.returns == self.guild.day + 1).flat_map(|e| e.party.iter().copied()).collect();
+        let arrivals = self
+            .guild
+            .expeditions
+            .iter()
+            .filter(|e| e.returns == self.guild.day + 1)
+            .flat_map(|e| e.party.iter().copied())
+            .collect();
         self.guild.next_day(&self.contracts);
         self.notice = if returning > 0 {
             format!(
-                "{returning} expeditions returned. Tap REPORTS: {} unread reports.",
+                "{returning} expeditions returned. Tap Returns: {} unread reports.",
                 self.guild.unread_reports()
             )
         } else {
@@ -346,13 +439,29 @@ impl Game {
         };
         if returning > 0 {
             self.hq.open(crate::headquarters::Sheet::Returns);
-            self.hq.transition = Some(crate::headquarters::Transition { people: arrivals, arriving: true, elapsed: 0.0 });
+            self.hq.transition = Some(crate::headquarters::Transition {
+                people: arrivals,
+                arriving: true,
+                elapsed: 0.0,
+            });
             self.tab = 2;
             self.report = 0;
             self.report_detail = false;
             self.report_page = 0;
         }
         self.save();
+    }
+
+    fn save_preferences(&mut self) {
+        if !self.capture {
+            if let Err(e) = persistence::save_to_slot(
+                "occupational_hazard",
+                "preferences",
+                &(self.hq.reduced_motion, self.hq.large_text),
+            ) {
+                self.notice = format!("Preferences could not be saved: {e}");
+            }
+        }
     }
 
     fn save(&mut self) {
@@ -375,31 +484,29 @@ impl Game {
     }
 
     pub fn draw(&mut self) {
-        self.pending = ui::draw(self);
-    }
-
-    pub fn hint(&self) -> &str {
-        if self.tab == 3 {
-            return "Services are optional. You can pass the review without buying any. Facilities speed recovery or training; scouting helps one dispatch.";
+        let pointer = macroquad_toolkit::ui::Pointer::read(|p| p);
+        if pointer.down {
+            let start = *self.hq.pointer_start.get_or_insert(pointer.position);
+            if start.distance(pointer.position) > 10. {
+                self.hq.dragged = true;
+            }
         }
-        if !self.guild.expeditions.is_empty() {
-            return "The road takes time. Tap NEXT DAY to advance expeditions; resting staff recover.";
-        }
-        if self
-            .guild
-            .roster
-            .iter()
-            .any(|a| a.trial_passed && !a.bronze)
+        if pointer.released
+            && self
+                .hq
+                .pointer_start
+                .is_some_and(|start| start.distance(pointer.position) > 10.)
         {
-            return "A recommendation has arrived! Tap ADVENTURERS, select the candidate, then APPROVE BRONZE.";
+            self.hq.dragged = true;
         }
-        if self.guild.roster.iter().any(|a| a.bronze) {
-            return "Your first Bronze licence! Try A Bridge Worth Keeping, or develop another Iron recruit.";
+        self.pending = ui::draw(self);
+        if self.hq.dragged {
+            self.pending = None;
         }
-        if self.guild.roster.iter().any(|a| a.eligible()) {
-            return "A candidate is ready. Select The Lantern Road Trial and that candidate alone. Rest them first.";
+        if !pointer.down {
+            self.hq.pointer_start = None;
+            self.hq.dragged = false;
         }
-        "Tap a contract, then adventurers, then DISPATCH. Earn 60 XP and 3 successes to qualify for the Bronze trial."
     }
 
     pub fn lesson(&self) -> Option<crate::tutorial::Lesson> {
@@ -407,7 +514,13 @@ impl Game {
     }
 
     pub fn begin_capture_scene(&mut self, scene: &str) {
+        let scene = scene
+            .strip_prefix("phone_")
+            .or_else(|| scene.strip_prefix("landscape_"))
+            .or_else(|| scene.strip_prefix("tablet_"))
+            .unwrap_or(scene);
         self.hq = Default::default();
+        macroquad_toolkit::ui::set_ui_text_scale(1.0);
         self.capture = true;
         self.guild = Guild::new();
         self.guild.tutorial.skipped = scene != "tutorial";
@@ -476,8 +589,15 @@ impl Game {
             self.selected = 3;
         }
         use crate::headquarters::{Room, Sheet};
-        self.hq.sheet = match self.tab { 1 => Sheet::Career, 2 => Sheet::Returns, 3 => Sheet::Facility(Room::Recovery), _ => Sheet::None };
-        if matches!(scene, "planning" | "mobile_party" | "mobile_contract") { self.hq.sheet = Sheet::Jobs; }
+        self.hq.sheet = match self.tab {
+            1 => Sheet::Career,
+            2 => Sheet::Returns,
+            3 => Sheet::Facility(Room::Recovery),
+            _ => Sheet::None,
+        };
+        if matches!(scene, "planning" | "mobile_party" | "mobile_contract") {
+            self.hq.sheet = Sheet::Jobs;
+        }
         if matches!(scene, "gameplay" | "planning" | "recovery") {
             self.guild.day = 9;
             self.guild.gold = 182;
@@ -485,8 +605,57 @@ impl Game {
             self.guild.migrate_board(&self.contracts).unwrap();
             self.guild.dispatch(2, &[1], &self.contracts).unwrap();
             self.selected = 3;
-            self.party = if scene == "planning" { vec![0, 2] } else { vec![] };
-            if scene == "recovery" { self.guild.roster[2].injury = 2; }
+            self.party = if scene == "planning" {
+                vec![0, 2]
+            } else {
+                vec![]
+            };
+            if scene == "recovery" {
+                self.guild.roster[2].injury = 2;
+            }
+        }
+        if scene == "everyone_away" {
+            self.guild.dispatch(0, &[0], &self.contracts).unwrap();
+            self.guild.dispatch(1, &[2], &self.contracts).unwrap();
+            self.guild.dispatch(2, &[1], &self.contracts).unwrap();
+            self.party.clear();
+        }
+        if scene == "facilities" {
+            self.guild.gold = 300;
+            self.guild
+                .purchase(crate::services::Purchase::Infirmary, &self.contracts)
+                .unwrap();
+            self.guild
+                .purchase(crate::services::Purchase::TrainingYard, &self.contracts)
+                .unwrap();
+            self.guild.roster[2].injury = 2;
+        }
+        if scene == "blocked_trial" {
+            self.selected = 4;
+            self.party = vec![0];
+            self.hq.sheet = Sheet::Jobs;
+        }
+        if matches!(scene, "injured_return" | "arrival") {
+            self.guild.dispatch(3, &[2], &self.contracts).unwrap();
+            self.guild.next_day(&self.contracts);
+            self.guild.next_day(&self.contracts);
+            self.report_detail = true;
+            self.hq.sheet = Sheet::Returns;
+            if scene == "arrival" {
+                self.hq.transition = Some(crate::headquarters::Transition {
+                    people: vec![2],
+                    arriving: true,
+                    elapsed: 0.,
+                });
+            }
+        }
+        if scene == "departure" {
+            self.guild.dispatch(0, &[0], &self.contracts).unwrap();
+            self.hq.transition = Some(crate::headquarters::Transition {
+                people: vec![0],
+                arriving: false,
+                elapsed: 0.,
+            });
         }
     }
 }

@@ -21,7 +21,7 @@ pub fn draw_warning(g: &Game) -> Option<UiAction> {
     );
     if button(
         Rect::new(x + 16.0, y + h - 112.0, w - 32.0, 44.0),
-        "BACK TO DESK",
+        "BACK TO HEADQUARTERS",
         true,
     ) {
         return Some(UiAction::CancelDay);

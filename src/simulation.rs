@@ -214,7 +214,7 @@ impl Guild {
                 return Some("A selected adventurer is away.".into());
             }
             if self.roster[a].injury > 0 {
-                return Some("Let injured adventurers recover: tap NEXT DAY.".into());
+                return Some("Let injured adventurers recover: tap ADVANCE DAY.".into());
             }
         }
         if q.promotion
@@ -331,7 +331,7 @@ impl Guild {
                 title: format!("Day {} / {} / {}", self.day, if success { "SUCCESS" } else { "RETREAT" }, q.title),
                 body: format!("{names}. {} {}", if success { &q.report } else {
                     "The party could not safely finish the job. Everyone returned; rest, bring support and try again."
-                }, if !success || (close_call && !has_healer) { "Medical leave required. Tap NEXT DAY to recover." } else { "Everyone returned safely, but needs rest." }),
+                }, if !success || (close_call && !has_healer) { "Medical leave required. Tap ADVANCE DAY to recover." } else { "Everyone returned safely, but needs rest." }),
                 reward: format!("Guild +{}g / Each adventurer +{} XP / Fatigue +3", if success { q.gold } else { 0 }, if success { q.xp } else { 5 }),
             });
         }

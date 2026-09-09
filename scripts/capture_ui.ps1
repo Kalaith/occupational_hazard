@@ -14,10 +14,11 @@
     ./scripts/capture_ui.ps1 -Frames 60 -SkipBuild
 #>
 param(
-    [ValidateSet("title", "gameplay", "settings", "promotion", "report", "reports", "victory", "tomas", "pip", "services", "objectives", "review", "review_missed", "tutorial", "idle_warning")]
-    [string[]]$Scenes = @("title", "gameplay", "settings", "promotion", "report", "reports", "victory", "tomas", "pip", "services", "objectives", "review", "review_missed", "tutorial", "idle_warning"),
+    [string[]]$Scenes = @("title", "gameplay", "planning", "everyone_away", "injured_return", "facilities", "blocked_trial", "promotion", "report", "reports", "review", "review_missed", "tutorial", "idle_warning"),
     [int]$Frames = 150,
     [string]$OutputDir = "docs\verification",
+    [int]$WindowWidth = 1280,
+    [int]$WindowHeight = 720,
     [switch]$SkipBuild
 )
 
@@ -26,4 +27,4 @@ $gameDir = Split-Path -Parent $PSScriptRoot
 $shared = Join-Path (Split-Path -Parent $gameDir) "macroquad-toolkit\scripts\capture_ui.ps1"
 
 # Keep all deterministic verification screens directly in docs/verification.
-& $shared -GameDir $gameDir -Prefix "OCCUPATIONAL_HAZARD" -Scenes $Scenes -Frames $Frames -OutputDir $OutputDir -MinBytes 10000 -SkipBuild:$SkipBuild
+& $shared -GameDir $gameDir -Prefix "OCCUPATIONAL_HAZARD" -Scenes $Scenes -Frames $Frames -OutputDir $OutputDir -WindowWidth $WindowWidth -WindowHeight $WindowHeight -MinBytes 10000 -SkipBuild:$SkipBuild

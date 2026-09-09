@@ -55,7 +55,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
             .join("\n");
         format!("{result}\n\nClosing treasury: {}g (opened with 80g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, i64::from(r.gold) - 80, r.reputation)
     } else {
-        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In ADVENTURERS, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader and 6 different service jobs. Each service job counts once; daily cellar work earns gold and XP only.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO DESK to begin.".into()
+        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In Staff, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader and 6 different service jobs. Each service job counts once; daily cellar work earns gold and XP only.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO HEADQUARTERS to begin.".into()
     };
     paragraph(
         &body,
@@ -84,7 +84,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         if g.guild.review_pending() {
             "MENU / SAVE"
         } else {
-            "BACK TO DESK"
+            "BACK TO HEADQUARTERS"
         },
         false,
     ) {

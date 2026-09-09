@@ -46,17 +46,16 @@ impl Lesson {
         }
     }
 
-    pub fn text(self, compact: bool) -> &'static str {
+    pub fn text(self, _compact: bool) -> &'static str {
         match self {
-            Self::Welcome => "By day 30, certify one Bronze adventurer complete A Bridge Worth Keeping and return from 6 different service jobs. Each adventurer earns their own rank and XP. Day 30 returns count before head office reviews the branch.\n\nTap BACK TO DESK, then the D30 objective control to see your targets. MENU opens HELP whenever you need it.",
-            Self::Selection if compact => "Tap BACK TO DESK. Tap < or > to browse contracts, then CHOOSE PARTY. Tap adventurer names to select them. Selected names turn gold.\n\nStart with Mira Ashford on Cellar, Meet Sword. Matching classes help; injured or away staff cannot join.",
-            Self::Selection => "Tap BACK TO DESK. Tap a contract in CONTRACT REGISTER, then tap adventurer names to select them. Selected names turn gold.\n\nStart with Mira Ashford on Cellar, Meet Sword. Matching classes help; injured or away staff cannot join.",
-            Self::Dispatch => "Your party is selected. Check the readiness message, then tap BACK TO DESK and DISPATCH.\n\nOffers expire after their last acceptance day. Accepted work may return later. Dispatch sends people away for the listed duration. Work returning after day 30 cannot improve the review; it can finish in sandbox.",
-            Self::Time => "The expedition is travelling. Tap BACK TO DESK, then NEXT DAY to advance one day. Repeat until the party returns.\n\nPeople staying at the guild rest while others travel. Returning expeditions receive their rewards before the day-30 review.",
-            Self::Reports => "An expedition returned. Tap BACK TO DESK, then REPORTS to read what happened. Tap a NEW report to open it, then ALL REPORTS to read the next one.\n\nGold, experience and successful-contract credit are applied automatically. The report explains any medical leave.",
-            Self::Recovery => "Tap BACK TO DESK, then ADVENTURERS to inspect fatigue and medical leave. Leave tired or injured staff at home and tap NEXT DAY to recover.\n\nRest two days after a typical return. An injured adventurer cannot dispatch. GUILD SERVICES offers optional faster recovery. No purchase is required for the review.",
-            Self::Promotion => "One adventurer must earn 60 XP and 3 successes, then pass The Lantern Road Trial alone. Their promotion changes only their own rank.\n\nTap BACK TO DESK, then ADVENTURERS, select the candidate and tap APPROVE BRONZE. Approval unlocks A Bridge Worth Keeping. Send a Bronze leader with support and return by day 30.",
-            Self::Trial => "A candidate has 60 XP and 3 successes. Rest them at home with NEXT DAY until fatigue clears.\n\nTap BACK TO DESK, then CONTRACTS. Select The Lantern Road Trial, choose that candidate alone and tap DISPATCH. Tap NEXT DAY twice for the assessment. On compact screens, tap CHOOSE PARTY to select the candidate.",
+            Self::Welcome => "Tap BACK TO HEADQUARTERS. Tap a room to open its work or a person to inspect their career. Review shows the day-30 targets: one Bronze certification, one Bronze commission and six distinct service successes.",
+            Self::Selection => "Tap BACK TO HEADQUARTERS, then Jobs. Tap Details to browse with Previous job and Next job. Tap Party to return, then tap portrait cards to add or remove people. Copper rings mark selection; away or injured staff cannot join.",
+            Self::Dispatch => "Tap BACK TO HEADQUARTERS, then Jobs. Check readiness, fatigue and return day. Details explains the acceptance deadline and offers Scout Route. Tap DISPATCH PARTY to commit. On short screens, first tap REVIEW DISPATCH.",
+            Self::Time => "Tap BACK TO HEADQUARTERS, then ADVANCE DAY. Journeys advance immediately and people at home recover or train. The footer identifies the next return. Tap its entry to inspect the accepted assignment.",
+            Self::Reports => "Tap BACK TO HEADQUARTERS, then Returns. Tap a NEW report to inspect its people, outcome and rewards. Tap ACKNOWLEDGE to return to the list. Rewards are applied once on return, never when reading.",
+            Self::Recovery => "Tap BACK TO HEADQUARTERS. Resting and injured people appear upstairs in Recovery. Tap a person for their exact fatigue and medical leave. Leave them home and tap ADVANCE DAY. Tap Recovery for the optional infirmary upgrade.",
+            Self::Promotion => "Tap BACK TO HEADQUARTERS, then Staff and the candidate. Earn 60 XP and three successes, pass the solo trial, then tap APPROVE BRONZE when home. Each person earns their own rank. A Bronze leader unlocks the Bronze commission.",
+            Self::Trial => "Tap BACK TO HEADQUARTERS, then Staff, the candidate and PREPARE SOLO TRIAL. This selects that person alone. Rest until fatigue clears, check the blockers in Jobs, then tap DISPATCH PARTY. The assessment must be unaided.",
         }
     }
 }

@@ -8,7 +8,7 @@ They are included in asset_registry.json for Windows and WebGL packaging.
 
 File: `assets/portraits/mira.png`
 
-Final prompt:
+Prompt summary:
 
 > Use case: stylized-concept. Asset type: fantasy management game character portrait. Create a polished painterly storybook portrait of a young adult female human adventurer, Mira Ashford, practical chestnut short hair, warm tan skin, green travel cloak over worn iron breastplate, sword hilt and battered round shield visible, earnest capable expression. Waist-up centered, head fully visible, square composition. Warm guild lamplight, muted teal and ochre palette, textured brushwork, rich readable silhouette. Background simple dark teal guild interior, no text, no lettering, no watermark. This is game artwork for Occupational Hazard, cozy fantasy with real stakes.
 
@@ -16,7 +16,7 @@ Final prompt:
 
 File: `assets/portraits/elowen.png`
 
-Final prompt:
+Prompt summary:
 
 > Use case: stylized-concept. Asset type: fantasy management game receptionist portrait. Polished painterly storybook portrait of an adult female human guild receptionist named Elowen, dark curly hair pinned into a bun, round brass spectacles, warm brown skin, cream blouse and burgundy waistcoat, ink-stained fingers holding a quill over a ledger at a wooden desk. Friendly shrewd smile. Waist-up centered square composition, head fully visible. Warm guild lamplight, muted teal and ochre palette, textured brushwork, readable silhouette, simple dark teal shelves background. No text, lettering or watermark. Artwork for Occupational Hazard, cozy fantasy bureaucracy.
 
@@ -38,3 +38,44 @@ File: `assets/portraits/pip.png`
 Final prompt (built-in image_gen):
 
 > Use case: stylized-concept. Asset type: fantasy management game character portrait. Create a polished painterly storybook portrait of Pip Fenwick, a young adult male human healer with tousled copper curls, freckles, kind green eyes and a dependable reassuring smile. Cream linen tunic, muted blue-teal travelling vest and short wool shoulder cape, practical healer's satchel with clean rolled bandages and herbal sprigs. Hands gently holding a small ceramic medicine jar; a simple wooden sun-shaped pendant at his collar. Waist-up centered square composition, head fully visible. Warm guild lamplight, muted teal and ochre palette, textured brushwork, rich readable silhouette. Simple dark teal guild interior background. No text, lettering or watermark. Match the cozy fantasy, grounded painterly portrait aesthetic of Occupational Hazard's Mira Ashford and receptionist Elowen.
+
+## Cutaway assets (2026-09-09)
+
+All five new assets use the built-in imagegen tool, with project copies in
+`assets/headquarters/`. No external image API or API key was used. Existing
+portraits define identities; supplied mockups define architectural composition,
+lighting and slate/timber/copper materials. The catalog now captures the building
+on the actual title screen.
+
+- `building.png` (1536×1024): empty two-storey cutaway, recovery/records upstairs,
+  common/assignments downstairs, ground gate and bare courtyard. Prompt summary:
+  "NO UI, NO text, NO people, NO animals. Warm amber lantern-lit timber and stone
+  interiors, cool blue dusk mountains and distant castle. Clear full room
+  interiors, front-facing side elevation; empty foreground for separate sprites."
+- `people-keyed.png` (1536×1024): Mira, Tomas, Pip and Elowen standing in the first
+  row; seated recovery poses and Elowen's ledger pose in the second. Final edit
+  prompt: "Change ONLY background to perfectly uniform flat pure saturated magenta
+  #FF00FF everywhere between and behind these 8 isolated character sprites.
+  Preserve character appearances, poses and items. No checkerboard, texture,
+  gradient, halo or shadows."
+- `activity-keyed.png` (1536×1024): three walking figures with packs, then sword,
+  bow and bandage-practice poses. Prompt summary: "SAME first three characters,
+  preserving faces, genders, hair and costume. THREE equal columns TWO rows.
+  Top row Mira, Tomas and Pip walking right with packs; bottom row practising
+  sword guard, drawing bow, and bandaging forearm. Flat magenta #FF00FF."
+- `facilities-keyed.png` (1536×1024): dummies, medical trolley, targets/rack and
+  medical cabinet. Prompt summary: "FOUR separate objects in 2×2 grid, generous
+  margins, front-facing side elevation, painterly realistic aged timber and warm
+  amber lighting. No people, text, floor or shadows. Flat magenta #FF00FF."
+- `route.png` (1536×1024): a generic route vignette, not a literal map of every
+  job. Prompt summary: "Medieval woodland path past three mossy boundary stones
+  towards a distant stone bridge, village and hilltop castle at blue dusk. Warm
+  lantern, slate blue mountains and copper sunset. Compose for a horizontal crop."
+
+The initial transparency attempts contained painted backgrounds, not alpha.
+Final source atlases retain magenta. Toolkit `AssetManager::load_texture_keyed`
+removes it once at loading and preserves genuine existing alpha. Source art is
+never decoded or reloaded during interaction. `scene.rs` records exact atlas
+crops, feet anchors and display scales. Figures precede labels; upgrade props
+appear only after purchase. All paths are in the texture manifest and registry.
+
