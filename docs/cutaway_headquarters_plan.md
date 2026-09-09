@@ -35,7 +35,7 @@ Created: 2026-09-09.
 - [x] **3.1 Define a documented placement table.** Away characters are absent from headquarters; injured characters recover; fatigued characters rest; fully rested Iron recruits train only when the purchased yard and existing XP conditions allow it; other available staff use the common room. Specify precedence and deterministic positions for every combination.
 - [x] **3.2 Keep planning separate from commitment.** Selecting someone adds a planning marker without falsely marking them away. Only a successful dispatch moves them into a departing party. Closing planning must not change simulation state.
 - [x] **3.3 Build direct selection.** Tapping a person opens their status and available actions. Tapping a work area opens its function. Selected targets receive a clear outline and label; overlapping targets have an explicit disambiguation treatment.
-- [ ] **3.4 Make camera and input agree.** Scene selection respects scaling, panning, overlays and touch bounds. Taps on panels never activate the room underneath. Dragging the scene never accidentally dispatches or selects someone.
+- [x] **3.4 Make camera and input agree.** Scene selection respects scaling, panning, overlays and touch bounds. Taps on panels never activate the room underneath. Dragging the scene never accidentally dispatches or selects someone.
 - [x] **3.5 Separate presentation from authority.** Derive room placement and activity from guild state. Store only necessary UI state separately. Rendering, movement completion and effects must never award rewards, recover injury, or advance a day.
 - [x] **3.6 Audit toolkit support first.** Check shared camera transforms, pointer handling, animation, layout, asset loading and capture capabilities. Put reusable missing behaviour in macroquad-toolkit; keep guild-specific placement and interaction rules in this project.
 
@@ -74,7 +74,7 @@ Created: 2026-09-09.
 **Outcome:** staff development and investments become visible parts of headquarters life.
 
 - [x] **6.1 Replace the static dossier composition.** Person selection opens a readable career view with portrait, current activity, experience, successful contracts and promotion requirements. Link to existing personal report evidence where available; do not fabricate historical records.
-- [ ] **6.2 Integrate promotion into the headquarters.** Identify eligible candidates visibly, show each unmet condition, preserve the unaided trial flow, and provide explicit Approve Bronze. Present a brief celebration and updated rank that persist after reload.
+- [x] **6.2 Integrate promotion into the headquarters.** Identify eligible candidates visibly, show each unmet condition, preserve the unaided trial flow, and provide explicit Approve Bronze. Present a brief celebration and updated rank that persist after reload.
 - [x] **6.3 Make facility purchases spatial.** Selecting recovery or training exposes current benefit, upgrade cost and affordability. Buying once changes both scenery and the existing mechanic. Explain training's XP cap and lack of successful-contract credit.
 - [x] **6.4 Put scouting in preparation.** Offer it from the selected contract's planning view with cost, route scope, consumption rule and an explicit purchased state. Preserve its prohibition for the unaided trial.
 - [x] **6.5 Replace cryptic objective shorthand.** Keep a compact labelled review reminder. Open a checklist for one Bronze certification, one Bronze commission and six distinct service jobs, with deadline and achieved progress.
@@ -87,10 +87,10 @@ Created: 2026-09-09.
 **Outcome:** spatial presentation remains usable without precision pointing, a keyboard or prior knowledge.
 
 - [x] **7.1 Design phone composition explicitly.** On narrow screens, show a legible portion of the building with labelled room navigation and a visible overview control. Use a focused bottom sheet or full-height planning view where needed; do not shrink the entire desktop scene to fit.
-- [ ] **7.2 Provide reliable touch targets.** Target at least 44 x 44 logical screen pixels for required controls. Tiny characters get larger non-overlapping selection bounds or a nearby labelled selector. Essential explanations cannot rely on hover.
+- [x] **7.2 Provide reliable touch targets.** Target at least 44 x 44 logical screen pixels for required controls. Tiny characters get larger non-overlapping selection bounds or a nearby labelled selector. Essential explanations cannot rely on hover.
 - [x] **7.3 Keep essential shortcuts available.** Jobs, staff, returns and Advance Day remain reachable without repeatedly navigating between rooms. Shortcuts focus the relevant scene/function; they must not recreate the original dashboard as a competing default interface.
-- [ ] **7.4 Make state readable without colour alone.** Combine activity icons with text, visibly distinguish selection from unavailability, and provide readable contrast and scalable text. Keep decorative type out of dense body copy.
-- [ ] **7.5 Rewrite contextual guidance.** Teach selecting a room, inspecting a person, choosing a job, assigning, dispatching, advancing, reviewing a return, resting and approving promotion. Every prompt names its exact visible control or gesture. Highlight the target without covering it.
+- [x] **7.4 Make state readable without colour alone.** Combine activity icons with text, visibly distinguish selection from unavailability, and provide readable contrast and scalable text. Keep decorative type out of dense body copy.
+- [x] **7.5 Rewrite contextual guidance.** Teach selecting a room, inspecting a person, choosing a job, assigning, dispatching, advancing, reviewing a return, resting and approving promotion. Every prompt names its exact visible control or gesture. Highlight the target without covering it.
 - [x] **7.6 Cover navigation and interruption.** Back, close, skip guidance, settings, help, save and title are reachable by touch. Test resizing during planning and closing/reopening overlays without losing or silently committing selection.
 
 **Completion gate:** complete the core loop at 1280 x 720, 1024 x 768, 390 x 844 and 844 x 390. Capture and inspect each composition. At least one actual browser run uses only pointer/touch interactions; static captures do not establish input coverage.
@@ -151,6 +151,7 @@ The redesign is incomplete if any of these remain:
 - New rules are invented to make the scenery appear functional without being separately designed and verified.
 
 Completion requires all ten sections' outcomes. Any accepted scope reduction must be recorded explicitly rather than silently interpreting a cosmetic change as a finished redesign.
+
 
 
 

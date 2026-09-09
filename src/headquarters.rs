@@ -105,6 +105,7 @@ pub struct Headquarters {
     pub transition: Option<Transition>,
     pub pointer_start: Option<macroquad::prelude::Vec2>,
     pub dragged: bool,
+    pub(crate) day_input_cooldown: f32,
 }
 
 pub struct Transition {
@@ -125,18 +126,28 @@ impl Default for Headquarters {
             transition: None,
             pointer_start: None,
             dragged: false,
+            day_input_cooldown: 0.,
         }
     }
 }
 
 impl Headquarters {
     pub fn tick(&mut self, dt: f32) {
+        self.day_input_cooldown = (self.day_input_cooldown - dt).max(0.);
         if let Some(t) = &mut self.transition {
             t.elapsed += dt;
             if t.elapsed >= 1.2 || self.reduced_motion {
                 self.transition = None;
             }
         }
+    }
+    /// Coalesce rapid duplicate taps while the date and return surface change.
+    pub fn begin_day_change(&mut self) -> bool {
+        if self.day_input_cooldown > 0. {
+            return false;
+        }
+        self.day_input_cooldown = 0.25;
+        true
     }
     pub fn open(&mut self, sheet: Sheet) {
         self.sheet = sheet;

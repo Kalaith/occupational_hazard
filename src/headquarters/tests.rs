@@ -2,6 +2,26 @@ use super::*;
 use crate::services::Purchase;
 
 #[test]
+fn rapid_day_inputs_do_not_consume_two_days() {
+    let mut hq = Headquarters::default();
+    let qs = crate::contracts::load().unwrap();
+    let mut guild = Guild::new();
+    for _ in 0..2 {
+        if hq.begin_day_change() {
+            guild.next_day(&qs);
+        }
+    }
+    assert_eq!(guild.day, 2);
+    hq.open(Sheet::Returns);
+    hq.tick(0.1);
+    assert!(!hq.begin_day_change());
+    hq.tick(0.2);
+    assert!(hq.begin_day_change());
+    guild.next_day(&qs);
+    assert_eq!(guild.day, 3);
+}
+
+#[test]
 fn placement_precedence_tracks_dispatch_rest_and_purchase() {
     let qs = crate::contracts::load().unwrap();
     let mut g = Guild::new();

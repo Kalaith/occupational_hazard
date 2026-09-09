@@ -110,3 +110,35 @@ not changed the corresponding table cells.
 Remaining validation is deliberately narrower than the implemented feature list:
 complete manual loops at every viewport, exhaustive navigation/guidance and motion
 coverage, and the three unfamiliar-player sessions still require further evidence.
+
+## Completed live loops and final input audit
+
+The same published save completed one full assignment loop at each requested size:
+390×844: Mira's day-7 dispatch and day-8 return; 844×390: rested Mira's day-10
+unaided trial, day-12 success and explicit Bronze approval; 1024×768: Tomas and
+Pip's day-12 dispatch and day-13 return; 1280×720: Mira's day-14 dispatch and
+day-15 return. Each result was opened through the report list. Additional live
+screenshots are ui_browser_phone, ui_browser_promotion, ui_browser_tablet and
+ui_browser_desktop. The saved Bronze rank was inspected after a browser reload.
+
+A drag across a selected portrait did not change the party. Direct sprite selection
+matched the displayed person after resizing. Settings exposed and saved larger text
+and reduced motion; larger-text Help remained readable. Reduced-motion dispatch and
+return placed people immediately without travel animation. Single-input checks
+confirmed that Skip motion changes no date and Advance Day consumes one day.
+
+One rapid automated two-click batch had consumed an extra day; single separated
+inputs did not reproduce it. Batched portrait clicks also differed from separate
+clicks, so automation event timing may contribute. A 250ms guard now coalesces
+rapid duplicate day-change inputs. This guard belongs to the game's presentation
+of a discrete calendar decision; simulation next_day remains unchanged. A dedicated
+regression test covers two immediate inputs, an overlay change and a later deliberate
+advance. On the final published build, an explicit double click advanced day 15 to
+16 exactly once and applied the 24g return reward once (198g to 222g).
+
+Latest validation: 32 unit tests, one asset-registry test and one source-size test
+passed (34 total), strict Clippy passed, and the no-argument publisher passed for
+Windows, WebGL, Preview, asset packaging, catalog and tracking. Earlier counts above
+refer to their recorded milestones. No physical touch or unfamiliar-player results
+are claimed. All automated/native/manual-agent evidence is separate from those two
+external requirements.

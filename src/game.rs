@@ -402,6 +402,9 @@ impl Game {
     }
 
     fn advance_day(&mut self) {
+        if !self.hq.begin_day_change() {
+            return;
+        }
         self.guild
             .tutorial
             .acknowledge(crate::tutorial::Lesson::Time);
