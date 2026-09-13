@@ -4,7 +4,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 mod day;
 mod dossier;
-mod headquarters;
+pub mod headquarters;
 mod help;
 mod month;
 mod theme;

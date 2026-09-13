@@ -359,5 +359,8 @@ impl Guild {
     }
 }
 
-#[cfg(test)]
-mod tests;
+impl Default for Guild {
+    fn default() -> Self {
+        Self::new()
+    }
+}

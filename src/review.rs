@@ -103,6 +103,3 @@ impl Guild {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests;

@@ -9,7 +9,7 @@ mod planning;
 mod preparation;
 mod quest;
 mod returns;
-mod scene;
+pub mod scene;
 
 pub fn draw(g: &Game) -> Option<UiAction> {
     let w = screen_width();

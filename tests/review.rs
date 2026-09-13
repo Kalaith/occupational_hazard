@@ -1,16 +1,18 @@
-use super::*;
+//! First-month review snapshots and sandbox continuation regressions.
+
+use occupational_hazard::{contracts, services::Purchase, simulation::Guild};
 
 fn reload(g: &Guild) -> Guild {
     let json = serde_json::to_string(g).unwrap();
     let loaded: Guild =
         macroquad_toolkit::data_loader::parse_json_labeled("review test", &json).unwrap();
-    loaded.validate(&crate::contracts::load().unwrap()).unwrap();
+    loaded.validate(&contracts::load().unwrap()).unwrap();
     loaded
 }
 
 #[test]
 fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = contracts::load().unwrap();
     let mut g = Guild::new();
     for quest in [0, 6, 7] {
         g.dispatch(quest, &[0], &qs).unwrap();
@@ -51,9 +53,7 @@ fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
     g.next_day(&qs);
     assert_eq!(g.day, 30);
     assert!(g.dispatch(0, &[0], &qs).is_err());
-    assert!(g
-        .purchase(crate::services::Purchase::Infirmary, &qs)
-        .is_err());
+    assert!(g.purchase(Purchase::Infirmary, &qs).is_err());
     g.continue_sandbox();
     g = reload(&g);
     g.next_day(&qs);
@@ -66,7 +66,7 @@ fn fresh_guild_can_pass_with_cutoff_return_then_reload_and_continue() {
 
 #[test]
 fn late_work_and_missed_targets_do_not_softlock_or_rewrite_review() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = contracts::load().unwrap();
     let mut g = Guild::new();
     while g.day < 29 {
         g.next_day(&qs);
@@ -92,7 +92,7 @@ fn late_work_and_missed_targets_do_not_softlock_or_rewrite_review() {
 
 #[test]
 fn older_ledgers_retain_progress_and_receive_a_review_when_loaded() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = contracts::load().unwrap();
     let mut value = serde_json::to_value(Guild::new()).unwrap();
     value.as_object_mut().unwrap().remove("month");
     value["day"] = 45.into();
@@ -113,7 +113,7 @@ fn invalid_review_state_is_rejected() {
 
 #[test]
 fn phase_one_review_keeps_its_original_result_without_a_new_quota() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = contracts::load().unwrap();
     let mut g = Guild::new();
     g.day = 30;
     g.roster[0].bronze = true;

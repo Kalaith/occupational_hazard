@@ -1,4 +1,7 @@
-use super::*;
+//! Headquarters image projection remains aligned across target viewports.
+
+use macroquad::prelude::*;
+use occupational_hazard::ui::headquarters::scene::project;
 
 #[test]
 fn room_bounds_and_art_share_the_same_projection_at_every_target_size() {

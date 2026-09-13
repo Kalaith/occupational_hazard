@@ -15,6 +15,3 @@ impl Guild {
         }
     }
 }
-
-#[cfg(test)]
-mod tests;

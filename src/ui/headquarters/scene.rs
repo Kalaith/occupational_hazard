@@ -1,8 +1,5 @@
 use super::*;
 
-#[cfg(test)]
-mod tests;
-
 /// Image-space room geometry is projected with the same mapping as every target.
 pub fn project(stage: Rect, view: Rect, world: Rect) -> Rect {
     Rect::new(

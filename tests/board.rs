@@ -1,4 +1,6 @@
-use crate::{contracts, services::Purchase, simulation::Guild};
+//! Contract board migration and dated-offer regression rules.
+
+use occupational_hazard::{contracts, services::Purchase, simulation::Guild};
 
 fn reload(g: &Guild, qs: &[contracts::Contract]) -> Guild {
     let mut loaded: Guild = macroquad_toolkit::data_loader::parse_json_labeled(

@@ -64,6 +64,10 @@ impl Tutorial {
     pub fn acknowledge(&mut self, lesson: Lesson) {
         self.seen |= 1 << lesson as u16;
     }
+    pub fn has_seen(&self, lesson: Lesson) -> bool {
+        !self.unseen(lesson)
+    }
+
     fn unseen(&self, lesson: Lesson) -> bool {
         self.seen & (1 << lesson as u16) == 0
     }
@@ -102,6 +106,3 @@ impl Guild {
             .map(|(l, _)| l)
     }
 }
-
-#[cfg(test)]
-mod tests;

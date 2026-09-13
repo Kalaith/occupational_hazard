@@ -157,6 +157,3 @@ impl Headquarters {
         self.journey = None;
     }
 }
-
-#[cfg(test)]
-mod tests;

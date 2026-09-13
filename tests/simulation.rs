@@ -1,4 +1,7 @@
-use super::*;
+//! Deterministic expedition resolution and progression regressions.
+
+use occupational_hazard::contracts::Contract;
+use occupational_hazard::simulation::{Expedition, Guild};
 
 fn rest(g: &mut Guild, qs: &[Contract]) {
     while g.roster.iter().any(|a| a.fatigue > 0 || a.injury > 0) || !g.expeditions.is_empty() {
@@ -8,7 +11,7 @@ fn rest(g: &mut Guild, qs: &[Contract]) {
 
 #[test]
 fn iron_to_bronze_and_first_commission_are_playable() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     let mut g = Guild::new();
     assert!(g.promote(0).is_err());
     assert!(g.dispatch(4, &[0], &qs).is_err());
@@ -42,7 +45,7 @@ fn iron_to_bronze_and_first_commission_are_playable() {
 
 #[test]
 fn no_double_booking_or_early_rewards() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     let mut g = Guild::new();
     assert!(g.dispatch(0, &[], &qs).is_err());
     assert!(g.dispatch(0, &[0, 0], &qs).is_err());
@@ -60,7 +63,7 @@ fn no_double_booking_or_early_rewards() {
 
 #[test]
 fn poor_assignment_retreats_and_recovers_without_a_softlock() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     let mut g = Guild::new();
     g.dispatch(3, &[2], &qs).unwrap();
     g.next_day(&qs);
@@ -77,7 +80,7 @@ fn poor_assignment_retreats_and_recovers_without_a_softlock() {
 
 #[test]
 fn save_round_trip_preserves_expedition_and_certification() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     let mut g = Guild::new();
     g.roster[0].trial_passed = true;
     g.roster[0].xp = 90;
@@ -104,7 +107,7 @@ fn save_round_trip_preserves_expedition_and_certification() {
 
 #[test]
 fn each_class_can_earn_bronze_through_its_specialty() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     for (candidate, route) in [(0, [0, 6, 7]), (1, [2, 8, 9]), (2, [1, 10, 11])] {
         let mut g = Guild::new();
         for quest in route {
@@ -120,7 +123,7 @@ fn each_class_can_earn_bronze_through_its_specialty() {
 
 #[test]
 fn day_warning_lists_only_rested_unassigned_adventurers() {
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     let mut g = Guild::new();
     assert_eq!(
         g.rested_idle(),

@@ -2,20 +2,7 @@
 
 use macroquad::prelude::*;
 use macroquad_toolkit::capture;
-
-mod board;
-mod contracts;
-mod game;
-mod headquarters;
-mod reports;
-mod review;
-mod services;
-mod simulation;
-mod tutorial;
-
-mod ui;
-
-use game::Game;
+use occupational_hazard::game::Game;
 
 fn window_conf() -> Conf {
     let mut config =

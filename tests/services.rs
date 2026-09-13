@@ -1,5 +1,6 @@
-use super::*;
-use crate::contracts;
+//! Facility, training, and scouting purchase regressions.
+
+use occupational_hazard::{contracts, services::Purchase, simulation::Guild};
 
 #[test]
 fn purchases_charge_once_and_reject_unaffordable_orders() {

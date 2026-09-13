@@ -81,6 +81,3 @@ impl Guild {
         Ok(message.into())
     }
 }
-
-#[cfg(test)]
-mod tests;

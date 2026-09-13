@@ -1,4 +1,6 @@
-use crate::{contracts, simulation::Guild};
+//! Return reports preserve independent rewards and unread state.
+
+use occupational_hazard::{contracts, simulation::Guild};
 
 #[test]
 fn simultaneous_returns_keep_both_rewards_and_independent_unread_reports() {

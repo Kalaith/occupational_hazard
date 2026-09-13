@@ -1,9 +1,12 @@
-use super::*;
+//! Saved tutorial progression and help coverage regressions.
+
+use occupational_hazard::simulation::Guild;
+use occupational_hazard::tutorial::*;
 
 #[test]
 fn guidance_follows_selection_dispatch_return_and_promotion() {
     let mut g = Guild::new();
-    let qs = crate::contracts::load().unwrap();
+    let qs = occupational_hazard::contracts::load().unwrap();
     assert_eq!(g.lesson(false), Some(Lesson::Welcome));
     g.tutorial.acknowledge(Lesson::Welcome);
     assert_eq!(g.lesson(false), Some(Lesson::Selection));
@@ -38,7 +41,7 @@ fn skip_and_acknowledgements_survive_reload_without_hiding_help() {
     let loaded: Guild =
         macroquad_toolkit::data_loader::parse_json_labeled("tutorial", &json).unwrap();
     assert_eq!(loaded.lesson(true), None);
-    assert!(!loaded.tutorial.unseen(Lesson::Welcome));
+    assert!(loaded.tutorial.has_seen(Lesson::Welcome));
     assert_eq!(LESSONS.len(), 8);
     for lesson in LESSONS {
         assert!(lesson.text(true).contains("BACK TO HEADQUARTERS"));
