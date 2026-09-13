@@ -1,3 +1,4 @@
+//! Tutorial prompts and the complete help handbook.
 use super::*;
 use crate::tutorial::Lesson;
 use crate::tutorial::LESSONS;

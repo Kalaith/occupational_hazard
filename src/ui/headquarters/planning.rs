@@ -1,3 +1,4 @@
+//! Compact party cards used while planning a commission.
 use super::*;
 
 pub(super) fn cards(g: &Game, r: Rect) -> Option<UiAction> {

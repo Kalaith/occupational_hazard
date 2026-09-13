@@ -8,12 +8,18 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     }
     let journey = g.hq.journey.and_then(|id| g.guild.expeditions.get(id));
     let id = journey.map_or(g.selected, |e| e.contract);
-    let q = &g.contracts[id];
     if g.hq.page == 3 {
         return phone::terms(g, r, id);
     }
+    let mut action = draw_contract(g, r, id, journey.is_some());
+    action = draw_party(g, r, id, journey).or(action);
+    action
+}
+
+fn draw_contract(g: &Game, r: Rect, id: usize, travelling: bool) -> Option<UiAction> {
+    let q = &g.contracts[id];
     let left = Rect::new(r.x, r.y, r.w * 0.49, r.h);
-    let right = Rect::new(left.right() + 30., r.y, r.right() - left.right() - 30., r.h);
+    let mut action = None;
     draw_line(
         left.right() + 15.,
         r.y,
@@ -22,7 +28,6 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         1.,
         Color::new(0.32, 0.30, 0.25, 1.),
     );
-    let mut action = None;
     text(
         &q.title.to_uppercase(),
         Rect::new(left.x, left.y, left.w, 58.),
@@ -74,7 +79,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         18.,
         INK,
     );
-    if journey.is_none() {
+    if !travelling {
         let expiry = if q.promotion {
             g.guild.text.get("ui.standing_trial").into()
         } else {
@@ -102,6 +107,19 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             action = Some(UiAction::SheetPage(3));
         }
     }
+    action
+}
+
+fn draw_party(
+    g: &Game,
+    r: Rect,
+    id: usize,
+    journey: Option<&crate::simulation::Expedition>,
+) -> Option<UiAction> {
+    let q = &g.contracts[id];
+    let left = Rect::new(r.x, r.y, r.w * 0.49, r.h);
+    let right = Rect::new(left.right() + 30., r.y, r.right() - left.right() - 30., r.h);
+    let mut action = None;
     text(
         if journey.is_some() {
             g.guild.text.get("ui.travelling_party")

@@ -99,6 +99,8 @@ pub const REQUIRED_TEXT_KEYS: &[&str] = &[
     "ui.fatigue_loss",
     "ui.contributes",
     "ui.career_heading",
+    "ui.career_identity",
+    "ui.purchase_cost",
     "ui.quest_stats",
     "ui.offer_terms",
     "ui.career_stats",

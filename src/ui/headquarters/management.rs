@@ -1,8 +1,31 @@
+//! Career, promotion, and facility management surfaces.
 use super::*;
 
 pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     let id = g.dossier;
-    let a = &g.guild.roster[id];
+    let mut action = member_tabs(g, r, id);
+    draw_identity(g, r, id);
+    let short = r.h < 400.;
+    if short && g.hq.page == 0 {
+        return if primary(
+            Rect::new(r.x, r.bottom() - 48., r.w, 46.),
+            g.guild.text.get("ui.career_heading"),
+            true,
+        ) {
+            Some(UiAction::SheetPage(1))
+        } else {
+            action
+        };
+    }
+    let y = if short { r.y + 52. } else { r.y + 188. };
+    draw_stats(g, r, id, y, short);
+    if !short {
+        action = career_note(g, r, id, y).or(action);
+    }
+    career_button(g, r, id).or(action)
+}
+
+fn member_tabs(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     let mut action = None;
     let cw = (r.w - 16.) / 3.;
     for member in 0..g.guild.roster.len() {
@@ -14,11 +37,12 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
             action = Some(UiAction::Dossier(member));
         }
     }
-    let short = r.h < 400.;
-    let size = if short { 64. } else { 112. };
-    let trial_xp = g.guild.config.progression.trial_xp;
-    let trial_successes = g.guild.config.progression.trial_successes;
-    let max_fatigue = g.guild.config.caps.max_fatigue;
+    action
+}
+
+fn draw_identity(g: &Game, r: Rect, id: usize) {
+    let a = &g.guild.roster[id];
+    let size = if r.h < 400. { 64. } else { 112. };
     portrait(g, key(id), Rect::new(r.x, r.y + 58., size, size));
     text(
         &a.name,
@@ -27,30 +51,27 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
         INK,
     );
     text(
-        &format!(
-            "{} · {}\n{}",
-            a.rank(&g.guild.text),
-            a.class,
-            activity(&g.guild, id).label(&g.guild.text)
+        &g.guild.text.format(
+            "ui.career_identity",
+            &[
+                ("rank", a.rank(&g.guild.text).to_string()),
+                ("class", a.class.clone()),
+                (
+                    "activity",
+                    activity(&g.guild, id).label(&g.guild.text).to_string(),
+                ),
+            ],
         ),
         Rect::new(r.x + size + 14., r.y + 105., r.w - size - 14., 58.),
         18.,
         GOLD,
     );
-    if short && g.hq.page == 0 {
-        if primary(
-            Rect::new(r.x, r.bottom() - 48., r.w, 46.),
-            g.guild.text.get("ui.career_heading"),
-            true,
-        ) {
-            return Some(UiAction::SheetPage(1));
-        }
-        return action;
-    }
-    let y = if short { r.y + 52. } else { r.y + 188. };
-    if short {
-        panel(Rect::new(r.x, y, r.w, r.h - 52.), PANEL);
-    }
+}
+
+fn draw_stats(g: &Game, r: Rect, id: usize, y: f32, short: bool) {
+    let a = &g.guild.roster[id];
+    let trial_xp = g.guild.config.progression.trial_xp;
+    let trial_successes = g.guild.config.progression.trial_successes;
     let stats = g.guild.text.format(
         "ui.career_stats",
         &[
@@ -76,11 +97,12 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
                 },
             ),
             ("fatigue", a.fatigue.to_string()),
-            ("max_fatigue", max_fatigue.to_string()),
+            ("max_fatigue", g.guild.config.caps.max_fatigue.to_string()),
             ("injury", a.injury.to_string()),
         ],
     );
     if short {
+        panel(Rect::new(r.x, y, r.w, r.h - 52.), PANEL);
         text(&stats, Rect::new(r.x, y, r.w, 104.), 19., INK);
     } else {
         theme::parchment(Rect::new(r.x, y, r.w, 116.));
@@ -100,51 +122,59 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
             a.successes as f32 / trial_successes as f32,
         );
     }
-    if !short {
-        rule(r, y + 128.);
-        let career_note = if a.bronze {
-            g.guild.text.get("ui.career_bronze").to_string()
-        } else if a.trial_passed {
-            g.guild.text.get("ui.career_passed").to_string()
-        } else if a.eligible(&g.guild.config) {
-            g.guild.text.get("ui.career_eligible").to_string()
-        } else {
-            g.guild.text.format(
-                "ui.career_build",
-                &[
-                    ("trial_xp", trial_xp.to_string()),
-                    ("trial_successes", trial_successes.to_string()),
-                ],
-            )
-        };
-        text(
-            &career_note,
-            Rect::new(r.x, y + 143., r.w, (r.bottom() - y - 249.).max(42.)),
-            18.,
-            GOLD,
-        );
-        if let Some(report) = g
-            .guild
-            .reports
-            .iter()
-            .position(|report| report.body.contains(&a.name) || report.title.contains(&a.name))
-        {
-            if button(
+}
+
+fn career_note(g: &Game, r: Rect, id: usize, y: f32) -> Option<UiAction> {
+    let a = &g.guild.roster[id];
+    let trial_xp = g.guild.config.progression.trial_xp;
+    let trial_successes = g.guild.config.progression.trial_successes;
+    rule(r, y + 128.);
+    let note = if a.bronze {
+        g.guild.text.get("ui.career_bronze").to_string()
+    } else if a.trial_passed {
+        g.guild.text.get("ui.career_passed").to_string()
+    } else if a.eligible(&g.guild.config) {
+        g.guild.text.get("ui.career_eligible").to_string()
+    } else {
+        g.guild.text.format(
+            "ui.career_build",
+            &[
+                ("trial_xp", trial_xp.to_string()),
+                ("trial_successes", trial_successes.to_string()),
+            ],
+        )
+    };
+    text(
+        &note,
+        Rect::new(r.x, y + 143., r.w, (r.bottom() - y - 249.).max(42.)),
+        18.,
+        GOLD,
+    );
+    let report = g
+        .guild
+        .reports
+        .iter()
+        .position(|report| report.body.contains(&a.name) || report.title.contains(&a.name));
+    report
+        .filter(|_| {
+            button(
                 Rect::new(r.x, r.bottom() - 104., r.w, 44.),
                 g.guild.text.get("ui.latest_report"),
                 false,
-            ) {
-                action = Some(UiAction::Report(report));
-            }
-        }
-    }
+            )
+        })
+        .map(UiAction::Report)
+}
+
+fn career_button(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
+    let a = &g.guild.roster[id];
     if a.trial_passed && !a.bronze {
         if primary(
             Rect::new(r.x, r.bottom() - 50., r.w, 48.),
             g.guild.text.get("ui.approve_bronze"),
             !g.guild.busy(id),
         ) {
-            action = Some(UiAction::Promote(id));
+            return Some(UiAction::Promote(id));
         }
     } else if !a.bronze
         && primary(
@@ -153,9 +183,9 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
             true,
         )
     {
-        action = Some(UiAction::PrepareTrial(id));
+        return Some(UiAction::PrepareTrial(id));
     }
-    action
+    None
 }
 
 pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
@@ -181,57 +211,9 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
         INK,
     );
     let short = r.h < 400.;
-    let body = if purchased && recovery {
-        g.guild.text.get("ui.facility_infirmary_open")
-    } else if purchased {
-        &g.guild.text.format(
-            "ui.facility_training_open",
-            &[
-                (
-                    "xp_per_day",
-                    g.guild.config.services.training_xp_per_day.to_string(),
-                ),
-                (
-                    "xp_cap",
-                    g.guild.config.progression.training_xp_cap.to_string(),
-                ),
-            ],
-        )
-    } else if short && recovery {
-        g.guild.text.get("ui.facility_recovery_short")
-    } else if short {
-        &g.guild.text.format(
-            "ui.facility_training_short",
-            &[
-                (
-                    "xp_per_day",
-                    g.guild.config.services.training_xp_per_day.to_string(),
-                ),
-                (
-                    "xp_cap",
-                    g.guild.config.progression.training_xp_cap.to_string(),
-                ),
-            ],
-        )
-    } else if recovery {
-        g.guild.text.get("ui.facility_recovery_long")
-    } else {
-        &g.guild.text.format(
-            "ui.facility_training_long",
-            &[
-                (
-                    "xp_per_day",
-                    g.guild.config.services.training_xp_per_day.to_string(),
-                ),
-                (
-                    "xp_cap",
-                    g.guild.config.progression.training_xp_cap.to_string(),
-                ),
-            ],
-        )
-    };
+    let body = facility_body(g, purchased, recovery, short);
     text(
-        body,
+        &body,
         Rect::new(
             r.x,
             r.y + 50.,
@@ -268,28 +250,79 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
             MUTED,
         );
     }
+    facility_button(g, r, recovery, purchased, cost)
+}
+
+fn facility_body(g: &Game, purchased: bool, recovery: bool, short: bool) -> String {
+    let training_values = || {
+        [
+            (
+                "xp_per_day",
+                g.guild.config.services.training_xp_per_day.to_string(),
+            ),
+            (
+                "xp_cap",
+                g.guild.config.progression.training_xp_cap.to_string(),
+            ),
+        ]
+    };
+    if purchased && recovery {
+        g.guild.text.get("ui.facility_infirmary_open").to_string()
+    } else if purchased {
+        g.guild
+            .text
+            .format("ui.facility_training_open", &training_values())
+    } else if short && recovery {
+        g.guild.text.get("ui.facility_recovery_short").to_string()
+    } else if short {
+        g.guild
+            .text
+            .format("ui.facility_training_short", &training_values())
+    } else if recovery {
+        g.guild.text.get("ui.facility_recovery_long").to_string()
+    } else {
+        g.guild
+            .text
+            .format("ui.facility_training_long", &training_values())
+    }
+}
+
+fn facility_button(
+    g: &Game,
+    r: Rect,
+    recovery: bool,
+    purchased: bool,
+    cost: u32,
+) -> Option<UiAction> {
+    let label = if purchased {
+        g.guild.text.get("ui.facility_open").to_string()
+    } else {
+        g.guild.text.format(
+            "ui.purchase_cost",
+            &[
+                (
+                    "action",
+                    if g.guild.gold >= cost {
+                        g.guild.text.get("ui.purchase").to_string()
+                    } else {
+                        g.guild.text.get("ui.need").to_string()
+                    },
+                ),
+                ("cost", cost.to_string()),
+            ],
+        )
+    };
     if primary(
         Rect::new(r.x, r.bottom() - 50., r.w, 48.),
-        &if purchased {
-            g.guild.text.get("ui.facility_open").into()
-        } else {
-            format!(
-                "{} · {}g",
-                if g.guild.gold >= cost {
-                    g.guild.text.get("ui.purchase")
-                } else {
-                    g.guild.text.get("ui.need")
-                },
-                cost
-            )
-        },
+        &label,
         !purchased && g.guild.gold >= cost,
     ) {
-        return Some(UiAction::Purchase(if recovery {
+        Some(UiAction::Purchase(if recovery {
             crate::services::Purchase::Infirmary
         } else {
             crate::services::Purchase::TrainingYard
-        }));
+        }))
+    } else {
+        None
     }
-    None
 }

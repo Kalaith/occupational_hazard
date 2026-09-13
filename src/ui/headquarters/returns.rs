@@ -1,9 +1,14 @@
+//! Expedition list and report detail surfaces.
 use super::*;
 
 pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     if g.report_detail && !g.guild.reports.is_empty() {
         return detail(g, r);
     }
+    list(g, r)
+}
+
+fn list(g: &Game, r: Rect) -> Option<UiAction> {
     text(
         g.guild.text.get("ui.journeys_returns"),
         Rect::new(r.x, r.y, r.w, 34.),
@@ -104,49 +109,59 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
 }
 
 fn detail(g: &Game, r: Rect) -> Option<UiAction> {
-    let report = &g.guild.reports[g.report.min(g.guild.reports.len() - 1)];
     if r.h < 420. {
-        text(
-            if g.hq.page == 0 {
-                g.guild.text.get("ui.party_returned")
-            } else {
-                g.guild.text.get("ui.return_account")
-            },
-            Rect::new(r.x, r.y, r.w, 30.),
-            23.,
-            INK,
-        );
-        text(
-            if g.hq.page == 0 {
-                &report.body
-            } else {
-                &report.reward
-            },
-            Rect::new(r.x, r.y + 40., r.w, r.h - 100.),
-            18.,
-            INK,
-        );
-        let half = (r.w - 8.) / 2.;
-        if button(
-            Rect::new(r.x, r.bottom() - 46., half, 44.),
-            if g.hq.page == 0 {
-                g.guild.text.get("ui.rewards")
-            } else {
-                g.guild.text.get("ui.people")
-            },
-            false,
-        ) {
-            return Some(UiAction::SheetPage(usize::from(g.hq.page == 0)));
-        }
-        if primary(
-            Rect::new(r.x + half + 8., r.bottom() - 46., half, 44.),
-            g.guild.text.get("ui.acknowledge"),
-            true,
-        ) {
-            return Some(UiAction::ReportList);
-        }
-        return None;
+        compact_detail(g, r)
+    } else {
+        wide_detail(g, r)
     }
+}
+
+fn compact_detail(g: &Game, r: Rect) -> Option<UiAction> {
+    let report = &g.guild.reports[g.report.min(g.guild.reports.len() - 1)];
+    text(
+        if g.hq.page == 0 {
+            g.guild.text.get("ui.party_returned")
+        } else {
+            g.guild.text.get("ui.return_account")
+        },
+        Rect::new(r.x, r.y, r.w, 30.),
+        23.,
+        INK,
+    );
+    text(
+        if g.hq.page == 0 {
+            &report.body
+        } else {
+            &report.reward
+        },
+        Rect::new(r.x, r.y + 40., r.w, r.h - 100.),
+        18.,
+        INK,
+    );
+    let half = (r.w - 8.) / 2.;
+    if button(
+        Rect::new(r.x, r.bottom() - 46., half, 44.),
+        if g.hq.page == 0 {
+            g.guild.text.get("ui.rewards")
+        } else {
+            g.guild.text.get("ui.people")
+        },
+        false,
+    ) {
+        return Some(UiAction::SheetPage(usize::from(g.hq.page == 0)));
+    }
+    if primary(
+        Rect::new(r.x + half + 8., r.bottom() - 46., half, 44.),
+        g.guild.text.get("ui.acknowledge"),
+        true,
+    ) {
+        return Some(UiAction::ReportList);
+    }
+    None
+}
+
+fn wide_detail(g: &Game, r: Rect) -> Option<UiAction> {
+    let report = &g.guild.reports[g.report.min(g.guild.reports.len() - 1)];
     let people: Vec<usize> = g
         .guild
         .roster

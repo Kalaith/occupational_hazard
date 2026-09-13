@@ -1,3 +1,4 @@
+//! Shared headquarters window chrome, resources, review status, and journey HUD.
 use super::*;
 
 pub fn window(r: Rect) {
@@ -26,9 +27,21 @@ pub fn window(r: Rect) {
 
 pub fn hud(g: &Game) -> Option<UiAction> {
     let w = screen_width();
+    let stack = w < 900.;
+    let mut action = header(g);
+    if let Some(next) = journey_card(g, stack) {
+        action = Some(next);
+    }
+    if let Some(next) = unread_returns(g, stack) {
+        action = Some(next);
+    }
+    action
+}
+
+fn header(g: &Game) -> Option<UiAction> {
+    let w = screen_width();
     let h = screen_height();
     let phone = w < 650.;
-    let stack = w < 900.;
     let mut action = None;
     let resources = Rect::new(
         12.,
@@ -95,6 +108,12 @@ pub fn hud(g: &Game) -> Option<UiAction> {
     if help::is_target(g, g.guild.text.get("ui.advance_day")) {
         draw_rectangle_lines(advance.x, advance.y, advance.w, advance.h, 3., GOLD);
     }
+    action
+}
+
+fn journey_card(g: &Game, stack: bool) -> Option<UiAction> {
+    let w = screen_width();
+    let h = screen_height();
     if let Some((id, e)) = g
         .guild
         .expeditions
@@ -130,9 +149,17 @@ pub fn hud(g: &Game) -> Option<UiAction> {
             INK,
         );
         if activated(r) {
-            action = Some(UiAction::Journey(id));
+            return Some(UiAction::Journey(id));
         }
     }
+    None
+}
+
+fn unread_returns(g: &Game, stack: bool) -> Option<UiAction> {
+    let w = screen_width();
+    let h = screen_height();
+    let phone = w < 650.;
+    let advance_width = if phone { 162. } else { 222. };
     let returns_x = if !stack && !g.guild.expeditions.is_empty() {
         24. + (w - 580.).min(600.)
     } else {
@@ -143,7 +170,7 @@ pub fn hud(g: &Game) -> Option<UiAction> {
             Rect::new(
                 returns_x,
                 h - 66.,
-                (w - advance.w - returns_x - 36.).min(252.),
+                (w - advance_width - returns_x - 36.).min(252.),
                 50.,
             ),
             &g.guild.text.format(
@@ -153,7 +180,7 @@ pub fn hud(g: &Game) -> Option<UiAction> {
             false,
         )
     {
-        action = Some(UiAction::Tab(2));
+        return Some(UiAction::Tab(2));
     }
-    action
+    None
 }

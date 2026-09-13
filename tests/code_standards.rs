@@ -1,4 +1,4 @@
-// The shared file-size gate from CODE_STANDARDS §2.2 — the 800-total-line hard
+//! The shared file-size gate from CODE_STANDARDS §2.2 — the 800-total-line hard
 // limit for every Rust source file — enforced under plain `cargo test`.
 
 #[test]

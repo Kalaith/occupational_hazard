@@ -76,6 +76,8 @@
   "ui.fatigue_loss": "Fatigue -{fatigue}",
   "ui.contributes": "Contributes {strength}",
   "ui.career_heading": "CAREER & PROMOTION",
+  "ui.career_identity": "{rank} · {class}\n{activity}",
+  "ui.purchase_cost": "{label} · {cost}g",
   "ui.quest_stats": "{type}    /    {days} days    /    {gold}g",
   "ui.offer_terms": "{title}\n\n{client}\n\n{notice}",
   "ui.career_stats": "{xp_mark}  Experience: {xp} / {trial_xp} XP\n{success_mark}  Successful contracts: {successes} / {trial_successes}\n{trial_mark}  Unaided assessment\nFatigue {fatigue}/{max_fatigue} · Medical leave {injury} day(s)",

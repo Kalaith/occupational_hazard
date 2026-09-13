@@ -95,118 +95,131 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
     }
     text(&q.title, Rect::new(r.x, r.y, r.w, 40.), 24., INK);
     if short && g.hq.page == 2 {
-        let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
-        text(
-            &preparation::summary(g, id),
-            Rect::new(r.x, r.y + 46., r.w, 56.),
-            19.,
-            GOLD,
-        );
-        text(
-            &preparation::advice(g, id),
-            Rect::new(r.x, r.y + 105., r.w, 60.),
-            18.,
-            INK,
-        );
-        let action = preparation::scout(g, Rect::new(r.x, r.bottom() - 98., r.w, 44.), id);
-        if primary(
-            Rect::new(r.x, r.bottom() - 48., r.w, 48.),
-            g.guild.text.get("ui.dispatch_party"),
-            problem.is_none() && g.hq.journey.is_none(),
-        ) {
-            return Some(UiAction::Dispatch);
-        }
-        return action;
+        return short_readiness(g, r, id);
     }
     if !party {
-        let image_h = if short { 0. } else { 140. };
-        if !short {
-            destination(g, id, Rect::new(r.x, r.y + 46., r.w, image_h));
-        }
-        let body_y = r.y + if short { 42. } else { image_h + 60. };
-        text(
-            &q.brief,
-            Rect::new(r.x, body_y, r.w, r.bottom() - 154. - body_y),
-            20.,
-            INK,
-        );
-        if r.h > 620.
-            && button(
-                Rect::new(r.x, r.bottom() - 240., r.w, 44.),
-                g.guild.text.get("ui.acceptance_terms"),
-                false,
-            )
-        {
-            return Some(UiAction::SheetPage(3));
-        }
-        text(
-            &g.guild.text.format(
-                "ui.phone_contract_stats",
-                &[
-                    ("gold", q.gold.to_string()),
-                    ("days", q.days.to_string()),
-                    (
-                        "type",
-                        if q.promotion {
-                            g.guild.text.get("ui.solo_trial").to_string()
-                        } else if q.bronze {
-                            g.guild.text.get("ui.bronze").to_string()
-                        } else {
-                            g.guild.text.get("ui.iron").to_string()
-                        },
-                    ),
-                    ("danger", q.danger.clone()),
-                ],
-            ),
-            Rect::new(r.x, r.bottom() - 150., r.w, 53.),
-            18.,
-            GOLD,
-        );
-        let expiry = if q.promotion {
-            g.guild.text.get("ui.standing_trial").into()
-        } else {
-            g.guild.text.format(
-                "ui.accept_by_day",
-                &[(
-                    "day",
-                    q.offer(g.guild.day)
-                        .map_or(g.guild.day, |o| o.expires)
-                        .to_string(),
-                )],
-            )
-        };
-        let return_day =
-            g.hq.journey
-                .map_or(g.guild.day + q.days, |e| g.guild.expeditions[e].returns);
-        text(
-            &g.guild.text.format(
-                "ui.return_timing",
-                &[
-                    ("expiry", expiry),
-                    ("return_day", return_day.to_string()),
-                    (
-                        "timing",
-                        if return_day <= g.guild.config.review.cutoff_day {
-                            g.guild.text.get("ui.before_review").to_string()
-                        } else {
-                            g.guild.text.get("ui.after_review").to_string()
-                        },
-                    ),
-                ],
-            ),
-            Rect::new(r.x, r.bottom() - 95., r.w, 43.),
-            18.,
-            MUTED,
-        );
-        if primary(
-            Rect::new(r.x, r.bottom() - 48., r.w, 48.),
-            g.guild.text.get("ui.choose_party"),
-            true,
-        ) {
-            return Some(UiAction::SheetPage(1));
-        }
-        return None;
+        return contract_page(g, r, id, short);
     }
+    party_page(g, r, id, short)
+}
+
+fn short_readiness(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
+    let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
+    text(
+        &preparation::summary(g, id),
+        Rect::new(r.x, r.y + 46., r.w, 56.),
+        19.,
+        GOLD,
+    );
+    text(
+        &preparation::advice(g, id),
+        Rect::new(r.x, r.y + 105., r.w, 60.),
+        18.,
+        INK,
+    );
+    let action = preparation::scout(g, Rect::new(r.x, r.bottom() - 98., r.w, 44.), id);
+    if primary(
+        Rect::new(r.x, r.bottom() - 48., r.w, 48.),
+        g.guild.text.get("ui.dispatch_party"),
+        problem.is_none() && g.hq.journey.is_none(),
+    ) {
+        return Some(UiAction::Dispatch);
+    }
+    action
+}
+
+fn contract_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> {
+    let q = &g.contracts[id];
+    let image_h = if short { 0. } else { 140. };
+    if !short {
+        destination(g, id, Rect::new(r.x, r.y + 46., r.w, image_h));
+    }
+    let body_y = r.y + if short { 42. } else { image_h + 60. };
+    text(
+        &q.brief,
+        Rect::new(r.x, body_y, r.w, r.bottom() - 154. - body_y),
+        20.,
+        INK,
+    );
+    if r.h > 620.
+        && button(
+            Rect::new(r.x, r.bottom() - 240., r.w, 44.),
+            g.guild.text.get("ui.acceptance_terms"),
+            false,
+        )
+    {
+        return Some(UiAction::SheetPage(3));
+    }
+    text(
+        &g.guild.text.format(
+            "ui.phone_contract_stats",
+            &[
+                ("gold", q.gold.to_string()),
+                ("days", q.days.to_string()),
+                (
+                    "type",
+                    if q.promotion {
+                        g.guild.text.get("ui.solo_trial").to_string()
+                    } else if q.bronze {
+                        g.guild.text.get("ui.bronze").to_string()
+                    } else {
+                        g.guild.text.get("ui.iron").to_string()
+                    },
+                ),
+                ("danger", q.danger.clone()),
+            ],
+        ),
+        Rect::new(r.x, r.bottom() - 150., r.w, 53.),
+        18.,
+        GOLD,
+    );
+    let expiry = if q.promotion {
+        g.guild.text.get("ui.standing_trial").into()
+    } else {
+        g.guild.text.format(
+            "ui.accept_by_day",
+            &[(
+                "day",
+                q.offer(g.guild.day)
+                    .map_or(g.guild.day, |o| o.expires)
+                    .to_string(),
+            )],
+        )
+    };
+    let return_day =
+        g.hq.journey
+            .map_or(g.guild.day + q.days, |e| g.guild.expeditions[e].returns);
+    text(
+        &g.guild.text.format(
+            "ui.return_timing",
+            &[
+                ("expiry", expiry),
+                ("return_day", return_day.to_string()),
+                (
+                    "timing",
+                    if return_day <= g.guild.config.review.cutoff_day {
+                        g.guild.text.get("ui.before_review").to_string()
+                    } else {
+                        g.guild.text.get("ui.after_review").to_string()
+                    },
+                ),
+            ],
+        ),
+        Rect::new(r.x, r.bottom() - 95., r.w, 43.),
+        18.,
+        MUTED,
+    );
+    if primary(
+        Rect::new(r.x, r.bottom() - 48., r.w, 48.),
+        g.guild.text.get("ui.choose_party"),
+        true,
+    ) {
+        return Some(UiAction::SheetPage(1));
+    }
+    None
+}
+
+fn party_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> {
     if short {
         let mut action = super::planning::cards(g, Rect::new(r.x, r.y + 42., r.w, 170.));
         if primary(
