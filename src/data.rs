@@ -2,8 +2,102 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
+use std::path::Path;
 
 pub const CONFIG_PATH: &str = "assets/data/game_config.json";
+pub const TEXTURE_MANIFEST_PATH: &str = "assets/data/texture_manifest.json";
+pub const REQUIRED_TEXTURE_KEYS: [&str; 11] = [
+    "mira",
+    "elowen",
+    "tomas",
+    "pip",
+    "building",
+    "people",
+    "route",
+    "facilities",
+    "activity",
+    "destinations",
+    "rest_beds",
+];
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct TextureManifest {
+    pub entries: Vec<TextureEntry>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct TextureEntry {
+    pub key: String,
+    pub path: String,
+    #[serde(default)]
+    pub chroma_key: Option<ChromaKeyConfig>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct ChromaKeyConfig {
+    pub color: [u8; 3],
+    pub tolerance: u8,
+    pub feather: u8,
+}
+
+impl TextureManifest {
+    pub fn load() -> Result<Self, String> {
+        Self::from_json(macroquad_toolkit::include_json_str!(
+            "../assets/data/texture_manifest.json"
+        ))
+    }
+
+    pub fn from_json(json: &str) -> Result<Self, String> {
+        let entries: Vec<TextureEntry> =
+            macroquad_toolkit::data_loader::parse_json_labeled(TEXTURE_MANIFEST_PATH, json)?;
+        let manifest = Self { entries };
+        manifest.validate()?;
+        Ok(manifest)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        let mut keys = BTreeSet::new();
+        let mut paths = BTreeSet::new();
+        for entry in &self.entries {
+            if entry.key.trim().is_empty()
+                || entry.path.trim().is_empty()
+                || !entry.path.starts_with("assets/")
+                || !keys.insert(entry.key.clone())
+                || !paths.insert(entry.path.clone())
+            {
+                return Err(format!(
+                    "{TEXTURE_MANIFEST_PATH}: texture keys and asset references must be unique, non-empty assets paths."
+                ));
+            }
+        }
+        for required in REQUIRED_TEXTURE_KEYS {
+            if !keys.contains(required) {
+                return Err(format!(
+                    "{TEXTURE_MANIFEST_PATH}: missing required texture key '{required}'."
+                ));
+            }
+        }
+        if self.entries.len() != REQUIRED_TEXTURE_KEYS.len() {
+            return Err(format!(
+                "{TEXTURE_MANIFEST_PATH}: unexpected texture key; expected {} entries.",
+                REQUIRED_TEXTURE_KEYS.len()
+            ));
+        }
+        Ok(())
+    }
+
+    pub fn validate_paths(&self, root: &Path) -> Result<(), String> {
+        for entry in &self.entries {
+            if !root.join(&entry.path).is_file() {
+                return Err(format!(
+                    "{TEXTURE_MANIFEST_PATH}: asset '{}' for key '{}' is missing.",
+                    entry.path, entry.key
+                ));
+            }
+        }
+        Ok(())
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GameConfig {

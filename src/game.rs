@@ -11,6 +11,22 @@ use crate::{
 use macroquad::prelude::*;
 use macroquad_toolkit::{assets::AssetManager, persistence};
 
+fn load_preferences() -> ((bool, bool), Option<String>) {
+    if !persistence::slot_exists("occupational_hazard", "preferences") {
+        return ((false, false), None);
+    }
+    match persistence::load_from_slot::<(bool, bool)>("occupational_hazard", "preferences") {
+        Ok(preferences) => (preferences, None),
+        Err(error) => {
+            eprintln!("Preferences could not be loaded: {error}");
+            (
+                (false, false),
+                Some(format!("Preferences could not be loaded: {error}")),
+            )
+        }
+    }
+}
+
 pub struct Game {
     pub hq: crate::headquarters::Headquarters,
     #[cfg(target_os = "windows")]
@@ -43,63 +59,30 @@ impl Game {
     pub async fn new() -> Self {
         let mut assets = AssetManager::new();
         assets.set_default_filter(FilterMode::Linear);
-        for (key, path) in [
-            ("building", "assets/headquarters/building-v2.png"),
-            ("route", "assets/headquarters/route.png"),
-            ("destinations", "assets/headquarters/destinations.png"),
-            ("mira", "assets/portraits/mira.png"),
-            ("tomas", "assets/portraits/tomas.png"),
-            ("pip", "assets/portraits/pip.png"),
-            ("elowen", "assets/portraits/elowen.png"),
-        ] {
-            assets
-                .load_texture(key, path)
-                .await
-                .unwrap_or_else(|e| panic!("Required portrait {path}: {e}"));
+        let manifest =
+            crate::data::TextureManifest::load().expect("Required texture manifest must be valid");
+        for entry in &manifest.entries {
+            let result = if let Some(chroma) = &entry.chroma_key {
+                assets
+                    .load_texture_keyed(
+                        &entry.key,
+                        &entry.path,
+                        chroma.color,
+                        chroma.tolerance,
+                        chroma.feather,
+                    )
+                    .await
+            } else {
+                assets.load_texture(&entry.key, &entry.path).await
+            };
+            result.unwrap_or_else(|error| {
+                panic!(
+                    "Required texture '{}' from '{}': {error}",
+                    entry.key, entry.path
+                )
+            });
         }
-        assets
-            .load_texture_keyed(
-                "people",
-                "assets/headquarters/people-v3-keyed.png",
-                [255, 0, 255],
-                90,
-                75,
-            )
-            .await
-            .expect("Required headquarters people atlas");
-        assets
-            .load_texture_keyed(
-                "facilities",
-                "assets/headquarters/facilities-keyed.png",
-                [255, 0, 255],
-                90,
-                75,
-            )
-            .await
-            .expect("Required headquarters facility atlas");
-        assets
-            .load_texture_keyed(
-                "activity",
-                "assets/headquarters/activity-v3-keyed.png",
-                [255, 0, 255],
-                90,
-                75,
-            )
-            .await
-            .expect("Required activity atlas");
-        assets
-            .load_texture_keyed(
-                "rest_beds",
-                "assets/headquarters/rest-beds-keyed.png",
-                [255, 0, 255],
-                90,
-                75,
-            )
-            .await
-            .expect("Required occupied beds");
-        let preferences =
-            persistence::load_from_slot::<(bool, bool)>("occupational_hazard", "preferences")
-                .unwrap_or_default();
+        let (preferences, preference_notice) = load_preferences();
         macroquad_toolkit::ui::set_ui_text_scale(if preferences.1 { 1.15 } else { 1.0 });
         Self {
             hq: crate::headquarters::Headquarters {
@@ -122,7 +105,7 @@ impl Game {
             report_detail: false,
             report_page: 0,
             board_page: 0,
-            notice: String::new(),
+            notice: preference_notice.unwrap_or_default(),
             has_save: persistence::slot_exists("occupational_hazard", "guild"),
             confirm_new: false,
             victory: false,

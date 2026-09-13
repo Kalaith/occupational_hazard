@@ -21,7 +21,8 @@
   },
   {
     "key": "people",
-    "path": "assets/headquarters/people-v3-keyed.png"
+    "path": "assets/headquarters/people-v3-keyed.png",
+    "chroma_key": { "color": [255, 0, 255], "tolerance": 90, "feather": 75 }
   },
   {
     "key": "route",
@@ -29,11 +30,13 @@
   },
   {
     "key": "facilities",
-    "path": "assets/headquarters/facilities-keyed.png"
+    "path": "assets/headquarters/facilities-keyed.png",
+    "chroma_key": { "color": [255, 0, 255], "tolerance": 90, "feather": 75 }
   },
   {
     "key": "activity",
-    "path": "assets/headquarters/activity-v3-keyed.png"
+    "path": "assets/headquarters/activity-v3-keyed.png",
+    "chroma_key": { "color": [255, 0, 255], "tolerance": 90, "feather": 75 }
   },
   {
     "path": "assets/headquarters/destinations.png",
@@ -41,6 +44,7 @@
   },
   {
     "path": "assets/headquarters/rest-beds-keyed.png",
-    "key": "rest_beds"
+    "key": "rest_beds",
+    "chroma_key": { "color": [255, 0, 255], "tolerance": 90, "feather": 75 }
   }
 ]
