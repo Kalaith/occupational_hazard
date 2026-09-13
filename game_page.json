@@ -1,7 +1,6 @@
 {
   "title": "Occupational Hazard",
   "wasm": "occupational_hazard",
-  "roost_slug": "rust_occupational_hazard",
   "status": {
     "text": "In Development",
     "class": "in-development"
