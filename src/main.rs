@@ -22,7 +22,8 @@ async fn main() {
             game.begin_capture_scene(&config.scene);
             capture::run_capture_once(&config, |dt| {
                 game.update(dt);
-                game.draw();
+                let action = game.draw();
+                game.queue_action(action);
             })
             .await;
         }
@@ -38,7 +39,8 @@ async fn main() {
         }
         let dt = get_frame_time().min(0.1);
         game.update(dt);
-        game.draw();
+        let action = game.draw();
+        game.queue_action(action);
         performance.draw(&[]);
         #[cfg(target_os = "windows")]
         if game.exit_requested {

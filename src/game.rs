@@ -2,6 +2,7 @@
 
 mod actions;
 mod capture;
+mod input;
 
 use crate::{
     contracts::{self, Contract},
@@ -118,33 +119,21 @@ impl Game {
     }
 
     pub fn update(&mut self, dt: f32) {
+        input::capture(self);
         actions::update(self, dt);
     }
 
-    pub fn draw(&mut self) {
-        let pointer = macroquad_toolkit::ui::Pointer::read(|p| p);
-        if pointer.down {
-            let start = *self.hq.pointer_start.get_or_insert(pointer.position);
-            if start.distance(pointer.position) > 10. {
-                self.hq.dragged = true;
-            }
-        }
-        if pointer.released
-            && self
-                .hq
-                .pointer_start
-                .is_some_and(|start| start.distance(pointer.position) > 10.)
-        {
-            self.hq.dragged = true;
-        }
-        self.pending = ui::draw(self);
+    pub fn draw(&self) -> Option<UiAction> {
+        let action = ui::draw(self);
         if self.hq.dragged {
-            self.pending = None;
+            None
+        } else {
+            action
         }
-        if !pointer.down {
-            self.hq.pointer_start = None;
-            self.hq.dragged = false;
-        }
+    }
+
+    pub fn queue_action(&mut self, action: Option<UiAction>) {
+        self.pending = action;
     }
 
     pub fn lesson(&self) -> Option<crate::tutorial::Lesson> {
