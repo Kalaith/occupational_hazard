@@ -29,9 +29,9 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         .unwrap_or(g.guild.board.service_credit.len());
     let target = review
         .map(|r| r.service_target)
-        .unwrap_or(crate::review::SERVICE_QUOTA);
+        .unwrap_or(g.guild.config.review.service_quota);
     paragraph(
-        &format!("Bronze adventurers: {}/1\nSuccessful Bronze commission: {}/1\nService jobs: {services}/{target} / {} days left", counts.certifications, counts.commissions, 30u32.saturating_sub(g.guild.day)),
+        &format!("Bronze adventurers: {}/1\nSuccessful Bronze commission: {}/1\nService jobs: {services}/{target} / {} days left", counts.certifications, counts.commissions, g.guild.config.review.cutoff_day.saturating_sub(g.guild.day)),
         Rect::new(x + 16.0, y + 55.0, w - 32.0, 82.0),
         19.0,
         WHITE,
@@ -56,7 +56,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
             })
             .collect::<Vec<_>>()
             .join("\n");
-        format!("{result}\n\nClosing treasury: {}g (opened with 80g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, i64::from(r.gold) - 80, r.reputation)
+        format!("{result}\n\nClosing treasury: {}g (opened with {}g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, g.guild.config.starting.gold, i64::from(r.gold) - i64::from(g.guild.config.starting.gold), r.reputation)
     } else {
         "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In Staff, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader and 6 different service jobs. Each service job counts once; daily cellar work earns gold and XP only.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO HEADQUARTERS to begin.".into()
     };

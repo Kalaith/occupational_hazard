@@ -20,7 +20,7 @@ fn iron_to_bronze_and_first_commission_are_playable() {
         g.next_day(&qs);
         rest(&mut g, &qs);
     }
-    assert!(g.roster[0].eligible());
+    assert!(g.roster[0].eligible(&g.config));
     assert_eq!(g.roster[0].xp, 60);
     assert!(g.promote(0).is_err());
     assert!(g.dispatch(4, &[0, 1], &qs).is_err());

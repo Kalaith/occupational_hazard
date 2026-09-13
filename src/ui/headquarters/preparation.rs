@@ -37,11 +37,16 @@ pub fn member(g: &Game, id: usize, quest: usize) -> String {
         return format!("Medical leave · {} days", a.injury);
     }
     let q = &g.contracts[quest];
+    let specialty_bonus = g.guild.config.expedition.specialty_bonus;
     let suitable = q.specialty == a.class || q.specialty == "Any";
     format!(
         "{} {} · Fatigue -{}\nContribution {}",
         a.class,
-        if suitable { "fit +3" } else { "support +0" },
+        if suitable {
+            format!("fit +{specialty_bonus}")
+        } else {
+            "support +0".into()
+        },
         a.fatigue,
         g.guild.strength(q, &[id])
     )
@@ -55,7 +60,7 @@ pub fn summary(g: &Game, id: usize) -> String {
     }
     let power = g.guild.prepared_strength(id, q, &g.party);
     let scout = power - g.guild.strength(q, &g.party);
-    let verdict = if power >= q.difficulty + 2 {
+    let verdict = if power >= q.difficulty + g.guild.config.expedition.close_call_margin {
         "Well prepared"
     } else if power >= q.difficulty {
         "Close call"
@@ -63,8 +68,8 @@ pub fn summary(g: &Game, id: usize) -> String {
         "Outmatched"
     };
     format!(
-        "{} · Strength {} / difficulty {}\nScouting +{} to party · {} specialist +3 each",
-        verdict, power, q.difficulty, scout, q.specialty
+        "{} · Strength {} / difficulty {}\nScouting +{} to party · {} specialist +{} each",
+        verdict, power, q.difficulty, scout, q.specialty, g.guild.config.expedition.specialty_bonus
     )
 }
 
@@ -155,18 +160,20 @@ pub fn members(g: &Game, r: Rect, quest: usize) -> Option<UiAction> {
 pub fn scout(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     let q = &g.contracts[id];
     let scouted = g.guild.services.scouted.contains(&id);
-    let enabled = !q.promotion && !scouted && g.guild.gold >= 20 && g.hq.journey.is_none();
+    let scout_cost = g.guild.config.services.scout_cost;
+    let scout_bonus = g.guild.config.services.scout_strength_bonus;
+    let enabled = !q.promotion && !scouted && g.guild.gold >= scout_cost && g.hq.journey.is_none();
     let title = if q.promotion {
-        "Unaided trial · no scouts"
+        "Unaided trial · no scouts".into()
     } else if scouted {
-        "Scouted · +2 party strength"
-    } else if g.guild.gold < 20 {
-        "Scout +2 · needs 20g"
+        format!("Scouted · +{scout_bonus} party strength")
+    } else if g.guild.gold < scout_cost {
+        format!("Scout +{scout_bonus} · needs {scout_cost}g")
     } else {
-        "Scout +2 party strength · 20g"
+        format!("Scout +{scout_bonus} party strength · {scout_cost}g")
     };
     panel(r, PANEL);
-    label(title, r, 17., if enabled { INK } else { MUTED });
+    label(&title, r, 17., if enabled { INK } else { MUTED });
     if enabled && activated(r) {
         Some(UiAction::Purchase(crate::services::Purchase::Scout(id)))
     } else {

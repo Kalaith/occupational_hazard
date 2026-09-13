@@ -1,0 +1,56 @@
+{
+  "starting": {
+    "day": 1,
+    "gold": 80,
+    "reputation": 0
+  },
+  "roster": [
+    { "name": "Mira Ashford", "class": "Fighter", "trait_name": "Protective" },
+    { "name": "Tomas Reed", "class": "Ranger", "trait_name": "Cautious" },
+    { "name": "Pip Fenwick", "class": "Healer", "trait_name": "Dependable" }
+  ],
+  "progression": {
+    "trial_xp": 60,
+    "trial_successes": 3,
+    "training_xp_cap": 60
+  },
+  "review": {
+    "cutoff_day": 30,
+    "service_quota": 6,
+    "max_saved_reports": 30
+  },
+  "services": {
+    "infirmary_cost": 100,
+    "training_yard_cost": 140,
+    "scout_cost": 20,
+    "scout_strength_bonus": 2,
+    "training_xp_per_day": 5,
+    "home_fatigue_recovery": 2,
+    "basic_injury_recovery": 1,
+    "infirmary_injury_recovery": 2
+  },
+  "expedition": {
+    "base_strength": 5,
+    "xp_strength_step": 20,
+    "xp_strength_cap": 5,
+    "bronze_strength_bonus": 4,
+    "specialty_bonus": 3,
+    "mission_fatigue": 3,
+    "failed_xp": 5,
+    "standard_reputation": 2,
+    "promotion_reputation": 5,
+    "close_call_margin": 2,
+    "failure_injury": 2,
+    "healer_injury": 1,
+    "max_expedition_days": 3
+  },
+  "caps": {
+    "max_day": 1000000,
+    "max_gold": 100000000,
+    "max_reputation": 1000000,
+    "max_xp": 1000000,
+    "max_successes": 1000000,
+    "max_fatigue": 6,
+    "max_injury": 2
+  }
+}

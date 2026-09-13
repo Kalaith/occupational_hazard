@@ -137,7 +137,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         &format!(
             "Return · day {}     {}",
             day,
-            if day <= 30 {
+            if day <= g.guild.config.review.cutoff_day {
                 "Before review"
             } else {
                 "After review"

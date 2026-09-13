@@ -16,6 +16,9 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     }
     let short = r.h < 400.;
     let size = if short { 64. } else { 112. };
+    let trial_xp = g.guild.config.progression.trial_xp;
+    let trial_successes = g.guild.config.progression.trial_successes;
+    let max_fatigue = g.guild.config.caps.max_fatigue;
     portrait(g, key(id), Rect::new(r.x, r.y + 58., size, size));
     text(
         &a.name,
@@ -48,7 +51,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     if short {
         panel(Rect::new(r.x, y, r.w, r.h - 52.), PANEL);
     }
-    let stats = format!("{}  Experience: {} / 60 XP\n{}  Successful contracts: {} / 3\n{}  Unaided assessment\nFatigue {}/6 · Medical leave {} day(s)", if a.xp >= 60 { "+" } else { "-" }, a.xp, if a.successes >= 3 { "+" } else { "-" }, a.successes, if a.trial_passed { "+ Passed" } else { "- Required" }, a.fatigue, a.injury);
+    let stats = format!("{}  Experience: {} / {} XP\n{}  Successful contracts: {} / {}\n{}  Unaided assessment\nFatigue {}/{} · Medical leave {} day(s)", if a.xp >= trial_xp { "+" } else { "-" }, a.xp, trial_xp, if a.successes >= trial_successes { "+" } else { "-" }, a.successes, trial_successes, if a.trial_passed { "+ Passed" } else { "- Required" }, a.fatigue, max_fatigue, a.injury);
     if short {
         text(&stats, Rect::new(r.x, y, r.w, 104.), 19., INK);
     } else {
@@ -62,11 +65,11 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
         let track_width = (r.w - 36.) / 2.;
         theme::progress(
             Rect::new(r.x + 12., y + 102., track_width, 5.),
-            a.xp as f32 / 60.,
+            a.xp as f32 / trial_xp as f32,
         );
         theme::progress(
             Rect::new(r.x + 24. + track_width, y + 102., track_width, 5.),
-            a.successes as f32 / 3.,
+            a.successes as f32 / trial_successes as f32,
         );
     }
     if !short {
@@ -76,7 +79,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
                 "BRONZE CERTIFIED\nThis adventurer can lead Bronze commissions."
             } else if a.trial_passed {
                 "Assessment passed. Sign the licence below when the candidate is home."
-            } else if a.eligible() {
+            } else if a.eligible(&g.guild.config) {
                 "Eligible for the solo trial. Rest first, then send this candidate unaided."
             } else {
                 "Build this person's experience and successful-contract record. The trial unlocks at 60 XP and 3 successes."
@@ -128,9 +131,9 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
         g.guild.services.training_yard
     };
     let cost = if recovery {
-        crate::services::INFIRMARY_COST
+        g.guild.config.services.infirmary_cost
     } else {
-        crate::services::TRAINING_COST
+        g.guild.config.services.training_yard_cost
     };
     text(
         if recovery {

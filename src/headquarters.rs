@@ -59,7 +59,7 @@ pub fn activity(g: &Guild, id: usize) -> Activity {
         Activity::Recovering
     } else if a.fatigue > 0 {
         Activity::Resting
-    } else if g.services.training_yard && !a.bronze && a.xp < 60 {
+    } else if g.services.training_yard && !a.bronze && a.xp < g.config.progression.training_xp_cap {
         Activity::Training
     } else {
         Activity::Ready

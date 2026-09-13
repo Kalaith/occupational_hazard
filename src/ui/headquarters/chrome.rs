@@ -57,7 +57,10 @@ pub fn hud(g: &Game) -> Option<UiAction> {
         } else if phone {
             "Review".into()
         } else {
-            format!("Review in {} days", 30u32.saturating_sub(g.guild.day))
+            format!(
+                "Review in {} days",
+                g.guild.config.review.cutoff_day.saturating_sub(g.guild.day)
+            )
         },
         false,
     ) {

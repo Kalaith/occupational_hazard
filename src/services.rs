@@ -2,10 +2,6 @@
 use crate::simulation::Guild;
 use serde::{Deserialize, Serialize};
 
-pub const INFIRMARY_COST: u32 = 100;
-pub const TRAINING_COST: u32 = 140;
-pub const SCOUT_COST: u32 = 20;
-
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Services {
     pub infirmary: bool,
@@ -35,7 +31,7 @@ impl Guild {
                     return Err("The infirmary is already open.".into());
                 }
                 (
-                    INFIRMARY_COST,
+                    self.config.services.infirmary_cost,
                     "Infirmary opened. Medical leave now recovers twice as fast at the guild.",
                 )
             }
@@ -43,7 +39,7 @@ impl Guild {
                 if self.services.training_yard {
                     return Err("The training yard is already open.".into());
                 }
-                (TRAINING_COST, "Training yard opened. Fully rested Iron recruits gain 5 XP per day at the guild, up to 60 XP.")
+                (self.config.services.training_yard_cost, "Training yard opened. Fully rested Iron recruits gain 5 XP per day at the guild, up to 60 XP.")
             }
             Purchase::Scout(id) => {
                 if !self.contract_open(id, contracts) {
@@ -64,7 +60,7 @@ impl Guild {
                 if self.expeditions.iter().any(|e| e.contract == id) {
                     return Err("That expedition has already left. Scout before dispatch.".into());
                 }
-                (SCOUT_COST, "Scouts prepared the route. The next party on this route gets an advantage, even on a later posting.")
+                (self.config.services.scout_cost, "Scouts prepared the route. The next party on this route gets an advantage, even on a later posting.")
             }
         };
         if self.gold < cost {

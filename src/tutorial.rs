@@ -88,7 +88,9 @@ impl Guild {
             ),
             (
                 Lesson::Trial,
-                self.roster.iter().any(|a| a.eligible() && !a.trial_passed),
+                self.roster
+                    .iter()
+                    .any(|a| a.eligible(&self.config) && !a.trial_passed),
             ),
             (
                 Lesson::Time,

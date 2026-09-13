@@ -184,6 +184,9 @@ fn scouting_survives_expiry_until_the_next_posting() {
         g.next_day(&qs);
     }
     g.dispatch(3, &[0, 2], &qs).unwrap();
-    assert_eq!(g.expeditions[0].strength, g.strength(&qs[3], &[0, 2]) + 2);
+    assert_eq!(
+        g.expeditions[0].strength,
+        g.strength(&qs[3], &[0, 2]) + g.config.services.scout_strength_bonus
+    );
     assert!(g.services.scouted.is_empty());
 }

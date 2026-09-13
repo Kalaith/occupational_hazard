@@ -40,7 +40,7 @@ fn infirmary_and_training_apply_only_to_eligible_staff_at_home() {
     g.next_day(&qs);
     assert_eq!(g.roster[0].xp, 60);
     assert_eq!(g.roster[1].xp, 90);
-    assert!(!g.roster[0].eligible());
+    assert!(!g.roster[0].eligible(&g.config));
     assert!(g.dispatch(4, &[0], &qs).is_err());
 }
 
@@ -59,7 +59,10 @@ fn scouting_is_consumed_once_by_its_route_and_preserves_trial_rules() {
     g.dispatch(0, &[0], &qs).unwrap();
     assert!(g.services.scouted.contains(&2));
     g.dispatch(2, &[1], &qs).unwrap();
-    assert_eq!(g.expeditions[1].strength, base + 2);
+    assert_eq!(
+        g.expeditions[1].strength,
+        base + g.config.services.scout_strength_bonus
+    );
     assert!(g.services.scouted.is_empty());
     assert!(g.purchase(Purchase::Scout(2), &qs).is_err());
     g.next_day(&qs);

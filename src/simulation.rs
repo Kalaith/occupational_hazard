@@ -1,5 +1,5 @@
 //! Deterministic dispatch, recovery, reports and professional certification.
-use crate::contracts::Contract;
+use crate::{contracts::Contract, data::GameConfig};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -16,8 +16,10 @@ pub struct Adventurer {
 }
 
 impl Adventurer {
-    pub fn eligible(&self) -> bool {
-        !self.bronze && self.xp >= 60 && self.successes >= 3
+    pub fn eligible(&self, config: &GameConfig) -> bool {
+        !self.bronze
+            && self.xp >= config.progression.trial_xp
+            && self.successes >= config.progression.trial_successes
     }
 
     pub fn rank(&self) -> &str {
@@ -50,6 +52,8 @@ pub struct Report {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Guild {
+    #[serde(skip)]
+    pub config: GameConfig,
     #[serde(default)]
     pub board: crate::board::Board,
     #[serde(default)]
@@ -70,32 +74,37 @@ pub struct Guild {
 
 impl Guild {
     pub fn new() -> Self {
-        let roster = [
-            ("Mira Ashford", "Fighter", "Protective"),
-            ("Tomas Reed", "Ranger", "Cautious"),
-            ("Pip Fenwick", "Healer", "Dependable"),
-        ]
-        .into_iter()
-        .map(|(name, class, trait_name)| Adventurer {
-            name: name.into(),
-            class: class.into(),
-            trait_name: trait_name.into(),
-            bronze: false,
-            xp: 0,
-            successes: 0,
-            fatigue: 0,
-            injury: 0,
-            trial_passed: false,
-        })
-        .collect();
+        Self::with_config(GameConfig::default())
+    }
+
+    pub fn with_config(config: GameConfig) -> Self {
+        let starting_day = config.starting.day;
+        let starting_gold = config.starting.gold;
+        let starting_reputation = config.starting.reputation;
+        let roster = config
+            .roster
+            .iter()
+            .map(|entry| Adventurer {
+                name: entry.name.clone(),
+                class: entry.class.clone(),
+                trait_name: entry.trait_name.clone(),
+                bronze: false,
+                xp: 0,
+                successes: 0,
+                fatigue: 0,
+                injury: 0,
+                trial_passed: false,
+            })
+            .collect();
         Self {
+            config,
             board: crate::board::Board::default(),
             tutorial: crate::tutorial::Tutorial::default(),
             month: crate::review::Month::default(),
             services: crate::services::Services::default(),
-            day: 1,
-            gold: 80,
-            reputation: 0,
+            day: starting_day,
+            gold: starting_gold,
+            reputation: starting_reputation,
             roster,
             expeditions: vec![],
             reports: vec![],
@@ -127,13 +136,13 @@ impl Guild {
         {
             return Err("This ledger has invalid scouting records.".into());
         }
-        if self.roster.len() != 3
+        if self.roster.len() != self.config.roster.len()
             || self.completed.len() != contracts.len()
             || self.day == 0
-            || self.day > 1_000_000
-            || self.gold > 100_000_000
-            || self.reputation > 1_000_000
-            || self.reports.len() > 30
+            || self.day > self.config.caps.max_day
+            || self.gold > self.config.caps.max_gold
+            || self.reputation > self.config.caps.max_reputation
+            || self.reports.len() > self.config.review.max_saved_reports
         {
             return Err("This ledger has unsupported or invalid guild records.".into());
         }
@@ -142,7 +151,7 @@ impl Guild {
         for e in &self.expeditions {
             if e.contract >= contracts.len()
                 || e.returns <= self.day
-                || e.returns > self.day + 3
+                || e.returns > self.day + self.config.expedition.max_expedition_days
                 || e.party.is_empty()
                 || quests.contains(&e.contract)
             {
@@ -156,11 +165,12 @@ impl Guild {
                 assigned.push(id);
             }
         }
-        if self
-            .roster
-            .iter()
-            .any(|a| a.xp > 1_000_000 || a.successes > 1_000_000 || a.fatigue > 6 || a.injury > 2)
-        {
+        if self.roster.iter().any(|a| {
+            a.xp > self.config.caps.max_xp
+                || a.successes > self.config.caps.max_successes
+                || a.fatigue > self.config.caps.max_fatigue
+                || a.injury > self.config.caps.max_injury
+        }) {
             return Err("This ledger has invalid adventurer records.".into());
         }
         Ok(())
@@ -174,9 +184,16 @@ impl Guild {
         let mut total = 0;
         for &id in party {
             if let Some(a) = self.roster.get(id) {
-                total += 5 + (a.xp / 20).min(5) as i32 + if a.bronze { 4 } else { 0 };
+                total += self.config.expedition.base_strength
+                    + (a.xp / self.config.expedition.xp_strength_step)
+                        .min(self.config.expedition.xp_strength_cap) as i32
+                    + if a.bronze {
+                        self.config.expedition.bronze_strength_bonus
+                    } else {
+                        0
+                    };
                 total += if q.specialty == a.class || q.specialty == "Any" {
-                    3
+                    self.config.expedition.specialty_bonus
                 } else {
                     0
                 };
@@ -219,7 +236,7 @@ impl Guild {
         }
         if q.promotion
             && (party.len() != 1
-                || !self.roster[party[0]].eligible()
+                || !self.roster[party[0]].eligible(&self.config)
                 || self.roster[party[0]].trial_passed)
         {
             return Some(
@@ -260,7 +277,7 @@ impl Guild {
     pub fn prepared_strength(&self, id: usize, q: &Contract, party: &[usize]) -> i32 {
         self.strength(q, party)
             + if self.services.scouted.contains(&id) {
-                2
+                self.config.services.scout_strength_bonus
             } else {
                 0
             }
@@ -276,16 +293,21 @@ impl Guild {
                 let a = &mut self.roster[id];
                 if self.services.training_yard
                     && !a.bronze
-                    && a.xp < 60
+                    && a.xp < self.config.progression.training_xp_cap
                     && a.fatigue == 0
                     && a.injury == 0
                 {
-                    a.xp = (a.xp + 5).min(60);
+                    a.xp = (a.xp + self.config.services.training_xp_per_day)
+                        .min(self.config.progression.training_xp_cap);
                 }
-                a.fatigue = a.fatigue.saturating_sub(2);
-                a.injury = a
-                    .injury
-                    .saturating_sub(if self.services.infirmary { 2 } else { 1 });
+                a.fatigue = a
+                    .fatigue
+                    .saturating_sub(self.config.services.home_fatigue_recovery);
+                a.injury = a.injury.saturating_sub(if self.services.infirmary {
+                    self.config.services.infirmary_injury_recovery
+                } else {
+                    self.config.services.basic_injury_recovery
+                });
             }
         }
         self.day += 1;
@@ -297,7 +319,7 @@ impl Guild {
             }
             let q = &qs[e.contract];
             let success = e.strength >= q.difficulty;
-            let close_call = e.strength < q.difficulty + 2;
+            let close_call = e.strength < q.difficulty + self.config.expedition.close_call_margin;
             let names = e
                 .party
                 .iter()
@@ -307,8 +329,13 @@ impl Guild {
             let has_healer = e.party.iter().any(|&id| self.roster[id].class == "Healer");
             for &id in &e.party {
                 let a = &mut self.roster[id];
-                a.fatigue = (a.fatigue + 3).min(6);
-                a.xp += if success { q.xp } else { 5 };
+                a.fatigue = (a.fatigue + self.config.expedition.mission_fatigue)
+                    .min(self.config.caps.max_fatigue);
+                a.xp += if success {
+                    q.xp
+                } else {
+                    self.config.expedition.failed_xp
+                };
                 if success {
                     a.successes += 1;
                 }
@@ -316,14 +343,22 @@ impl Guild {
                     a.trial_passed = true;
                 }
                 if !success || (close_call && !has_healer) {
-                    a.injury = if has_healer { 1 } else { 2 };
+                    a.injury = if has_healer {
+                        self.config.expedition.healer_injury
+                    } else {
+                        self.config.expedition.failure_injury
+                    };
                 }
             }
             if success {
                 self.gold += q.gold;
-                self.reputation += if q.promotion { 5 } else { 2 };
+                self.reputation += if q.promotion {
+                    self.config.expedition.promotion_reputation
+                } else {
+                    self.config.expedition.standard_reputation
+                };
                 self.completed[e.contract] += 1;
-                if q.service && self.day <= crate::review::REVIEW_DAY {
+                if q.service && self.day <= self.config.review.cutoff_day {
                     self.board.service_credit.insert(q.id.clone());
                 }
             }
@@ -332,11 +367,20 @@ impl Guild {
                 body: format!("{names}. {} {}", if success { &q.report } else {
                     "The party could not safely finish the job. Everyone returned; rest, bring support and try again."
                 }, if !success || (close_call && !has_healer) { "Medical leave required. Tap ADVANCE DAY to recover." } else { "Everyone returned safely, but needs rest." }),
-                reward: format!("Guild +{}g / Each adventurer +{} XP / Fatigue +3", if success { q.gold } else { 0 }, if success { q.xp } else { 5 }),
+                reward: format!(
+                    "Guild +{}g / Each adventurer +{} XP / Fatigue +{}",
+                    if success { q.gold } else { 0 },
+                    if success {
+                        q.xp
+                    } else {
+                        self.config.expedition.failed_xp
+                    },
+                    self.config.expedition.mission_fatigue
+                ),
             });
         }
         self.expeditions = remaining;
-        self.reports.truncate(30);
+        self.reports.truncate(self.config.review.max_saved_reports);
         // Returns, XP and payments on the cutoff day count before the review closes.
         self.finish_review(qs);
     }
@@ -347,14 +391,14 @@ impl Guild {
         }
         let busy = self.busy(id);
         let a = self.roster.get_mut(id).ok_or("Select an adventurer.")?;
-        if busy || !a.eligible() || !a.trial_passed {
+        if busy || !a.eligible(&self.config) || !a.trial_passed {
             return Err("The candidate must return with a passed assessment.".into());
         }
         a.bronze = true;
         self.reports.insert(0, Report { read: false, title: format!("{} / BRONZE CERTIFIED", a.name),
             body: "You sign the promotion form. An Iron recruit becomes a trusted Bronze adventurer. The North Bridge commission is now open.".into(),
             reward: "Bronze licence / stronger expedition capability / new commission".into() });
-        self.reports.truncate(30);
+        self.reports.truncate(self.config.review.max_saved_reports);
         Ok(())
     }
 }

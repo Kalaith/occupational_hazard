@@ -5,9 +5,6 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
-pub const REVIEW_DAY: u32 = 30;
-pub const SERVICE_QUOTA: usize = 6;
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ObjectiveCounts {
     pub certifications: usize,
@@ -60,13 +57,13 @@ impl Guild {
     }
 
     pub fn finish_review(&mut self, qs: &[Contract]) {
-        if self.day < REVIEW_DAY || self.month.review.is_some() {
+        if self.day < self.config.review.cutoff_day || self.month.review.is_some() {
             return;
         }
         let counts = self.objective_counts(qs);
         self.month.review = Some(Review {
             service_returns: self.board.service_credit.len(),
-            service_target: SERVICE_QUOTA,
+            service_target: self.config.review.service_quota,
             day: self.day,
             certifications: counts.certifications,
             commissions: counts.commissions,
@@ -86,7 +83,7 @@ impl Guild {
         let returns = self.day + days;
         if self.month.sandbox {
             format!("SANDBOX / Returns day {returns}. Review is already filed.")
-        } else if returns > REVIEW_DAY {
+        } else if returns > self.config.review.cutoff_day {
             format!("Returns day {returns}: too late for day 30 review. Continue in sandbox to collect.")
         } else {
             format!("Returns day {returns}; credited before the day 30 review.")
@@ -98,9 +95,9 @@ impl Guild {
             return Err("Sandbox ledger is missing its review.".into());
         }
         if let Some(r) = &self.month.review {
-            if r.day < REVIEW_DAY
+            if r.day < self.config.review.cutoff_day
                 || r.day > self.day
-                || r.careers.len() != 3
+                || r.careers.len() != self.config.roster.len()
                 || r.certifications != r.careers.iter().filter(|a| a.bronze).count()
                 || (!self.month.sandbox && r.day != self.day)
             {

@@ -2,6 +2,7 @@
 
 pub mod board;
 pub mod contracts;
+pub mod data;
 pub mod game;
 pub mod headquarters;
 pub mod reports;
