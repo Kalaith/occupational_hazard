@@ -1,7 +1,7 @@
 //! Compact navigation and decision pages, with room artwork secondary to reading.
 use super::*;
 
-pub fn rooms(r: Rect) -> Option<UiAction> {
+pub fn rooms(g: &Game, r: Rect) -> Option<UiAction> {
     let columns = if r.h < 360. { 2 } else { 1 };
     let row = (r.h / (6 / columns) as f32).min(72.);
     let width = (r.w - 8. * (columns - 1) as f32) / columns as f32;
@@ -13,7 +13,7 @@ pub fn rooms(r: Rect) -> Option<UiAction> {
                 width,
                 row - 6.,
             ),
-            room.name(),
+            room.name(&g.guild.text),
             false,
         ) {
             return Some(UiAction::Room(*room));
@@ -31,15 +31,28 @@ pub fn overview(g: &Game, y: f32) -> Option<UiAction> {
         let size = (r.h - 12.).min(46.);
         portrait(g, key(id), Rect::new(r.x + 6., r.y + 6., size, size));
         text(
-            &format!("{} · {}", first(g, id), activity(&g.guild, id).label()),
+            &g.guild.text.format(
+                "ui.member_status",
+                &[
+                    ("name", first(g, id).to_string()),
+                    (
+                        "activity",
+                        activity(&g.guild, id).label(&g.guild.text).to_string(),
+                    ),
+                ],
+            ),
             Rect::new(r.x + 64., r.y + 3., r.w - 72., 22.),
             20.,
             INK,
         );
         text(
-            &format!(
-                "{} · Fatigue {}/6",
-                g.guild.roster[id].class, g.guild.roster[id].fatigue
+            &g.guild.text.format(
+                "ui.member_fatigue",
+                &[
+                    ("class", g.guild.roster[id].class.clone()),
+                    ("fatigue", g.guild.roster[id].fatigue.to_string()),
+                    ("max_fatigue", g.guild.config.caps.max_fatigue.to_string()),
+                ],
             ),
             Rect::new(r.x + 64., r.y + 25., r.w - 72., 20.),
             17.,
@@ -51,7 +64,7 @@ pub fn overview(g: &Game, y: f32) -> Option<UiAction> {
     }
     if button(
         Rect::new(12., y + row_h * 3. + 3., w - 24., 48.),
-        "Compare commissions >",
+        g.guild.text.get("ui.compare_phone"),
         false,
     ) {
         return Some(UiAction::CommissionList);
@@ -71,7 +84,11 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
     let short = r.h < 420.;
     if button(
         Rect::new(r.right() - 112., r.y - 54., 112., 44.),
-        if party { "Contract" } else { "Party >" },
+        if party {
+            g.guild.text.get("ui.contract")
+        } else {
+            g.guild.text.get("ui.party")
+        },
         false,
     ) {
         return Some(UiAction::SheetPage(usize::from(!party)));
@@ -94,7 +111,7 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
         let action = preparation::scout(g, Rect::new(r.x, r.bottom() - 98., r.w, 44.), id);
         if primary(
             Rect::new(r.x, r.bottom() - 48., r.w, 48.),
-            "DISPATCH PARTY",
+            g.guild.text.get("ui.dispatch_party"),
             problem.is_none() && g.hq.journey.is_none(),
         ) {
             return Some(UiAction::Dispatch);
@@ -116,47 +133,66 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
         if r.h > 620.
             && button(
                 Rect::new(r.x, r.bottom() - 240., r.w, 44.),
-                "Acceptance & service terms",
+                g.guild.text.get("ui.acceptance_terms"),
                 false,
             )
         {
             return Some(UiAction::SheetPage(3));
         }
         text(
-            &format!(
-                "{}g · {} days · {}\nDanger: {}",
-                q.gold,
-                q.days,
-                if q.promotion {
-                    "Solo trial"
-                } else if q.bronze {
-                    "Bronze"
-                } else {
-                    "Iron"
-                },
-                q.danger
+            &g.guild.text.format(
+                "ui.phone_contract_stats",
+                &[
+                    ("gold", q.gold.to_string()),
+                    ("days", q.days.to_string()),
+                    (
+                        "type",
+                        if q.promotion {
+                            g.guild.text.get("ui.solo_trial").to_string()
+                        } else if q.bronze {
+                            g.guild.text.get("ui.bronze").to_string()
+                        } else {
+                            g.guild.text.get("ui.iron").to_string()
+                        },
+                    ),
+                    ("danger", q.danger.clone()),
+                ],
             ),
             Rect::new(r.x, r.bottom() - 150., r.w, 53.),
             18.,
             GOLD,
         );
         let expiry = if q.promotion {
-            "Standing trial".into()
+            g.guild.text.get("ui.standing_trial").into()
         } else {
-            format!(
-                "Accept by day {}",
-                q.offer(g.guild.day).map_or(g.guild.day, |o| o.expires)
+            g.guild.text.format(
+                "ui.accept_by_day",
+                &[(
+                    "day",
+                    q.offer(g.guild.day)
+                        .map_or(g.guild.day, |o| o.expires)
+                        .to_string(),
+                )],
             )
         };
         let return_day =
             g.hq.journey
                 .map_or(g.guild.day + q.days, |e| g.guild.expeditions[e].returns);
         text(
-            &format!(
-                "{}\nReturn day {} · {} review",
-                expiry,
-                return_day,
-                if return_day <= 30 { "before" } else { "after" }
+            &g.guild.text.format(
+                "ui.return_timing",
+                &[
+                    ("expiry", expiry),
+                    ("return_day", return_day.to_string()),
+                    (
+                        "timing",
+                        if return_day <= g.guild.config.review.cutoff_day {
+                            g.guild.text.get("ui.before_review").to_string()
+                        } else {
+                            g.guild.text.get("ui.after_review").to_string()
+                        },
+                    ),
+                ],
             ),
             Rect::new(r.x, r.bottom() - 95., r.w, 43.),
             18.,
@@ -164,7 +200,7 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
         );
         if primary(
             Rect::new(r.x, r.bottom() - 48., r.w, 48.),
-            "CHOOSE PARTY >",
+            g.guild.text.get("ui.choose_party"),
             true,
         ) {
             return Some(UiAction::SheetPage(1));
@@ -175,7 +211,7 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
         let mut action = super::planning::cards(g, Rect::new(r.x, r.y + 42., r.w, 170.));
         if primary(
             Rect::new(r.x, r.bottom() - 44., r.w, 44.),
-            "READINESS & DISPATCH >",
+            g.guild.text.get("ui.readiness_dispatch"),
             true,
         ) {
             action = Some(UiAction::SheetPage(2));
@@ -206,7 +242,7 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
     action = preparation::scout(g, Rect::new(r.x, r.bottom() - 104., r.w, 44.), id).or(action);
     if primary(
         Rect::new(r.x, r.bottom() - 52., r.w, 52.),
-        "DISPATCH PARTY",
+        g.guild.text.get("ui.dispatch_party"),
         problem.is_none() && g.hq.journey.is_none(),
     ) {
         action = Some(UiAction::Dispatch);
@@ -216,11 +252,16 @@ pub fn planning(g: &Game, r: Rect) -> Option<UiAction> {
 
 pub fn terms(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     text(
-        &format!(
-            "{}\n\n{}\n\n{}",
-            g.contracts[id].title,
-            g.contracts[id].client,
-            g.guild.offer_notice(&g.contracts[id])
+        &g.guild.text.format(
+            "ui.offer_terms",
+            &[
+                ("title", g.contracts[id].title.clone()),
+                ("client", g.contracts[id].client.clone()),
+                (
+                    "notice",
+                    g.guild.offer_notice(&g.contracts[id], &g.guild.text),
+                ),
+            ],
         ),
         Rect::new(r.x, r.y, r.w, r.h - 62.),
         21.,
@@ -228,7 +269,7 @@ pub fn terms(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     );
     if button(
         Rect::new(r.x, r.bottom() - 48., r.w, 48.),
-        "< Contract",
+        g.guild.text.get("ui.back_contract"),
         false,
     ) {
         Some(UiAction::SheetPage(0))

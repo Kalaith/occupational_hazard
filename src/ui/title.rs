@@ -27,38 +27,43 @@ pub fn draw_title(g: &Game) -> Option<UiAction> {
     let short = h < 500.;
     headquarters::crest(vec2(x + width / 2., y + 35.), 19.);
     label(
-        "OCCUPATIONAL HAZARD",
+        g.guild.text.get("title.name"),
         Rect::new(x + 14., y + 64., width - 28., 42.),
         29.,
         INK,
     );
     label(
-        "People. Work. A safer tomorrow.",
+        g.guild.text.get("title.tagline"),
         Rect::new(x + 14., y + 108., width - 28., 30.),
         18.,
         GOLD,
     );
     if !short {
-        paragraph("Run a working guild. Choose assignments, develop your people and help them come home. Head office reviews the branch on day 30.", Rect::new(x + 24., y + 158., width - 48., 85.), 20., MUTED);
+        paragraph(
+            g.guild.text.get("title.description"),
+            Rect::new(x + 24., y + 158., width - 48., 85.),
+            20.,
+            MUTED,
+        );
     }
     let controls = y + if short { 152. } else { 260. };
     if g.confirm_new {
         paragraph(
-            "Start a new guild? This replaces your saved progress.",
+            g.guild.text.get("title.confirm_new"),
             Rect::new(x + 24., controls, width - 48., 46.),
             17.,
             GOLD,
         );
         if button(
             Rect::new(x + 24., controls + 52., width - 48., 46.),
-            "START NEW GUILD",
+            g.guild.text.get("title.start_new"),
             true,
         ) {
             return Some(UiAction::Start);
         }
         if button(
             Rect::new(x + 24., controls + 106., width - 48., 46.),
-            "KEEP MY GUILD",
+            g.guild.text.get("title.keep"),
             false,
         ) {
             return Some(UiAction::Cancel);
@@ -66,7 +71,7 @@ pub fn draw_title(g: &Game) -> Option<UiAction> {
     } else {
         if headquarters::primary(
             Rect::new(x + 24., controls, width - 48., 48.),
-            "NEW GUILD",
+            g.guild.text.get("title.new"),
             true,
         ) {
             return Some(UiAction::Start);
@@ -74,7 +79,7 @@ pub fn draw_title(g: &Game) -> Option<UiAction> {
         if g.has_save
             && button(
                 Rect::new(x + 24., controls + 56., width - 48., 46.),
-                "CONTINUE",
+                g.guild.text.get("title.continue"),
                 false,
             )
         {
@@ -83,7 +88,7 @@ pub fn draw_title(g: &Game) -> Option<UiAction> {
         #[cfg(target_os = "windows")]
         if button(
             Rect::new(x + 24., controls + 110., width - 48., 44.),
-            "EXIT GAME",
+            g.guild.text.get("title.exit"),
             false,
         ) {
             return Some(UiAction::Exit);

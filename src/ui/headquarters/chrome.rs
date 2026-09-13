@@ -38,7 +38,13 @@ pub fn hud(g: &Game) -> Option<UiAction> {
     );
     panel(resources, PANEL);
     label(
-        &format!("DAY {}     /     {}g", g.guild.day, g.guild.gold),
+        &g.guild.text.format(
+            "ui.day_gold",
+            &[
+                ("day", g.guild.day.to_string()),
+                ("gold", g.guild.gold.to_string()),
+            ],
+        ),
         resources,
         18.,
         GOLD,
@@ -49,24 +55,32 @@ pub fn hud(g: &Game) -> Option<UiAction> {
         if phone { 90. } else { 166. },
         44.,
     );
-    if guided_button(
-        g,
-        review,
-        &if g.guild.month.sandbox {
-            "Sandbox".into()
-        } else if phone {
-            "Review".into()
-        } else {
-            format!(
-                "Review in {} days",
-                g.guild.config.review.cutoff_day.saturating_sub(g.guild.day)
-            )
-        },
-        false,
-    ) {
+    let review_label = if g.guild.month.sandbox {
+        g.guild.text.get("ui.sandbox").to_string()
+    } else if phone {
+        g.guild.text.get("ui.review").to_string()
+    } else {
+        g.guild.text.format(
+            "ui.review_in",
+            &[(
+                "days",
+                g.guild
+                    .config
+                    .review
+                    .cutoff_day
+                    .saturating_sub(g.guild.day)
+                    .to_string(),
+            )],
+        )
+    };
+    if guided_button(g, review, &review_label, false) {
         action = Some(UiAction::Month);
     }
-    if button(Rect::new(w - 96., 12., 84., 44.), "Menu", false) {
+    if button(
+        Rect::new(w - 96., 12., 84., 44.),
+        g.guild.text.get("ui.menu"),
+        false,
+    ) {
         action = Some(UiAction::Settings);
     }
     let advance = Rect::new(
@@ -75,10 +89,10 @@ pub fn hud(g: &Game) -> Option<UiAction> {
         if phone { 162. } else { 222. },
         50.,
     );
-    if primary(advance, "ADVANCE DAY", true) {
+    if primary(advance, g.guild.text.get("ui.advance_day"), true) {
         action = Some(UiAction::NextDay);
     }
-    if help::is_target(g, "ADVANCE DAY") {
+    if help::is_target(g, g.guild.text.get("ui.advance_day")) {
         draw_rectangle_lines(advance.x, advance.y, advance.w, advance.h, 3., GOLD);
     }
     if let Some((id, e)) = g
@@ -102,9 +116,14 @@ pub fn hud(g: &Game) -> Option<UiAction> {
             .collect::<Vec<_>>()
             .join(" + ");
         text(
-            &format!(
-                "{} · {}\n{} · Returns day {}",
-                g.contracts[e.contract].title, g.contracts[e.contract].client, names, e.returns
+            &g.guild.text.format(
+                "ui.journey_card",
+                &[
+                    ("contract", g.contracts[e.contract].title.clone()),
+                    ("client", g.contracts[e.contract].client.clone()),
+                    ("people", names),
+                    ("day", e.returns.to_string()),
+                ],
             ),
             Rect::new(r.x + 12., r.y + 7., r.w - 24., r.h - 14.),
             16.,
@@ -127,7 +146,10 @@ pub fn hud(g: &Game) -> Option<UiAction> {
                 (w - advance.w - returns_x - 36.).min(252.),
                 50.,
             ),
-            &format!("Returns · {} unread", g.guild.unread_reports()),
+            &g.guild.text.format(
+                "ui.return_unread",
+                &[("count", g.guild.unread_reports().to_string())],
+            ),
             false,
         )
     {

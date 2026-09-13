@@ -29,9 +29,9 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     text(
         &format!(
             "{} · {}\n{}",
-            a.rank(),
+            a.rank(&g.guild.text),
             a.class,
-            activity(&g.guild, id).label()
+            activity(&g.guild, id).label(&g.guild.text)
         ),
         Rect::new(r.x + size + 14., r.y + 105., r.w - size - 14., 58.),
         18.,
@@ -40,7 +40,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     if short && g.hq.page == 0 {
         if primary(
             Rect::new(r.x, r.bottom() - 48., r.w, 46.),
-            "CAREER & PROMOTION",
+            g.guild.text.get("ui.career_heading"),
             true,
         ) {
             return Some(UiAction::SheetPage(1));
@@ -51,7 +51,35 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     if short {
         panel(Rect::new(r.x, y, r.w, r.h - 52.), PANEL);
     }
-    let stats = format!("{}  Experience: {} / {} XP\n{}  Successful contracts: {} / {}\n{}  Unaided assessment\nFatigue {}/{} · Medical leave {} day(s)", if a.xp >= trial_xp { "+" } else { "-" }, a.xp, trial_xp, if a.successes >= trial_successes { "+" } else { "-" }, a.successes, trial_successes, if a.trial_passed { "+ Passed" } else { "- Required" }, a.fatigue, max_fatigue, a.injury);
+    let stats = g.guild.text.format(
+        "ui.career_stats",
+        &[
+            ("xp_mark", if a.xp >= trial_xp { "+" } else { "-" }.into()),
+            ("xp", a.xp.to_string()),
+            ("trial_xp", trial_xp.to_string()),
+            (
+                "success_mark",
+                if a.successes >= trial_successes {
+                    "+".into()
+                } else {
+                    "-".into()
+                },
+            ),
+            ("successes", a.successes.to_string()),
+            ("trial_successes", trial_successes.to_string()),
+            (
+                "trial_mark",
+                if a.trial_passed {
+                    g.guild.text.get("ui.mark_passed").to_string()
+                } else {
+                    g.guild.text.get("ui.mark_required").to_string()
+                },
+            ),
+            ("fatigue", a.fatigue.to_string()),
+            ("max_fatigue", max_fatigue.to_string()),
+            ("injury", a.injury.to_string()),
+        ],
+    );
     if short {
         text(&stats, Rect::new(r.x, y, r.w, 104.), 19., INK);
     } else {
@@ -74,16 +102,23 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     }
     if !short {
         rule(r, y + 128.);
+        let career_note = if a.bronze {
+            g.guild.text.get("ui.career_bronze").to_string()
+        } else if a.trial_passed {
+            g.guild.text.get("ui.career_passed").to_string()
+        } else if a.eligible(&g.guild.config) {
+            g.guild.text.get("ui.career_eligible").to_string()
+        } else {
+            g.guild.text.format(
+                "ui.career_build",
+                &[
+                    ("trial_xp", trial_xp.to_string()),
+                    ("trial_successes", trial_successes.to_string()),
+                ],
+            )
+        };
         text(
-            if a.bronze {
-                "BRONZE CERTIFIED\nThis adventurer can lead Bronze commissions."
-            } else if a.trial_passed {
-                "Assessment passed. Sign the licence below when the candidate is home."
-            } else if a.eligible(&g.guild.config) {
-                "Eligible for the solo trial. Rest first, then send this candidate unaided."
-            } else {
-                "Build this person's experience and successful-contract record. The trial unlocks at 60 XP and 3 successes."
-            },
+            &career_note,
             Rect::new(r.x, y + 143., r.w, (r.bottom() - y - 249.).max(42.)),
             18.,
             GOLD,
@@ -96,7 +131,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
         {
             if button(
                 Rect::new(r.x, r.bottom() - 104., r.w, 44.),
-                "Latest personal report",
+                g.guild.text.get("ui.latest_report"),
                 false,
             ) {
                 action = Some(UiAction::Report(report));
@@ -106,7 +141,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     if a.trial_passed && !a.bronze {
         if primary(
             Rect::new(r.x, r.bottom() - 50., r.w, 48.),
-            "APPROVE BRONZE",
+            g.guild.text.get("ui.approve_bronze"),
             !g.guild.busy(id),
         ) {
             action = Some(UiAction::Promote(id));
@@ -114,7 +149,7 @@ pub fn career(g: &Game, r: Rect) -> Option<UiAction> {
     } else if !a.bronze
         && primary(
             Rect::new(r.x, r.bottom() - 50., r.w, 48.),
-            "PREPARE SOLO TRIAL",
+            g.guild.text.get("ui.prepare_trial"),
             true,
         )
     {
@@ -137,9 +172,9 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
     };
     text(
         if recovery {
-            "RECOVERY ROOM"
+            g.guild.text.get("ui.recovery_room")
         } else {
-            "TRAINING YARD"
+            g.guild.text.get("ui.training_yard")
         },
         Rect::new(r.x, r.y, r.w, 40.),
         26.,
@@ -147,17 +182,53 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
     );
     let short = r.h < 400.;
     let body = if purchased && recovery {
-        "Infirmary open. Medical leave recovers twice as quickly. Basic fatigue recovery continues each day at home. Beds have no capacity limit."
+        g.guild.text.get("ui.facility_infirmary_open")
     } else if purchased {
-        "Training yard open. Fully rested Iron staff at home gain 5 XP per day, up to 60 XP. Training never awards successful-contract credit."
+        &g.guild.text.format(
+            "ui.facility_training_open",
+            &[
+                (
+                    "xp_per_day",
+                    g.guild.config.services.training_xp_per_day.to_string(),
+                ),
+                (
+                    "xp_cap",
+                    g.guild.config.progression.training_xp_cap.to_string(),
+                ),
+            ],
+        )
     } else if short && recovery {
-        "Basic rest is free. An infirmary doubles medical-leave recovery. It adds equipment, with no bed limit."
+        g.guild.text.get("ui.facility_recovery_short")
     } else if short {
-        "Equip the yard: rested Iron staff gain 5 XP/day, capped at 60 XP. No successful-contract credit."
+        &g.guild.text.format(
+            "ui.facility_training_short",
+            &[
+                (
+                    "xp_per_day",
+                    g.guild.config.services.training_xp_per_day.to_string(),
+                ),
+                (
+                    "xp_cap",
+                    g.guild.config.progression.training_xp_cap.to_string(),
+                ),
+            ],
+        )
     } else if recovery {
-        "Basic rest is always available. People at home recover fatigue and medical leave when you advance a day.\n\nThe infirmary adds medical equipment and doubles medical-leave recovery. Beds are scenery, with no capacity limit."
+        g.guild.text.get("ui.facility_recovery_long")
     } else {
-        "The unequipped courtyard grants no training.\n\nEquip the yard for fully rested Iron recruits to gain 5 XP per day at home, up to 60 XP. Training never awards successful-contract credit."
+        &g.guild.text.format(
+            "ui.facility_training_long",
+            &[
+                (
+                    "xp_per_day",
+                    g.guild.config.services.training_xp_per_day.to_string(),
+                ),
+                (
+                    "xp_cap",
+                    g.guild.config.progression.training_xp_cap.to_string(),
+                ),
+            ],
+        )
     };
     text(
         body,
@@ -181,13 +252,16 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
         .join(", ");
     if !short {
         text(
-            &format!(
-                "Here now: {}",
-                if people.is_empty() {
-                    "No staff"
-                } else {
-                    &people
-                }
+            &g.guild.text.format(
+                "ui.here_now",
+                &[(
+                    "people",
+                    if people.is_empty() {
+                        g.guild.text.get("ui.no_staff").to_string()
+                    } else {
+                        people
+                    },
+                )],
             ),
             Rect::new(r.x, r.bottom() - 134., r.w, 65.),
             18.,
@@ -197,14 +271,14 @@ pub fn facility(g: &Game, r: Rect, room: Room) -> Option<UiAction> {
     if primary(
         Rect::new(r.x, r.bottom() - 50., r.w, 48.),
         &if purchased {
-            "FACILITY OPEN".into()
+            g.guild.text.get("ui.facility_open").into()
         } else {
             format!(
                 "{} · {}g",
                 if g.guild.gold >= cost {
-                    "PURCHASE"
+                    g.guild.text.get("ui.purchase")
                 } else {
-                    "NEED"
+                    g.guild.text.get("ui.need")
                 },
                 cost
             )

@@ -5,7 +5,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         return detail(g, r);
     }
     text(
-        "JOURNEYS & RETURNS",
+        g.guild.text.get("ui.journeys_returns"),
         Rect::new(r.x, r.y, r.w, 34.),
         24.,
         INK,
@@ -20,9 +20,13 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             .join(" + ");
         if button(
             Rect::new(r.x, y, r.w, 52.),
-            &format!(
-                "{} · {} · Day {}",
-                names, g.contracts[e.contract].title, e.returns
+            &g.guild.text.format(
+                "ui.expedition_entry",
+                &[
+                    ("people", names),
+                    ("contract", g.contracts[e.contract].title.clone()),
+                    ("day", e.returns.to_string()),
+                ],
             ),
             false,
         ) {
@@ -31,7 +35,10 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         y += 60.;
     }
     text(
-        &format!("{} unread reports", g.guild.unread_reports()),
+        &g.guild.text.format(
+            "ui.unread_reports",
+            &[("count", g.guild.unread_reports().to_string())],
+        ),
         Rect::new(r.x, y, r.w, 28.),
         18.,
         GOLD,
@@ -51,10 +58,19 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     {
         if button(
             Rect::new(r.x, y + i as f32 * 58., r.w, 50.),
-            &format!(
-                "{} {}",
-                if report.read { "Read ·" } else { "NEW ·" },
-                report.title
+            &g.guild.text.format(
+                "ui.report_entry",
+                &[
+                    (
+                        "status",
+                        if report.read {
+                            g.guild.text.get("ui.report_read").to_string()
+                        } else {
+                            g.guild.text.get("ui.report_new").to_string()
+                        },
+                    ),
+                    ("title", report.title.clone()),
+                ],
             ),
             !report.read,
         ) {
@@ -62,12 +78,23 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         }
     }
     if g.guild.reports.is_empty() {
-        text("No returns yet. Tap < Guild, then Assignments to dispatch a party. Tap ADVANCE DAY to follow their journey.", Rect::new(r.x, y, r.w, r.bottom() - y), 20., MUTED);
+        text(
+            g.guild.text.get("ui.no_returns"),
+            Rect::new(r.x, y, r.w, r.bottom() - y),
+            20.,
+            MUTED,
+        );
     }
     if pages > 1
         && button(
             Rect::new(r.x, r.bottom() - 46., r.w, 44.),
-            &format!("More reports · {}/{}", page + 1, pages),
+            &g.guild.text.format(
+                "ui.more_reports",
+                &[
+                    ("page", (page + 1).to_string()),
+                    ("pages", pages.to_string()),
+                ],
+            ),
             false,
         )
     {
@@ -81,9 +108,9 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
     if r.h < 420. {
         text(
             if g.hq.page == 0 {
-                "PARTY RETURNED"
+                g.guild.text.get("ui.party_returned")
             } else {
-                "RETURN ACCOUNT"
+                g.guild.text.get("ui.return_account")
             },
             Rect::new(r.x, r.y, r.w, 30.),
             23.,
@@ -103,9 +130,9 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
         if button(
             Rect::new(r.x, r.bottom() - 46., half, 44.),
             if g.hq.page == 0 {
-                "Rewards >"
+                g.guild.text.get("ui.rewards")
             } else {
-                "< People"
+                g.guild.text.get("ui.people")
             },
             false,
         ) {
@@ -113,7 +140,7 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
         }
         if primary(
             Rect::new(r.x + half + 8., r.bottom() - 46., half, 44.),
-            "ACKNOWLEDGE",
+            g.guild.text.get("ui.acknowledge"),
             true,
         ) {
             return Some(UiAction::ReportList);
@@ -129,7 +156,12 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
         .map(|(id, _)| id)
         .collect();
     let title = report.title.split(" / ").last().unwrap_or(&report.title);
-    text("PARTY RETURNED", Rect::new(r.x, r.y, r.w, 36.), 27., INK);
+    text(
+        g.guild.text.get("ui.party_returned"),
+        Rect::new(r.x, r.y, r.w, 36.),
+        27.,
+        INK,
+    );
     text(title, Rect::new(r.x, r.y + 40., r.w, 40.), 20., MUTED);
     let portrait_size = (r.w * 0.34).min(r.h * 0.25);
     let y = r.y + 92.;
@@ -150,18 +182,20 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
         text(
             people
                 .first()
-                .map_or("Guild record", |&id| g.guild.roster[id].name.as_str()),
+                .map_or(g.guild.text.get("ui.guild_record"), |&id| {
+                    g.guild.roster[id].name.as_str()
+                }),
             Rect::new(x, y + 12., r.right() - x, 40.),
             21.,
             INK,
         );
         text(
-            if report.title.contains("SUCCESS") {
-                "SUCCESS"
-            } else if report.title.contains("RETREAT") {
-                "RETREAT"
+            if report.title.contains(g.guild.text.get("ui.success")) {
+                g.guild.text.get("ui.success")
+            } else if report.title.contains(g.guild.text.get("ui.retreat")) {
+                g.guild.text.get("ui.retreat")
             } else {
-                "CERTIFIED"
+                g.guild.text.get("ui.certified")
             },
             Rect::new(x, y + 60., r.right() - x, 35.),
             24.,
@@ -171,10 +205,10 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
     let body_y = y + portrait_size + 20.;
     rule(r, body_y);
     text(
-        if report.body.contains("Medical leave") {
-            "! Medical leave · recovering upstairs"
+        if report.body.contains(g.guild.text.get("activity.medical")) {
+            g.guild.text.get("ui.medical_recovering")
         } else {
-            "Rest recommended · recovery upstairs"
+            g.guild.text.get("ui.rest_recommended")
         },
         Rect::new(r.x, body_y + 10., r.w, 26.),
         17.,
@@ -200,7 +234,7 @@ fn detail(g: &Game, r: Rect) -> Option<UiAction> {
     );
     if primary(
         Rect::new(r.x, r.bottom() - 48., r.w, 46.),
-        "ACKNOWLEDGE · ALL RETURNS",
+        g.guild.text.get("ui.acknowledge_all"),
         true,
     ) {
         return Some(UiAction::ReportList);

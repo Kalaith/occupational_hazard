@@ -1,5 +1,8 @@
 //! Deterministic dispatch, recovery, reports and professional certification.
-use crate::{contracts::Contract, data::GameConfig};
+use crate::{
+    contracts::Contract,
+    data::{GameConfig, TextCatalog},
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -22,11 +25,11 @@ impl Adventurer {
             && self.successes >= config.progression.trial_successes
     }
 
-    pub fn rank(&self) -> &str {
+    pub fn rank<'a>(&self, text: &'a TextCatalog) -> &'a str {
         if self.bronze {
-            "BRONZE"
+            text.get("rank.bronze")
         } else {
-            "IRON"
+            text.get("rank.iron")
         }
     }
 }
@@ -54,6 +57,8 @@ pub struct Report {
 pub struct Guild {
     #[serde(skip)]
     pub config: GameConfig,
+    #[serde(skip)]
+    pub text: TextCatalog,
     #[serde(default)]
     pub board: crate::board::Board,
     #[serde(default)]
@@ -98,6 +103,7 @@ impl Guild {
             .collect();
         Self {
             config,
+            text: TextCatalog::default(),
             board: crate::board::Board::default(),
             tutorial: crate::tutorial::Tutorial::default(),
             month: crate::review::Month::default(),
@@ -205,33 +211,31 @@ impl Guild {
 
     pub fn dispatch_problem(&self, id: usize, party: &[usize], qs: &[Contract]) -> Option<String> {
         if self.review_pending() {
-            return Some("Read the review, then tap CONTINUE SANDBOX or RESTART.".into());
+            return Some(self.text.get("error.review_pending").into());
         }
         let Some(q) = qs.get(id) else {
-            return Some("Select a contract.".into());
+            return Some(self.text.get("error.select_contract").into());
         };
         if !self.contract_open(id, qs) {
-            return Some(
-                "This offer is unavailable or already accepted. Choose another contract.".into(),
-            );
+            return Some(self.text.get("error.offer_unavailable").into());
         }
         if self.expeditions.iter().any(|e| e.contract == id) {
-            return Some("This contract already has an expedition.".into());
+            return Some(self.text.get("error.expedition_exists").into());
         }
         if party.is_empty() {
-            return Some("Tap an adventurer to select a party.".into());
+            return Some(self.text.get("error.select_party").into());
         }
         let mut seen = vec![];
         for &a in party {
             if a >= self.roster.len() || seen.contains(&a) {
-                return Some("Invalid party.".into());
+                return Some(self.text.get("error.invalid_party").into());
             }
             seen.push(a);
             if self.busy(a) {
-                return Some("A selected adventurer is away.".into());
+                return Some(self.text.get("error.adventurer_away").into());
             }
             if self.roster[a].injury > 0 {
-                return Some("Let injured adventurers recover: tap ADVANCE DAY.".into());
+                return Some(self.text.get("error.adventurer_injured").into());
             }
         }
         if q.promotion
@@ -239,13 +243,19 @@ impl Guild {
                 || !self.roster[party[0]].eligible(&self.config)
                 || self.roster[party[0]].trial_passed)
         {
-            return Some(
-                "Select one Iron candidate with 60 XP and 3 successes who still needs the trial."
-                    .into(),
-            );
+            return Some(self.text.format(
+                "error.trial_candidate",
+                &[
+                    ("trial_xp", self.config.progression.trial_xp.to_string()),
+                    (
+                        "trial_successes",
+                        self.config.progression.trial_successes.to_string(),
+                    ),
+                ],
+            ));
         }
         if q.bronze && !party.iter().any(|&a| self.roster[a].bronze) {
-            return Some("A Bronze adventurer must lead this contract.".into());
+            return Some(self.text.get("error.bronze_leader").into());
         }
         None
     }
@@ -260,7 +270,10 @@ impl Guild {
         let instance = if qs[id].promotion {
             format!("{}@{}-{}", qs[id].id, self.day, party[0])
         } else {
-            qs[id].offer(self.day).ok_or("Offer expired")?.id
+            qs[id]
+                .offer(self.day)
+                .ok_or_else(|| self.text.get("error.offer_expired").to_string())?
+                .id
         };
         self.board.accepted.insert(instance.clone());
         self.expeditions.push(Expedition {
@@ -362,22 +375,55 @@ impl Guild {
                     self.board.service_credit.insert(q.id.clone());
                 }
             }
-            self.reports.insert(0, Report { read: false,
-                title: format!("Day {} / {} / {}", self.day, if success { "SUCCESS" } else { "RETREAT" }, q.title),
-                body: format!("{names}. {} {}", if success { &q.report } else {
-                    "The party could not safely finish the job. Everyone returned; rest, bring support and try again."
-                }, if !success || (close_call && !has_healer) { "Medical leave required. Tap ADVANCE DAY to recover." } else { "Everyone returned safely, but needs rest." }),
-                reward: format!(
-                    "Guild +{}g / Each adventurer +{} XP / Fatigue +{}",
-                    if success { q.gold } else { 0 },
-                    if success {
-                        q.xp
-                    } else {
-                        self.config.expedition.failed_xp
-                    },
-                    self.config.expedition.mission_fatigue
-                ),
-            });
+            let result = if success {
+                self.text.get("ui.success")
+            } else {
+                self.text.get("ui.retreat")
+            };
+            let resolution = if success {
+                q.report.clone()
+            } else {
+                self.text.get("report.failure_body").to_string()
+            };
+            let recovery = if !success || (close_call && !has_healer) {
+                self.text.get("report.medical_leave")
+            } else {
+                self.text.get("report.safe_return")
+            };
+            self.reports.insert(
+                0,
+                Report {
+                    read: false,
+                    title: self.text.format(
+                        "report.title",
+                        &[
+                            ("day", self.day.to_string()),
+                            ("result", result.to_string()),
+                            ("contract", q.title.clone()),
+                        ],
+                    ),
+                    body: format!("{names}. {resolution} {recovery}"),
+                    reward: self.text.format(
+                        "report.reward",
+                        &[
+                            ("gold", if success { q.gold } else { 0 }.to_string()),
+                            (
+                                "xp",
+                                if success {
+                                    q.xp
+                                } else {
+                                    self.config.expedition.failed_xp
+                                }
+                                .to_string(),
+                            ),
+                            (
+                                "fatigue",
+                                self.config.expedition.mission_fatigue.to_string(),
+                            ),
+                        ],
+                    ),
+                },
+            );
         }
         self.expeditions = remaining;
         self.reports.truncate(self.config.review.max_saved_reports);
@@ -387,17 +433,29 @@ impl Guild {
 
     pub fn promote(&mut self, id: usize) -> Result<(), String> {
         if self.review_pending() {
-            return Err("Tap CONTINUE SANDBOX to resume the guild.".into());
+            return Err(self.text.get("error.review_pending").into());
         }
         let busy = self.busy(id);
-        let a = self.roster.get_mut(id).ok_or("Select an adventurer.")?;
+        let a = self
+            .roster
+            .get_mut(id)
+            .ok_or_else(|| self.text.get("error.select_adventurer").to_string())?;
         if busy || !a.eligible(&self.config) || !a.trial_passed {
-            return Err("The candidate must return with a passed assessment.".into());
+            return Err(self.text.get("error.candidate_unready").into());
         }
+        let name = a.name.clone();
         a.bronze = true;
-        self.reports.insert(0, Report { read: false, title: format!("{} / BRONZE CERTIFIED", a.name),
-            body: "You sign the promotion form. An Iron recruit becomes a trusted Bronze adventurer. The North Bridge commission is now open.".into(),
-            reward: "Bronze licence / stronger expedition capability / new commission".into() });
+        self.reports.insert(
+            0,
+            Report {
+                read: false,
+                title: self
+                    .text
+                    .format("report.promotion_title", &[("name", name)]),
+                body: self.text.get("report.promotion_body").into(),
+                reward: self.text.get("report.promotion_reward").into(),
+            },
+        );
         self.reports.truncate(self.config.review.max_saved_reports);
         Ok(())
     }

@@ -1,5 +1,5 @@
 //! Dated offers and stable save identities; UI indices are disposable lookup caches.
-use crate::{contracts::Contract, simulation::Guild};
+use crate::{contracts::Contract, data::TextCatalog, simulation::Guild};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -69,27 +69,37 @@ impl Guild {
             .collect()
     }
 
-    pub fn offer_notice(&self, q: &Contract) -> String {
+    pub fn offer_notice(&self, q: &Contract, text: &TextCatalog) -> String {
         let acceptance = if q.promotion {
-            "Standing trial.".to_string()
+            text.get("contract.standing_trial").to_string()
         } else if let Some(o) = q.offer(self.day) {
-            format!(
-                "Accept days {}-{}; later returns allowed.",
-                o.arrives, o.expires
+            text.format(
+                "contract.accept_days",
+                &[
+                    ("arrives", o.arrives.to_string()),
+                    ("expires", o.expires.to_string()),
+                ],
             )
         } else {
-            "Offer expired.".into()
+            text.get("contract.expired").into()
         };
         let credit = if q.service {
             if self.board.service_credit.contains(&q.id) {
-                "Service already credited."
+                text.get("contract.service_credited")
             } else {
-                "New service credit on success."
+                text.get("contract.service_new")
             }
         } else {
-            "No service credit."
+            text.get("contract.no_service")
         };
-        format!("{acceptance} {credit} {}", self.cutoff_notice(q.days))
+        text.format(
+            "contract.offer_notice",
+            &[
+                ("acceptance", acceptance),
+                ("credit", credit.to_string()),
+                ("cutoff", self.cutoff_notice(q.days)),
+            ],
+        )
     }
 
     /// Resolve legacy numeric slots once, then resolve all caches by saved names.

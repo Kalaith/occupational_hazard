@@ -85,43 +85,44 @@ pub fn draw(game: &Game) -> Option<UiAction> {
 }
 
 fn menu(game: &Game) -> Option<UiAction> {
+    let copy = &game.guild.text;
     let w = (screen_width() - 32.0).min(440.0);
     let x = (screen_width() - w) / 2.0;
     let height = (screen_height() - 24.).min(490.);
     let y = (screen_height() - height) / 2.0;
     panel(Rect::new(x, y, w, height), PANEL);
     label(
-        "THE GUILD LEDGER",
+        copy.get("menu.heading"),
         Rect::new(x, y + 14.0, w, 44.0),
         26.0,
         GOLD,
     );
     if height > 420. {
         paragraph(
-            "Progress saves after dispatch, day changes, promotions and purchases.",
+            copy.get("menu.save_note"),
             Rect::new(x + 20.0, y + 65.0, w - 40.0, 50.0),
             18.0,
             MUTED,
         );
     }
     for (i, (text, action)) in [
-        ("SAVE", UiAction::Save),
-        ("HELP", UiAction::Help(0)),
-        ("RETURN TO TITLE", UiAction::Title),
+        (copy.get("menu.save"), UiAction::Save),
+        (copy.get("menu.help"), UiAction::Help(0)),
+        (copy.get("menu.return"), UiAction::Title),
         (
             if game.hq.reduced_motion {
-                "MOTION: REDUCED"
+                copy.get("menu.motion_reduced")
             } else {
-                "MOTION: FULL"
+                copy.get("menu.motion_full")
             },
             UiAction::ReducedMotion,
         ),
-        ("CLOSE", UiAction::CloseSettings),
+        (copy.get("menu.close"), UiAction::CloseSettings),
         (
             if game.hq.large_text {
-                "TEXT: LARGE"
+                copy.get("menu.text_large")
             } else {
-                "TEXT: STANDARD"
+                copy.get("menu.text_standard")
             },
             UiAction::TextSize,
         ),

@@ -194,10 +194,20 @@ fn continue_guild(game: &mut Game) {
                     game.notice.clear();
                     game.save();
                 }
-                Err(error) => game.notice = format!("Cannot open ledger: {error}"),
+                Err(error) => {
+                    game.notice = game
+                        .guild
+                        .text
+                        .format("action.cannot_open_ledger", &[("error", error)])
+                }
             }
         }
-        Err(error) => game.notice = format!("Cannot open ledger: {error}"),
+        Err(error) => {
+            game.notice = game
+                .guild
+                .text
+                .format("action.cannot_open_ledger", &[("error", error)])
+        }
     }
 }
 
@@ -260,7 +270,7 @@ fn dispatch(game: &mut Game) {
             if game.contracts[game.selected].promotion {
                 game.guild.tutorial.acknowledge(Lesson::Trial);
             }
-            game.notice = "Dispatched. Tap ADVANCE DAY to advance their journey.".into();
+            game.notice = game.guild.text.get("ui.dispatched").into();
             game.party.clear();
             game.save();
         }
@@ -299,7 +309,7 @@ fn promote(game: &mut Game, id: usize) {
             game.guild.tutorial.acknowledge(Lesson::Promotion);
             game.victory = !game.guild.victory_seen;
             game.guild.victory_seen = true;
-            game.notice = "Bronze certification signed. North Bridge is now available.".into();
+            game.notice = game.guild.text.get("action.promotion").into();
             game.save();
         }
         Err(error) => game.notice = error,
@@ -334,12 +344,15 @@ fn advance_day(game: &mut Game) {
         .collect();
     game.guild.next_day(&game.contracts);
     game.notice = if returning > 0 {
-        format!(
-            "{returning} expeditions returned. Tap Returns: {} unread reports.",
-            game.guild.unread_reports()
+        game.guild.text.format(
+            "ui.return_reports",
+            &[
+                ("count", game.guild.unread_reports().to_string()),
+                ("returning", returning.to_string()),
+            ],
         )
     } else {
-        "A new day. Adventurers at the guild have rested.".into()
+        game.guild.text.get("ui.new_day").into()
     };
     if returning > 0 {
         game.hq.open(Sheet::Returns);
@@ -372,7 +385,10 @@ impl Game {
                 "preferences",
                 &(self.hq.reduced_motion, self.hq.large_text),
             ) {
-                self.notice = format!("Preferences could not be saved: {error}");
+                self.notice = self
+                    .guild
+                    .text
+                    .format("action.preferences_save_failed", &[("error", error)]);
             }
         }
     }
@@ -382,14 +398,19 @@ impl Game {
             return;
         }
         if let Err(error) = self.guild.migrate_board(&self.contracts) {
-            self.notice = format!("Ledger could not be saved: {error}");
+            self.notice = self
+                .guild
+                .text
+                .format("action.ledger_save_failed", &[("error", error)]);
             return;
         }
         match persistence::save_to_slot("occupational_hazard", "guild", &self.guild) {
             Ok(()) => self.has_save = true,
             Err(error) => {
-                self.notice =
-                    format!("Ledger could not be saved: {error}. Tap MENU then SAVE to retry.")
+                self.notice = self
+                    .guild
+                    .text
+                    .format("action.ledger_save_retry", &[("error", error)])
             }
         }
     }

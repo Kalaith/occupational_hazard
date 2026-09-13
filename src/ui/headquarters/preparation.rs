@@ -31,24 +31,34 @@ pub fn checkmark(r: Rect) {
 pub fn member(g: &Game, id: usize, quest: usize) -> String {
     let a = &g.guild.roster[id];
     if g.guild.busy(id) {
-        return "Away · cannot join".into();
+        return g.guild.text.get("ui.away_cannot_join").into();
     }
     if a.injury > 0 {
-        return format!("Medical leave · {} days", a.injury);
+        return g
+            .guild
+            .text
+            .format("ui.medical_days", &[("days", a.injury.to_string())]);
     }
     let q = &g.contracts[quest];
     let specialty_bonus = g.guild.config.expedition.specialty_bonus;
     let suitable = q.specialty == a.class || q.specialty == "Any";
-    format!(
-        "{} {} · Fatigue -{}\nContribution {}",
-        a.class,
-        if suitable {
-            format!("fit +{specialty_bonus}")
-        } else {
-            "support +0".into()
-        },
-        a.fatigue,
-        g.guild.strength(q, &[id])
+    g.guild.text.format(
+        "ui.member_detail",
+        &[
+            ("class", a.class.clone()),
+            (
+                "contribution",
+                if suitable {
+                    g.guild
+                        .text
+                        .format("ui.fit_strength", &[("bonus", specialty_bonus.to_string())])
+                } else {
+                    g.guild.text.get("ui.support_strength").into()
+                },
+            ),
+            ("fatigue", a.fatigue.to_string()),
+            ("strength", g.guild.strength(q, &[id]).to_string()),
+        ],
     )
 }
 
@@ -56,26 +66,43 @@ pub fn summary(g: &Game, id: usize) -> String {
     let q = &g.contracts[id];
     if let Some(journey) = g.hq.journey {
         let e = &g.guild.expeditions[journey];
-        return format!("On the road · Strength {} / difficulty {}\nAccepted preparation is fixed. Returns day {}.",e.strength,q.difficulty,e.returns);
+        return g.guild.text.format(
+            "ui.on_the_road",
+            &[
+                ("strength", e.strength.to_string()),
+                ("difficulty", q.difficulty.to_string()),
+                ("day", e.returns.to_string()),
+            ],
+        );
     }
     let power = g.guild.prepared_strength(id, q, &g.party);
     let scout = power - g.guild.strength(q, &g.party);
     let verdict = if power >= q.difficulty + g.guild.config.expedition.close_call_margin {
-        "Well prepared"
+        g.guild.text.get("ui.well_prepared")
     } else if power >= q.difficulty {
-        "Close call"
+        g.guild.text.get("ui.close_call")
     } else {
-        "Outmatched"
+        g.guild.text.get("ui.outmatched")
     };
-    format!(
-        "{} · Strength {} / difficulty {}\nScouting +{} to party · {} specialist +{} each",
-        verdict, power, q.difficulty, scout, q.specialty, g.guild.config.expedition.specialty_bonus
+    g.guild.text.format(
+        "ui.preparation_summary",
+        &[
+            ("verdict", verdict.to_string()),
+            ("power", power.to_string()),
+            ("difficulty", q.difficulty.to_string()),
+            ("scout", scout.to_string()),
+            ("specialty", q.specialty.clone()),
+            (
+                "bonus",
+                g.guild.config.expedition.specialty_bonus.to_string(),
+            ),
+        ],
     )
 }
 
 pub fn advice(g: &Game, id: usize) -> String {
     if g.hq.journey.is_some() {
-        return "This party is already travelling; its preparation cannot change.".into();
+        return g.guild.text.get("ui.preparation_unchanged").into();
     }
     if let Some(reason) = g.guild.dispatch_problem(id, &g.party, &g.contracts) {
         return reason;
@@ -83,7 +110,7 @@ pub fn advice(g: &Game, id: usize) -> String {
     let rest: u32 = g.party.iter().map(|&i| g.guild.roster[i].fatigue).sum();
     let q = &g.contracts[id];
     if q.promotion {
-        return "Solo trial: one eligible adventurer, fully rested. No helpers or scouting.".into();
+        return g.guild.text.get("ui.trial_readiness").into();
     }
     if let Some((id, power)) = g
         .guild
@@ -95,23 +122,36 @@ pub fn advice(g: &Game, id: usize) -> String {
         .filter(|(_, power)| *power > 0)
         .max_by_key(|(_, p)| *p)
     {
-        return format!(
-            "Add {}: {:+} strength. Full party rest restores +{}.",
-            first(g, id),
-            power,
-            rest
+        return g.guild.text.format(
+            "ui.add_member",
+            &[
+                ("member", first(g, id).to_string()),
+                ("strength", format!("{power:+}")),
+                ("rest", rest.to_string()),
+            ],
         );
     }
-    format!(
-        "Full party rest restores +{} strength. {}",
-        rest,
-        if g.guild.services.scouted.contains(&id) {
-            "Scouting is already included."
-        } else if q.promotion {
-            "The trial must be unaided."
-        } else {
-            "Scouting adds +2 once."
-        }
+    g.guild.text.format(
+        "ui.full_party_rest",
+        &[
+            ("rest", rest.to_string()),
+            (
+                "note",
+                if g.guild.services.scouted.contains(&id) {
+                    g.guild.text.get("ui.scouting_included").to_string()
+                } else if q.promotion {
+                    g.guild.text.get("ui.trial_unaided").to_string()
+                } else {
+                    g.guild.text.format(
+                        "ui.scouting_adds",
+                        &[(
+                            "bonus",
+                            g.guild.config.services.scout_strength_bonus.to_string(),
+                        )],
+                    )
+                },
+            ),
+        ],
     )
 }
 
@@ -133,7 +173,11 @@ pub fn members(g: &Game, r: Rect, quest: usize) -> Option<UiAction> {
         }
         let x = pic.right() + 12.;
         text(
-            &format!("{} · {}", first(g, id), g.guild.roster[id].rank()),
+            &format!(
+                "{} · {}",
+                first(g, id),
+                g.guild.roster[id].rank(&g.guild.text)
+            ),
             Rect::new(x, row.y + 4., row.right() - x - 8., 24.),
             20.,
             INK,
@@ -164,13 +208,27 @@ pub fn scout(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     let scout_bonus = g.guild.config.services.scout_strength_bonus;
     let enabled = !q.promotion && !scouted && g.guild.gold >= scout_cost && g.hq.journey.is_none();
     let title = if q.promotion {
-        "Unaided trial · no scouts".into()
+        g.guild.text.get("ui.unaided_trial").into()
     } else if scouted {
-        format!("Scouted · +{scout_bonus} party strength")
+        g.guild
+            .text
+            .format("ui.scouted", &[("bonus", scout_bonus.to_string())])
     } else if g.guild.gold < scout_cost {
-        format!("Scout +{scout_bonus} · needs {scout_cost}g")
+        g.guild.text.format(
+            "ui.scout_needs",
+            &[
+                ("bonus", scout_bonus.to_string()),
+                ("cost", scout_cost.to_string()),
+            ],
+        )
     } else {
-        format!("Scout +{scout_bonus} party strength · {scout_cost}g")
+        g.guild.text.format(
+            "ui.scout_strength",
+            &[
+                ("bonus", scout_bonus.to_string()),
+                ("cost", scout_cost.to_string()),
+            ],
+        )
     };
     panel(r, PANEL);
     label(&title, r, 17., if enabled { INK } else { MUTED });

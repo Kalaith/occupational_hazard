@@ -1,6 +1,6 @@
 //! Registered runtime assets and the typed texture manifest stay in agreement.
 
-use occupational_hazard::data::TextureManifest;
+use occupational_hazard::data::{TextCatalog, TextureManifest};
 use serde::Deserialize;
 use std::collections::BTreeSet;
 use std::fs;
@@ -41,6 +41,15 @@ fn asset_registry_contains_external_texture_manifest_paths() {
     assert!(
         missing.is_empty(),
         "texture manifest paths missing from asset registry: {missing:?}"
+    );
+    TextCatalog::from_json(
+        &fs::read_to_string(root.join("assets/data/text.json"))
+            .expect("text catalog must be readable"),
+    )
+    .expect("text catalog must validate");
+    assert!(
+        registered.contains("assets/data/text.json"),
+        "text catalog is missing from the asset registry"
     );
     for relative in registered {
         assert!(

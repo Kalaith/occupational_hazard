@@ -1,3 +1,4 @@
+//! Projected headquarters art, people, and touch targets.
 use super::*;
 
 /// Image-space room geometry is projected with the same mapping as every target.
@@ -91,8 +92,8 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         {
             let target = Rect::new(r.x, r.y, r.w.max(90.), 44.);
             panel(Rect::new(target.x, target.y + 7., target.w, 30.), PANEL);
-            label(room.name(), target, 15., GOLD);
-            if interactive && help::is_target(g, room.name()) {
+            label(room.name(&g.guild.text), target, 15., GOLD);
+            if interactive && help::is_target(g, room.name(&g.guild.text)) {
                 draw_rectangle_lines(target.x, target.y + 7., target.w, 30., 2., GOLD);
             }
             if interactive && !g.hq.dragged && activated(target) {
@@ -105,7 +106,13 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         let badge = Rect::new(posting.x - 65., posting.y, 130., 44.);
         panel(badge, PANEL);
         label(
-            &format!("{} open jobs", g.guild.open_contracts(&g.contracts).len()),
+            &g.guild.text.format(
+                "ui.open_jobs",
+                &[(
+                    "count",
+                    g.guild.open_contracts(&g.contracts).len().to_string(),
+                )],
+            ),
             badge,
             16.,
             GOLD,
@@ -243,7 +250,13 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             let caption = if rw < 100. {
                 first(g, id).to_string()
             } else {
-                format!("{} · {}", first(g, id), state.label())
+                g.guild.text.format(
+                    "ui.person_caption",
+                    &[
+                        ("name", first(g, id).to_string()),
+                        ("activity", state.label(&g.guild.text).to_string()),
+                    ],
+                )
             };
             label(
                 &caption,
@@ -262,9 +275,9 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
             if rw < 100. {
                 label(
                     if state == Activity::Recovering {
-                        "Injured"
+                        g.guild.text.get("ui.injured")
                     } else {
-                        state.label()
+                        state.label(&g.guild.text)
                     },
                     Rect::new(tag.x, tag.y + 14., tag.w, 14.),
                     12.,
@@ -335,9 +348,9 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         }
         text(
             if t.arriving {
-                "PARTY RETURNED"
+                g.guild.text.get("ui.party_returned")
             } else {
-                "PARTY DEPARTING"
+                g.guild.text.get("ui.party_departing")
             },
             Rect::new(p.x - 85., p.y - 110., 170., 30.),
             17.,
@@ -345,7 +358,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         );
         if button(
             Rect::new(stage.x + 14., stage.bottom() - 130., 132., 44.),
-            "Skip motion",
+            g.guild.text.get("ui.skip_motion"),
             false,
         ) {
             action = Some(UiAction::SkipMotion);

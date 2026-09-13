@@ -22,30 +22,40 @@ pub(super) fn cards(g: &Game, r: Rect) -> Option<UiAction> {
         }
         text(first(g, id), Rect::new(x, r.y + 68., cw, 23.), 20., INK);
         text(
-            &format!(
-                "{} {}",
-                a.class,
-                if q.specialty == a.class || q.specialty == "Any" {
-                    "+3"
-                } else {
-                    "+0"
-                }
+            &g.guild.text.format(
+                "ui.member_contribution",
+                &[
+                    ("class", a.class.clone()),
+                    (
+                        "contribution",
+                        if q.specialty == a.class || q.specialty == "Any" {
+                            format!("+{}", g.guild.config.expedition.specialty_bonus)
+                        } else {
+                            "+0".into()
+                        },
+                    ),
+                ],
             ),
             Rect::new(x, r.y + 94., cw, 23.),
             17.,
             GOLD,
         );
         text(
-            &format!("Fatigue -{}", a.fatigue),
+            &g.guild
+                .text
+                .format("ui.fatigue_loss", &[("fatigue", a.fatigue.to_string())]),
             Rect::new(x, r.y + 119., cw, 23.),
             17.,
             MUTED,
         );
         text(
             &if blocked {
-                activity(&g.guild, id).label().into()
+                activity(&g.guild, id).label(&g.guild.text).to_string()
             } else {
-                format!("Contributes {}", g.guild.strength(q, &[id]))
+                g.guild.text.format(
+                    "ui.contributes",
+                    &[("strength", g.guild.strength(q, &[id]).to_string())],
+                )
             },
             Rect::new(x, r.y + 143., cw, 23.),
             17.,

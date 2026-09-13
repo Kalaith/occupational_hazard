@@ -14,15 +14,29 @@ pub fn victory(g: &Game) -> Option<UiAction> {
         Rect::new(x + (width - size) / 2., y + 18., size, size),
     );
     label(
-        "BRONZE, DULY EARNED",
+        g.guild.text.get("ui.dossier_heading"),
         Rect::new(x + 16., y + size + 32., width - 32., 44.),
         28.,
         GOLD,
     );
-    paragraph("The licence is signed. This adventurer can now lead a Bronze commission. Return by day 30 and complete six distinct service jobs for head office.", Rect::new(x + 24., y + size + 86., width - 48., height - size - 160.), 21., INK);
+    paragraph(
+        &g.guild.text.format(
+            "ui.dossier_body",
+            &[
+                ("cutoff_day", g.guild.config.review.cutoff_day.to_string()),
+                (
+                    "service_quota",
+                    g.guild.config.review.service_quota.to_string(),
+                ),
+            ],
+        ),
+        Rect::new(x + 24., y + size + 86., width - 48., height - size - 160.),
+        21.,
+        INK,
+    );
     if button(
         Rect::new(x + 24., y + height - 62., width - 48., 48.),
-        "BACK TO HEADQUARTERS",
+        g.guild.text.get("ui.back_headquarters"),
         true,
     ) {
         return Some(UiAction::CloseVictory);

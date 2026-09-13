@@ -3,12 +3,7 @@ use super::*;
 
 pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     if g.guild.open_contracts(&g.contracts).is_empty() && g.hq.journey.is_none() {
-        text(
-            "No commissions posted today. Return to the guild and tap ADVANCE DAY.",
-            r,
-            24.,
-            INK,
-        );
+        text(g.guild.text.get("ui.no_postings"), r, 24., INK);
         return None;
     }
     let journey = g.hq.journey.and_then(|id| g.guild.expeditions.get(id));
@@ -50,35 +45,47 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         INK,
     );
     text(
-        &format!(
-            "{}    /    {} days    /    {}g",
-            if q.promotion {
-                "SOLO TRIAL"
-            } else if q.bronze {
-                "BRONZE"
-            } else {
-                "IRON"
-            },
-            q.days,
-            q.gold
+        &g.guild.text.format(
+            "ui.quest_stats",
+            &[
+                (
+                    "type",
+                    if q.promotion {
+                        g.guild.text.get("ui.solo_trial").to_string()
+                    } else if q.bronze {
+                        g.guild.text.get("ui.bronze").to_string()
+                    } else {
+                        g.guild.text.get("ui.iron").to_string()
+                    },
+                ),
+                ("days", q.days.to_string()),
+                ("gold", q.gold.to_string()),
+            ],
         ),
         Rect::new(left.x, left.bottom() - 124., left.w, 28.),
         20.,
         GOLD,
     );
     text(
-        &format!("Danger: {}", q.danger),
+        &g.guild
+            .text
+            .format("ui.danger", &[("danger", q.danger.clone())]),
         Rect::new(left.x, left.bottom() - 87., left.w, 30.),
         18.,
         INK,
     );
     if journey.is_none() {
         let expiry = if q.promotion {
-            "Standing trial".into()
+            g.guild.text.get("ui.standing_trial").into()
         } else {
-            format!(
-                "Accept by day {}",
-                q.offer(g.guild.day).map_or(g.guild.day, |o| o.expires)
+            g.guild.text.format(
+                "ui.accept_by_day",
+                &[(
+                    "day",
+                    q.offer(g.guild.day)
+                        .map_or(g.guild.day, |o| o.expires)
+                        .to_string(),
+                )],
             )
         };
         text(
@@ -89,7 +96,7 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         );
         if button(
             Rect::new(left.x, left.bottom() - 46., left.w, 44.),
-            "Acceptance & service terms",
+            g.guild.text.get("ui.acceptance_terms"),
             false,
         ) {
             action = Some(UiAction::SheetPage(3));
@@ -97,9 +104,9 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     }
     text(
         if journey.is_some() {
-            "THE TRAVELLING PARTY"
+            g.guild.text.get("ui.travelling_party")
         } else {
-            "CHOOSE YOUR PARTY"
+            g.guild.text.get("ui.choose_your_party")
         },
         Rect::new(right.x, right.y + 4., right.w, 32.),
         19.,
@@ -134,14 +141,19 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     .or(action);
     let day = journey.map_or(g.guild.day + q.days, |e| e.returns);
     text(
-        &format!(
-            "Return · day {}     {}",
-            day,
-            if day <= g.guild.config.review.cutoff_day {
-                "Before review"
-            } else {
-                "After review"
-            }
+        &g.guild.text.format(
+            "ui.return_day",
+            &[
+                ("day", day.to_string()),
+                (
+                    "timing",
+                    if day <= g.guild.config.review.cutoff_day {
+                        g.guild.text.get("ui.before_review").to_string()
+                    } else {
+                        g.guild.text.get("ui.after_review").to_string()
+                    },
+                ),
+            ],
         ),
         Rect::new(right.x, right.bottom() - 70., right.w, 24.),
         16.,
@@ -149,14 +161,14 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     );
     if journey.is_some() {
         label(
-            "ON THE ROAD",
+            g.guild.text.get("ui.on_the_road_label"),
             Rect::new(right.x, right.bottom() - 43., right.w, 43.),
             22.,
             GOLD,
         );
     } else if primary(
         Rect::new(right.x, right.bottom() - 46., right.w, 46.),
-        "DISPATCH PARTY",
+        g.guild.text.get("ui.dispatch_party"),
         problem.is_none(),
     ) {
         action = Some(UiAction::Dispatch);

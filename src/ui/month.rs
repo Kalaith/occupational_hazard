@@ -8,12 +8,16 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
     let y = (screen_height() - h) / 2.0;
     panel(Rect::new(x, y, w, h), PANEL);
     let review = g.guild.month.review.as_ref();
+    let heading = if review.is_some() {
+        g.guild.text.get("ui.review_heading").to_string()
+    } else {
+        g.guild.text.format(
+            "ui.review_pending_heading",
+            &[("day", g.guild.config.review.cutoff_day.to_string())],
+        )
+    };
     label(
-        if review.is_some() {
-            "HEAD-OFFICE REVIEW"
-        } else {
-            "FIRST MONTH / DAY 30"
-        },
+        &heading,
         Rect::new(x + 12.0, y + 10.0, w - 24.0, 36.0),
         26.0,
         GOLD,
@@ -31,34 +35,84 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         .map(|r| r.service_target)
         .unwrap_or(g.guild.config.review.service_quota);
     paragraph(
-        &format!("Bronze adventurers: {}/1\nSuccessful Bronze commission: {}/1\nService jobs: {services}/{target} / {} days left", counts.certifications, counts.commissions, g.guild.config.review.cutoff_day.saturating_sub(g.guild.day)),
+        &g.guild.text.format(
+            "ui.review_targets",
+            &[
+                ("certifications", counts.certifications.to_string()),
+                ("commissions", counts.commissions.to_string()),
+                ("services", services.to_string()),
+                ("target", target.to_string()),
+                (
+                    "days",
+                    g.guild
+                        .config
+                        .review
+                        .cutoff_day
+                        .saturating_sub(g.guild.day)
+                        .to_string(),
+                ),
+            ],
+        ),
         Rect::new(x + 16.0, y + 55.0, w - 32.0, 82.0),
         19.0,
         WHITE,
     );
     let body = if let Some(r) = review {
         let result = if r.passed() {
-            "TARGETS MET. Head office renews its confidence."
+            g.guild.text.get("ui.review_passed").to_string()
         } else {
-            "TARGETS MISSED. The branch needed all targets by the cutoff. Continue to develop the guild or restart."
+            g.guild.text.get("ui.review_failed").to_string()
         };
         let careers = r
             .careers
             .iter()
             .map(|a| {
-                format!(
-                    "{} / {} / {} XP / {} successes",
-                    a.name,
-                    a.rank(),
-                    a.xp,
-                    a.successes
+                g.guild.text.format(
+                    "ui.review_careers",
+                    &[
+                        ("name", a.name.clone()),
+                        ("rank", a.rank(&g.guild.text).to_string()),
+                        ("xp", a.xp.to_string()),
+                        ("successes", a.successes.to_string()),
+                    ],
                 )
             })
             .collect::<Vec<_>>()
             .join("\n");
-        format!("{result}\n\nClosing treasury: {}g (opened with {}g; net {:+}g). Renown: {}.\n\n{careers}", r.gold, g.guild.config.starting.gold, i64::from(r.gold) - i64::from(g.guild.config.starting.gold), r.reputation)
+        format!(
+            "{result}\n\n{}\n\n{careers}",
+            g.guild.text.format(
+                "ui.review_closing",
+                &[
+                    ("gold", r.gold.to_string()),
+                    ("starting_gold", g.guild.config.starting.gold.to_string(),),
+                    (
+                        "net",
+                        format!(
+                            "{:+}",
+                            i64::from(r.gold) - i64::from(g.guild.config.starting.gold)
+                        ),
+                    ),
+                    ("reputation", r.reputation.to_string()),
+                ],
+            )
+        )
     } else {
-        "Choose one adventurer to earn Bronze: that person needs 60 XP, 3 successes and a solo Lantern Road Trial pass. In Staff, select them and tap APPROVE BRONZE. Rank and XP belong to each person.\n\nComplete A Bridge Worth Keeping with a Bronze leader and 6 different service jobs. Each service job counts once; daily cellar work earns gold and XP only.\n\nDay 30 returns and rewards count before the review. Later returns only count in sandbox. Tap BACK TO HEADQUARTERS to begin.".into()
+        g.guild.text.format(
+            "ui.review_open_body",
+            &[
+                ("trial_xp", g.guild.config.progression.trial_xp.to_string()),
+                (
+                    "trial_successes",
+                    g.guild.config.progression.trial_successes.to_string(),
+                ),
+                (
+                    "service_quota",
+                    g.guild.config.review.service_quota.to_string(),
+                ),
+                ("cutoff_day", g.guild.config.review.cutoff_day.to_string()),
+            ],
+        )
     };
     paragraph(
         &body,
@@ -69,14 +123,14 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
     if review.is_some() {
         if button(
             Rect::new(x + 16.0, y + h - 166.0, w - 32.0, 44.0),
-            "CONTINUE SANDBOX",
+            g.guild.text.get("ui.continue_sandbox"),
             true,
         ) {
             return Some(UiAction::Sandbox);
         }
         if button(
             Rect::new(x + 16.0, y + h - 114.0, w - 32.0, 44.0),
-            "RESTART",
+            g.guild.text.get("ui.restart"),
             false,
         ) {
             return Some(UiAction::Restart);
@@ -85,9 +139,9 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
     if button(
         Rect::new(x + 16.0, y + h - 62.0, w - 32.0, 44.0),
         if g.guild.review_pending() {
-            "MENU / SAVE"
+            g.guild.text.get("ui.menu_save")
         } else {
-            "BACK TO HEADQUARTERS"
+            g.guild.text.get("ui.back_headquarters")
         },
         false,
     ) {

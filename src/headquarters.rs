@@ -1,5 +1,5 @@
 //! Presentation derived from the guild. No rewards or availability live here.
-use crate::simulation::Guild;
+use crate::{data::TextCatalog, simulation::Guild};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Room {
@@ -20,14 +20,14 @@ impl Room {
         Self::Gate,
         Self::Training,
     ];
-    pub fn name(self) -> &'static str {
+    pub fn name(self, text: &TextCatalog) -> &str {
         match self {
-            Self::Common => "Common room",
-            Self::Assignments => "Assignments",
-            Self::Recovery => "Recovery",
-            Self::Records => "Records",
-            Self::Gate => "Departure",
-            Self::Training => "Training",
+            Self::Common => text.get("room.common"),
+            Self::Assignments => text.get("room.assignments"),
+            Self::Recovery => text.get("room.recovery"),
+            Self::Records => text.get("room.records"),
+            Self::Gate => text.get("room.departure"),
+            Self::Training => text.get("room.training"),
         }
     }
     pub fn center(self) -> (f32, f32) {
@@ -67,13 +67,13 @@ pub fn activity(g: &Guild, id: usize) -> Activity {
 }
 
 impl Activity {
-    pub fn label(self) -> &'static str {
+    pub fn label(self, text: &TextCatalog) -> &str {
         match self {
-            Self::Away => "Away",
-            Self::Recovering => "Medical leave",
-            Self::Resting => "Resting",
-            Self::Training => "Training",
-            Self::Ready => "Ready",
+            Self::Away => text.get("activity.away"),
+            Self::Recovering => text.get("activity.medical"),
+            Self::Resting => text.get("activity.resting"),
+            Self::Training => text.get("activity.training"),
+            Self::Ready => text.get("activity.ready"),
         }
     }
     pub fn room(self) -> Option<Room> {

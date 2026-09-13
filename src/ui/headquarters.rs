@@ -36,7 +36,11 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         let planning = g.hq.sheet == Sheet::Jobs && g.hq.journey.is_none();
         if button(
             Rect::new(r.x + 20., r.y + 14., 104., 44.),
-            if planning { "< Offers" } else { "< Guild" },
+            if planning {
+                g.guild.text.get("ui.back_offers")
+            } else {
+                g.guild.text.get("ui.back_guild")
+            },
             false,
         ) {
             action = Some(if planning {
@@ -46,12 +50,12 @@ pub fn draw(g: &Game) -> Option<UiAction> {
             });
         }
         let title = match g.hq.sheet {
-            Sheet::Rooms => "HEADQUARTERS ROOMS",
-            Sheet::Commissions => "COMMISSION BOARD",
-            Sheet::Jobs => "GUILD COMMISSION",
-            Sheet::Returns => "EXPEDITION JOURNAL",
-            Sheet::Career => "GUILD REGISTER",
-            Sheet::Facility(_) => "HEADQUARTERS IMPROVEMENT",
+            Sheet::Rooms => g.guild.text.get("ui.headquarters_rooms"),
+            Sheet::Commissions => g.guild.text.get("ui.commission_board"),
+            Sheet::Jobs => g.guild.text.get("ui.guild_commission"),
+            Sheet::Returns => g.guild.text.get("ui.expedition_journal"),
+            Sheet::Career => g.guild.text.get("ui.guild_register"),
+            Sheet::Facility(_) => g.guild.text.get("ui.headquarters_improvement"),
             Sheet::None => "",
         };
         if ww > 500. {
@@ -64,7 +68,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         }
         let area = Rect::new(r.x + 24., r.y + 74., ww - 48., wh - 98.);
         let inner = match g.hq.sheet {
-            Sheet::Rooms => phone::rooms(area),
+            Sheet::Rooms => phone::rooms(g, area),
             Sheet::Commissions => commissions::draw(g, area),
             Sheet::Jobs if wide => quest::draw(g, area),
             Sheet::Jobs => phone::planning(g, area),
@@ -79,12 +83,16 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         action = Some(next);
     }
     if phone || short {
-        if button(Rect::new(12., 68., (w - 32.) / 2., 44.), "Overview", false) {
+        if button(
+            Rect::new(12., 68., (w - 32.) / 2., 44.),
+            g.guild.text.get("ui.overview"),
+            false,
+        ) {
             action = Some(UiAction::Overview);
         }
         if button(
             Rect::new(w / 2. + 4., 68., (w - 32.) / 2., 44.),
-            "Rooms >",
+            g.guild.text.get("ui.rooms"),
             false,
         ) {
             action = Some(UiAction::Rooms);
@@ -137,7 +145,7 @@ pub fn first(g: &Game, id: usize) -> &str {
         .name
         .split_whitespace()
         .next()
-        .unwrap_or("Member")
+        .unwrap_or(g.guild.text.get("ui.guild_record"))
 }
 
 pub fn primary(r: Rect, title: &str, enabled: bool) -> bool {

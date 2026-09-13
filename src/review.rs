@@ -82,11 +82,24 @@ impl Guild {
     pub fn cutoff_notice(&self, days: u32) -> String {
         let returns = self.day + days;
         if self.month.sandbox {
-            format!("SANDBOX / Returns day {returns}. Review is already filed.")
+            self.text
+                .format("review.sandbox_returns", &[("day", returns.to_string())])
         } else if returns > self.config.review.cutoff_day {
-            format!("Returns day {returns}: too late for day 30 review. Continue in sandbox to collect.")
+            self.text.format(
+                "review.late_returns",
+                &[
+                    ("day", returns.to_string()),
+                    ("cutoff_day", self.config.review.cutoff_day.to_string()),
+                ],
+            )
         } else {
-            format!("Returns day {returns}; credited before the day 30 review.")
+            self.text.format(
+                "review.credited_returns",
+                &[
+                    ("day", returns.to_string()),
+                    ("cutoff_day", self.config.review.cutoff_day.to_string()),
+                ],
+            )
         }
     }
 

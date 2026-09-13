@@ -23,50 +23,65 @@ impl Guild {
         contracts: &[crate::contracts::Contract],
     ) -> Result<String, String> {
         if self.review_pending() {
-            return Err("Tap CONTINUE SANDBOX to resume the guild.".into());
+            return Err(self.text.get("service.review_pending").into());
         }
         let (cost, message) = match purchase {
             Purchase::Infirmary => {
                 if self.services.infirmary {
-                    return Err("The infirmary is already open.".into());
+                    return Err(self.text.get("service.infirmary_exists").into());
                 }
                 (
                     self.config.services.infirmary_cost,
-                    "Infirmary opened. Medical leave now recovers twice as fast at the guild.",
+                    self.text.get("service.infirmary_open").to_string(),
                 )
             }
             Purchase::TrainingYard => {
                 if self.services.training_yard {
-                    return Err("The training yard is already open.".into());
+                    return Err(self.text.get("service.training_exists").into());
                 }
-                (self.config.services.training_yard_cost, "Training yard opened. Fully rested Iron recruits gain 5 XP per day at the guild, up to 60 XP.")
+                (
+                    self.config.services.training_yard_cost,
+                    self.text.format(
+                        "service.training_open",
+                        &[
+                            (
+                                "xp_per_day",
+                                self.config.services.training_xp_per_day.to_string(),
+                            ),
+                            (
+                                "xp_cap",
+                                self.config.progression.training_xp_cap.to_string(),
+                            ),
+                        ],
+                    ),
+                )
             }
             Purchase::Scout(id) => {
                 if !self.contract_open(id, contracts) {
-                    return Err("Choose an unfinished contract to scout.".into());
+                    return Err(self.text.get("service.choose_contract").into());
                 }
                 let q = contracts
                     .get(id)
-                    .ok_or("Select a valid contract to scout.")?;
+                    .ok_or_else(|| self.text.get("service.invalid_contract").to_string())?;
                 if q.promotion {
-                    return Err(
-                        "The promotion trial must be completed unaided. Scouts cannot assist."
-                            .into(),
-                    );
+                    return Err(self.text.get("service.trial_no_scout").into());
                 }
                 if self.services.scouted.contains(&id) {
-                    return Err("Scouts have already prepared this route.".into());
+                    return Err(self.text.get("service.scout_exists").into());
                 }
                 if self.expeditions.iter().any(|e| e.contract == id) {
-                    return Err("That expedition has already left. Scout before dispatch.".into());
+                    return Err(self.text.get("service.expedition_exists").into());
                 }
-                (self.config.services.scout_cost, "Scouts prepared the route. The next party on this route gets an advantage, even on a later posting.")
+                (
+                    self.config.services.scout_cost,
+                    self.text.get("service.scout_prepared").to_string(),
+                )
             }
         };
         if self.gold < cost {
-            return Err(format!(
-                "Requires {cost}g. Complete contracts to earn more."
-            ));
+            return Err(self
+                .text
+                .format("service.requires_gold", &[("cost", cost.to_string())]));
         }
         self.gold -= cost;
         match purchase {
@@ -74,6 +89,6 @@ impl Guild {
             Purchase::TrainingYard => self.services.training_yard = true,
             Purchase::Scout(id) => self.services.scouted.push(id),
         }
-        Ok(message.into())
+        Ok(message)
     }
 }

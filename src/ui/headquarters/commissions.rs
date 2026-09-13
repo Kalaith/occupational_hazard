@@ -5,14 +5,14 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     let ids = g.guild.open_contracts(&g.contracts);
     let compact = r.w < 600.;
     text(
-        "COMPARE COMMISSIONS",
+        g.guild.text.get("ui.compare_commissions"),
         Rect::new(r.x, r.y, r.w, 30.),
         24.,
         INK,
     );
     if ids.is_empty() {
         text(
-            "No postings today. Tap < Guild, then ADVANCE DAY.",
+            g.guild.text.get("ui.no_postings"),
             Rect::new(r.x, r.y + 48., r.w, 100.),
             21.,
             MUTED,
@@ -34,20 +34,36 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             INK,
         );
         let expiry = if q.promotion {
-            "Standing trial".into()
+            g.guild.text.get("ui.standing_trial").into()
         } else {
-            format!(
-                "Expires day {}",
-                q.offer(g.guild.day).expect("open posting").expires
+            g.guild.text.format(
+                "ui.expires_day",
+                &[(
+                    "day",
+                    q.offer(g.guild.day)
+                        .expect("open posting")
+                        .expires
+                        .to_string(),
+                )],
             )
         };
         text(
-            &format!("{}g  ·  {} days  ·  {}", q.gold, q.days, expiry),
+            &g.guild.text.format(
+                "ui.commission_stats",
+                &[
+                    ("gold", q.gold.to_string()),
+                    ("days", q.days.to_string()),
+                    ("expiry", expiry),
+                ],
+            ),
             Rect::new(row.x + 12., row.y + 36., row.w - 24., 25.),
             18.,
             GOLD,
         );
-        let danger = format!("Danger: {}", q.danger);
+        let danger = g
+            .guild
+            .text
+            .format("ui.danger", &[("danger", q.danger.clone())]);
         text(
             &danger,
             if compact {
@@ -65,8 +81,8 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     if pages > 1 {
         let half = (r.w - 12.) / 2.;
         for (next, title, x) in [
-            (false, "< Previous offers", r.x),
-            (true, "More offers >", r.x + half + 12.),
+            (false, g.guild.text.get("ui.previous_offers"), r.x),
+            (true, g.guild.text.get("ui.more_offers"), r.x + half + 12.),
         ] {
             if button(Rect::new(x, r.bottom() - 44., half, 44.), title, false) {
                 return Some(UiAction::CommissionPage(
