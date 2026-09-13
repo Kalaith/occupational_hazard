@@ -23,7 +23,7 @@ as errors passes. Browser clicks exercised selection, dispatch, NEXT DAY,
 reports, recovery, approval and the intermediate celebration. This fresh guild
 certified Mira on day 12 and returned a Bronze commission on day 17, then
 received its successful review on day 30 with 352g and Mira at 130 XP/five
-successes. The successful review screenshot is `browser_review.png`.
+successes. The successful review screenshot is `docs/verification/ui_review.png`.
 
 Testing prompted separate trial and approval guidance and fixed consecutive
 lessons so BACK TO DESK actually returns to the desk. Compact tutorial and
@@ -58,10 +58,10 @@ captures use 1280x720. These are mouse-click tests at desktop and compact
 viewports, not a claim of physical touchscreen-device coverage. Native capture
 checks are layout verification, not an independent native interactive playthrough.
 
-Evidence lives directly in docs/verification/: browser_review_mobile.png,
-browser_review_missed_mobile.png, browser_cutoff_mobile.png and
-browser_help_mobile.png, with deterministic title, objectives, promotion and
-review captures. The catalog thumbnail was refreshed from the new title screen.
+Evidence lives directly in docs/verification/: the current phone review,
+missed-review, tutorial and warning captures, with deterministic title,
+objectives, promotion and review captures. The catalog thumbnail was refreshed
+from the new title screen.
 ## First unfamiliar-player feedback and fixes
 
 Feedback supplied by the user after the session:
@@ -104,7 +104,7 @@ completed one. Reload retained day 2, 134g, zero unread reports and removal
 of both completed quests. The previous six-job test ledger also loaded with
 its day-33/152g state intact and completed jobs absent from navigation.
 
-Screenshots: browser_guidance_mobile.png and browser_reports_mobile.png;
+Screenshots: ui_phone_tutorial.png and ui_phone_pending_returns.png;
 updated native ui_tutorial.png, ui_reports.png, ui_report.png and ui_gameplay.png.
 No physical touchscreen-device coverage is claimed.
 
@@ -139,7 +139,7 @@ BACK TO DESK preserves the day and ADVANCE DAY deliberately proceeds.
 A regression covers a fresh roster, mixed availability, recovery and everyone
 away. At 360x640, actual browser clicks on the published build showed Tomas
 alone in the warning on day 2, cancellation retained day 2/134g, and explicit
-confirmation advanced to day 3/134g. See browser_idle_warning_mobile.png.
+confirmation advanced to day 3/134g. See ui_phone_idle_warning.png.
 All 24 Rust tests (22 unit and two integration) and the required no-argument
 publish.ps1 passed. Windows and WebGL packages deployed to the WSL preview.
 
@@ -149,6 +149,6 @@ publish.ps1 passed. Windows and WebGL packages deployed to the WSL preview.
 The final build passed the no-argument publisher and clippy with warnings as
 errors. Published-browser clicks at 360x640 verified the complete objective
 explanation, the individual Iron record, and all three optional-service rows.
-Updated ui_objectives.png and ui_mobile_services.png now come from this browser
+Updated ui_objectives.png and ui_phone_services.png now come from this browser
 check, replacing captures of those same screens. These checks verify layout
 and controls, not a second human comprehension study or physical touch hardware.

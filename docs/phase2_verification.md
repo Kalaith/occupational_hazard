@@ -73,8 +73,8 @@ the visible idle warning returned Beekeeper on day 5 and paid exactly 48g (182g)
 The objective panel showed two distinct service credits, including the migrated
 medicine success, and 25 days remaining. No keyboard controls were used.
 
-Evidence: `verification/ui_mobile_party.png`,
-`verification/phase2_expired_return.png`, `verification/ui_objectives.png`.
+Evidence: `verification/ui_phone_party_readiness.png`,
+`verification/ui_phone_pending_returns.png`, `verification/ui_objectives.png`.
 Browser clicks are not physical-touch testing or an unfamiliar-player study.
 
 Desktop 1280x720 inspection also confirmed readable contract timing, roster and

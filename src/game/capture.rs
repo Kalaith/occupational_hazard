@@ -38,9 +38,14 @@ fn reset(game: &mut Game, scene_id: &str) {
     game.report_page = 0;
     game.board_page = 0;
     game.party = vec![0];
-    game.has_save = false;
-    game.in_title = scene_id == "title";
-    game.settings_open = scene_id == "settings";
+    game.has_save = scene_id == "confirm_new";
+    game.in_title = matches!(scene_id, "title" | "confirm_new");
+    game.confirm_new = scene_id == "confirm_new";
+    game.settings_open = matches!(scene_id, "settings" | "large_text");
+    game.hq.large_text = scene_id == "large_text";
+    if game.hq.large_text {
+        macroquad_toolkit::ui::set_ui_text_scale(1.15);
+    }
     game.tab = 0;
     game.victory = false;
     game.month_open = scene_id == "objectives";
