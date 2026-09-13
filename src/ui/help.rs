@@ -76,7 +76,7 @@ pub fn draw_help(g: &Game) -> Option<UiAction> {
         GOLD,
     );
     paragraph(
-        lesson.text(screen_width() < 874.0 || screen_height() < 674.0),
+        lesson.text(),
         Rect::new(x + 20.0, y + 78.0, w - 40.0, h - 222.0),
         22.0,
         WHITE,

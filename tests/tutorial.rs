@@ -44,7 +44,6 @@ fn skip_and_acknowledgements_survive_reload_without_hiding_help() {
     assert!(loaded.tutorial.has_seen(Lesson::Welcome));
     assert_eq!(LESSONS.len(), 8);
     for lesson in LESSONS {
-        assert!(lesson.text(true).contains("BACK TO HEADQUARTERS"));
-        assert!(lesson.text(false).contains("BACK TO HEADQUARTERS"));
+        assert!(lesson.text().contains("BACK TO HEADQUARTERS"));
     }
 }

@@ -46,7 +46,7 @@ impl Lesson {
         }
     }
 
-    pub fn text(self, _compact: bool) -> &'static str {
+    pub fn text(self) -> &'static str {
         match self {
             Self::Welcome => "Tap BACK TO HEADQUARTERS. Tap a room to open its work or a person to inspect their career. Review shows the day-30 targets: one Bronze certification, one Bronze commission and six distinct service successes.",
             Self::Selection => "Tap BACK TO HEADQUARTERS, then Assignments (Rooms > Assignments on a phone). Compare the offer rows and select a commission. On a phone tap CHOOSE PARTY, then tap a member row. Checkmarks mark selection; away or injured staff cannot join.",

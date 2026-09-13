@@ -1,7 +1,7 @@
 //! Compact navigation and decision pages, with room artwork secondary to reading.
 use super::*;
 
-pub fn rooms(_g: &Game, r: Rect) -> Option<UiAction> {
+pub fn rooms(r: Rect) -> Option<UiAction> {
     let columns = if r.h < 360. { 2 } else { 1 };
     let row = (r.h / (6 / columns) as f32).min(72.);
     let width = (r.w - 8. * (columns - 1) as f32) / columns as f32;

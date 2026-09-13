@@ -64,7 +64,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         }
         let area = Rect::new(r.x + 24., r.y + 74., ww - 48., wh - 98.);
         let inner = match g.hq.sheet {
-            Sheet::Rooms => phone::rooms(g, area),
+            Sheet::Rooms => phone::rooms(area),
             Sheet::Commissions => commissions::draw(g, area),
             Sheet::Jobs if wide => quest::draw(g, area),
             Sheet::Jobs => phone::planning(g, area),
