@@ -105,7 +105,7 @@ impl Guild {
 
     pub fn validate_month(&self) -> Result<(), String> {
         if self.month.sandbox && self.month.review.is_none() {
-            return Err("Sandbox ledger is missing its review.".into());
+            return Err(self.text.get("error.sandbox_missing_review").into());
         }
         if let Some(r) = &self.month.review {
             if r.day < self.config.review.cutoff_day
@@ -114,7 +114,7 @@ impl Guild {
                 || r.certifications != r.careers.iter().filter(|a| a.bronze).count()
                 || (!self.month.sandbox && r.day != self.day)
             {
-                return Err("This ledger has an invalid first-month review.".into());
+                return Err(self.text.get("error.invalid_first_month_review").into());
             }
         }
         Ok(())

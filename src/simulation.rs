@@ -140,7 +140,7 @@ impl Guild {
                 .iter()
                 .any(|&id| id >= contracts.len() || contracts[id].promotion)
         {
-            return Err("This ledger has invalid scouting records.".into());
+            return Err(self.text.get("error.invalid_scouting_records").into());
         }
         if self.roster.len() != self.config.roster.len()
             || self.completed.len() != contracts.len()
@@ -150,7 +150,7 @@ impl Guild {
             || self.reputation > self.config.caps.max_reputation
             || self.reports.len() > self.config.review.max_saved_reports
         {
-            return Err("This ledger has unsupported or invalid guild records.".into());
+            return Err(self.text.get("error.invalid_guild_records").into());
         }
         let mut assigned = vec![];
         let mut quests = vec![];
@@ -161,12 +161,15 @@ impl Guild {
                 || e.party.is_empty()
                 || quests.contains(&e.contract)
             {
-                return Err("This ledger has an invalid expedition.".into());
+                return Err(self.text.get("error.invalid_expedition_records").into());
             }
             quests.push(e.contract);
             for &id in &e.party {
                 if id >= self.roster.len() || assigned.contains(&id) {
-                    return Err("This ledger assigns an adventurer more than once.".into());
+                    return Err(self
+                        .text
+                        .get("error.duplicate_adventurer_assignment")
+                        .into());
                 }
                 assigned.push(id);
             }
@@ -177,7 +180,7 @@ impl Guild {
                 || a.fatigue > self.config.caps.max_fatigue
                 || a.injury > self.config.caps.max_injury
         }) {
-            return Err("This ledger has invalid adventurer records.".into());
+            return Err(self.text.get("error.invalid_adventurer_records").into());
         }
         Ok(())
     }

@@ -108,7 +108,7 @@ impl Guild {
         let legacy = self.board.definition_order.is_empty();
         let order: Vec<String> = if legacy {
             if ![6, 12].contains(&self.completed.len()) {
-                return Err("Unsupported legacy contract records.".into());
+                return Err(self.text.get("error.unsupported_legacy_records").into());
             }
             LEGACY_IDS[..self.completed.len()]
                 .iter()
@@ -120,14 +120,15 @@ impl Guild {
         if order.len() != self.completed.len()
             || order.iter().collect::<BTreeSet<_>>().len() != order.len()
         {
-            return Err("Invalid saved contract identities.".into());
+            return Err(self.text.get("error.invalid_saved_contracts").into());
         }
         let indices: Vec<usize> = order
             .iter()
             .map(|key| {
-                qs.iter()
-                    .position(|q| &q.id == key)
-                    .ok_or_else(|| format!("Unknown saved contract: {key}"))
+                qs.iter().position(|q| &q.id == key).ok_or_else(|| {
+                    self.text
+                        .format("error.unknown_saved_contract", &[("key", key.clone())])
+                })
             })
             .collect::<Result<_, _>>()?;
         let mut completed = vec![0; qs.len()];
@@ -137,7 +138,7 @@ impl Guild {
         for e in &mut self.expeditions {
             e.contract = *indices
                 .get(e.contract)
-                .ok_or("Invalid saved expedition identity")?;
+                .ok_or_else(|| self.text.get("error.invalid_saved_expedition").to_string())?;
             if legacy {
                 e.instance = format!("{}@legacy-{}", qs[e.contract].id, e.returns);
                 self.board.accepted.insert(e.instance.clone());
@@ -147,7 +148,9 @@ impl Guild {
             }
         }
         for id in &mut self.services.scouted {
-            *id = *indices.get(*id).ok_or("Invalid saved scout identity")?;
+            *id = *indices
+                .get(*id)
+                .ok_or_else(|| self.text.get("error.invalid_saved_scout").to_string())?;
         }
         if legacy {
             for (id, q) in qs.iter().enumerate() {
@@ -172,7 +175,7 @@ impl Guild {
         if !self.board.definition_order.is_empty()
             && self.board.definition_order != qs.iter().map(|q| q.id.clone()).collect::<Vec<_>>()
         {
-            return Err("Contract identities need migration before use.".into());
+            return Err(self.text.get("error.contract_migration_required").into());
         }
         if self
             .board
@@ -180,7 +183,7 @@ impl Guild {
             .iter()
             .any(|key| !qs.iter().any(|q| &q.id == key && q.service))
         {
-            return Err("Invalid service quota records.".into());
+            return Err(self.text.get("error.invalid_service_quota_records").into());
         }
         let mut instances = BTreeSet::new();
         for e in &self.expeditions {
@@ -191,7 +194,10 @@ impl Guild {
                         .get(e.contract)
                         .is_some_and(|q| e.instance.starts_with(&format!("{}@", q.id))))
             {
-                return Err("Invalid dated expedition records.".into());
+                return Err(self
+                    .text
+                    .get("error.invalid_dated_expedition_records")
+                    .into());
             }
         }
         Ok(())
