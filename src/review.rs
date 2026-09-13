@@ -8,6 +8,12 @@ use serde::{Deserialize, Serialize};
 pub const REVIEW_DAY: u32 = 30;
 pub const SERVICE_QUOTA: usize = 6;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ObjectiveCounts {
+    pub certifications: usize,
+    pub commissions: u32,
+}
+
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct Month {
     pub review: Option<Review>,
@@ -41,28 +47,29 @@ impl Guild {
         self.month.review.is_some() && !self.month.sandbox
     }
 
-    pub fn objective_counts(&self, qs: &[Contract]) -> (usize, u32) {
-        (
-            self.roster.iter().filter(|a| a.bronze).count(),
-            qs.iter()
+    pub fn objective_counts(&self, qs: &[Contract]) -> ObjectiveCounts {
+        ObjectiveCounts {
+            certifications: self.roster.iter().filter(|a| a.bronze).count(),
+            commissions: qs
+                .iter()
                 .zip(&self.completed)
                 .filter(|(q, _)| q.bronze)
                 .map(|(_, n)| n)
                 .sum(),
-        )
+        }
     }
 
     pub fn finish_review(&mut self, qs: &[Contract]) {
         if self.day < REVIEW_DAY || self.month.review.is_some() {
             return;
         }
-        let (certifications, commissions) = self.objective_counts(qs);
+        let counts = self.objective_counts(qs);
         self.month.review = Some(Review {
             service_returns: self.board.service_credit.len(),
             service_target: SERVICE_QUOTA,
             day: self.day,
-            certifications,
-            commissions,
+            certifications: counts.certifications,
+            commissions: counts.commissions,
             gold: self.gold,
             reputation: self.reputation,
             careers: self.roster.clone(),

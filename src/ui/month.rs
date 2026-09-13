@@ -18,8 +18,11 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         26.0,
         GOLD,
     );
-    let (certs, commissions) = review
-        .map(|r| (r.certifications, r.commissions))
+    let counts = review
+        .map(|r| crate::review::ObjectiveCounts {
+            certifications: r.certifications,
+            commissions: r.commissions,
+        })
         .unwrap_or_else(|| g.guild.objective_counts(&g.contracts));
     let services = review
         .map(|r| r.service_returns)
@@ -28,7 +31,7 @@ pub fn draw_month(g: &Game) -> Option<UiAction> {
         .map(|r| r.service_target)
         .unwrap_or(crate::review::SERVICE_QUOTA);
     paragraph(
-        &format!("Bronze adventurers: {certs}/1\nSuccessful Bronze commission: {commissions}/1\nService jobs: {services}/{target} / {} days left", 30u32.saturating_sub(g.guild.day)),
+        &format!("Bronze adventurers: {}/1\nSuccessful Bronze commission: {}/1\nService jobs: {services}/{target} / {} days left", counts.certifications, counts.commissions, 30u32.saturating_sub(g.guild.day)),
         Rect::new(x + 16.0, y + 55.0, w - 32.0, 82.0),
         19.0,
         WHITE,
