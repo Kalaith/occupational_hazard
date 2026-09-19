@@ -101,7 +101,7 @@ Created: 2026-09-09.
 
 - [x] **8.1 Map ownership before implementation.** Keep simulation, contracts, board, services, reports and review authoritative. Replace the presentation responsibilities under src/ui and adapt src/game.rs actions deliberately. Split scene layout, character presentation, selection, planning and transitions into cohesive modules as needed.
 - [x] **8.2 Preserve save compatibility.** Load representative saves with expeditions, unread reports, purchased services, partial promotion and completed review. Reconstruct visual state from saved guild data. Add migration only for genuinely new persisted data, with backward-compatible defaults.
-- [x] **8.3 Test meaningful invariants.** Cover placement precedence, interaction transforms, blocked dispatch, duplicate action protection, purchase effects, report accounting and interruption/reload. Store tests in separate child files and keep every Rust file at or below 800 physical lines.
+- [x] **8.3 Test meaningful invariants.** Cover placement precedence, blocked dispatch, duplicate action protection, purchase effects, report accounting and interruption/reload through public game APIs. Follow `CODE_STANDARDS.md` §11: all tests and test-only helpers belong in each crate's `tests/` directory; migrate legacy source-side tests separately before expanding coverage. Strongly target five cases per major feature, consolidating related inputs and explaining justified exceptions. Check interaction transforms through focused regression coverage or manual input checks; UI and rendering generally do not need unit tests. Keep every Rust file within 800 total physical lines.
 - [x] **8.4 Package all required assets.** Update manifests and registry consistently. Use toolkit asset facilities and data_loader for JSON/loading. Missing required art must produce an obvious source-labelled failure, not an unnoticed blank room.
 - [x] **8.5 Verify performance.** Record browser/device, resolution and frame timing on a named desktop and a touch device where available. Target smooth 60 fps on the chosen desktop and at least 30 fps on the chosen touch device; report unavailable device evidence honestly. Avoid loading assets during interaction or allocating unbounded transition queues.
 - [x] **8.6 Update capture and publishing coverage.** Extend deterministic scenarios for headquarters occupancy and new flows. Store screenshots directly in docs/verification/, replacing equivalent existing captures. Update the title and root catalog_thumbnail.png to reflect the delivered game.
@@ -149,7 +149,6 @@ The redesign is incomplete if any of these remain:
 - New rules are invented to make the scenery appear functional without being separately designed and verified.
 
 Completion requires all ten sections' outcomes. Any accepted scope reduction must be recorded explicitly rather than silently interpreting a cosmetic change as a finished redesign.
-
 
 
 

@@ -201,8 +201,12 @@ who has never seen the project.
   continue. Check desktop and a touch device, plus reload during an expedition.
 - Verify older slice saves, current saves and invalid-save recovery; no silent
   resets or duplicate payouts. Check packaged assets and native build behavior.
-- Run focused simulation/save regression tests and clippy. Store tests in child
-  files and keep every Rust source file at or below 800 physical lines.
+- Run focused simulation/save regression tests and clippy. Store all tests and
+  test-only helpers in each crate's `tests/` directory, exercise its public API,
+  and migrate legacy source-side tests separately before expanding coverage.
+  Strongly target five cases per major feature; consolidate related inputs and
+  explain distinct coverage beyond that target (`CODE_STANDARDS.md` §11).
+  Keep every Rust file within 800 total physical lines, including tests.
 - Observe at least three unfamiliar players. Target all three completing the
   first dispatch unaided and at least two finishing a review and describing one
   meaningful roster tradeoff. Treat this small sample as a usability gate, not

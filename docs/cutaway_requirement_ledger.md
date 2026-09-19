@@ -2,6 +2,12 @@
 
 2026-09-09 owner revision: the previous visual acceptance estimate was rejected. Current screenshots show the replacement art and centered quest windows. Verified below describes implementation evidence, not owner sign-off on visual similarity. Unfamiliar-player feedback and discoverability sessions are deferred by explicit owner instruction and are no longer blockers.
 
+The regression results below are historical implementation evidence. They do
+not certify test placement against current `CODE_STANDARDS.md` §11: migrate
+legacy tests from `src/` into the owning crate's `tests/` directory separately
+before expanding coverage. Review each major feature against the five-case
+target while preserving useful regressions.
+
 | Goal | Status | Implementation | Verification scenario / evidence |
 | --- | --- | --- | --- |
 | 1.1 Replace the primary interaction model. | Verified | docs/cutaway_design.md; src/ui/headquarters.rs | Desktop mockup comparison and unchanged deterministic rules |
@@ -47,13 +53,13 @@
 | 7.4 Make state readable without colour alone. | Verified | src/ui/headquarters.rs; src/ui/help.rs; src/tutorial.rs | 390×844 and 844×390 captures; published pointer checks; full manual month per viewport not claimed |
 | 7.5 Rewrite contextual guidance. | Verified | src/ui/headquarters.rs; src/ui/help.rs; src/tutorial.rs | 390×844 and 844×390 captures; published pointer checks; full manual month per viewport not claimed |
 | 7.6 Cover navigation and interruption. | Verified | src/ui/headquarters.rs; src/ui/help.rs; src/tutorial.rs | 390×844 and 844×390 captures; published pointer checks; full manual month per viewport not claimed |
-| 8.1 Map ownership before implementation. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
-| 8.2 Preserve save compatibility. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
-| 8.3 Test meaningful invariants. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
-| 8.4 Package all required assets. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
-| 8.5 Verify performance. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | Windows Ryzen 7 5800X / RTX 4080 SUPER, in-app Chromium at 1280×720: 60 FPS / 16.6 ms spot checks; physical touch device unavailable. |
-| 8.6 Update capture and publishing coverage. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
-| 8.7 Run the required validation path. | Verified | src/headquarters/tests.rs; existing rule tests; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.1 Map ownership before implementation. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.2 Preserve save compatibility. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.3 Test meaningful invariants. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.4 Package all required assets. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.5 Verify performance. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | Windows Ryzen 7 5800X / RTX 4080 SUPER, in-app Chromium at 1280×720: 60 FPS / 16.6 ms spot checks; physical touch device unavailable. |
+| 8.6 Update capture and publishing coverage. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
+| 8.7 Run the required validation path. | Verified | headquarters rule coverage; asset_registry.json; publish.ps1 | 34 game/asset/source tests; 2 chroma tests; no-argument Preview publishing |
 | 10.1 Maintain a requirement ledger. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
 | 10.2 Capture representative states. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
 | 10.5 Demonstrate visual differentiation. | Verified | docs/verification/cutaway_comparison.md; this ledger | Comparison document, captured images, commit history |
