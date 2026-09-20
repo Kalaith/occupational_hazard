@@ -3,11 +3,17 @@ use super::*;
 
 /// Image-space room geometry is projected with the same mapping as every target.
 pub fn project(stage: Rect, view: Rect, world: Rect) -> Rect {
+    if world.x == view.x && world.y == view.y && world.w == view.w && world.h == view.h {
+        return stage;
+    }
+    let scale = (stage.w / view.w).min(stage.h / view.h);
+    let offset_x = stage.x + (stage.w - view.w * scale) * 0.5;
+    let offset_y = stage.y + (stage.h - view.h * scale) * 0.5;
     Rect::new(
-        stage.x + (world.x - view.x) * stage.w / view.w,
-        stage.y + (world.y - view.y) * stage.h / view.h,
-        world.w * stage.w / view.w,
-        world.h * stage.h / view.h,
+        offset_x + (world.x - view.x) * scale,
+        offset_y + (world.y - view.y) * scale,
+        world.w * scale,
+        world.h * scale,
     )
 }
 
@@ -19,13 +25,20 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         .assets
         .get_texture("building")
         .expect("Required headquarters building");
+    let scale = (stage.w / view.w).min(stage.h / view.h);
+    let art_dest = Rect::new(
+        stage.x + (stage.w - view.w * scale) * 0.5,
+        stage.y + (stage.h - view.h * scale) * 0.5,
+        view.w * scale,
+        view.h * scale,
+    );
     draw_texture_ex(
         art,
-        stage.x,
-        stage.y,
+        art_dest.x,
+        art_dest.y,
         WHITE,
         DrawTextureParams {
-            dest_size: Some(stage.size()),
+            dest_size: Some(art_dest.size()),
             source: Some(view),
             ..Default::default()
         },
@@ -35,7 +48,7 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
         action = Some(UiAction::Room(Room::Assignments));
     }
     draw_facilities(g, stage, view);
-    if let Some(next) = draw_people(g, stage, view, phone, short, interactive) {
+    if let Some(next) = draw_people(g, stage, view, phone, interactive) {
         action = Some(next);
     }
     draw_clerk(g, stage, view);
@@ -49,8 +62,8 @@ pub fn draw(g: &Game, stage: Rect, interactive: bool) -> Option<UiAction> {
 fn scene_view(g: &Game, stage: Rect, phone: bool, short: bool) -> Rect {
     let mut view = Rect::new(0., 0., 1536., 900.);
     if phone && g.hq.focus.is_none() {
-        view.h = (1536. * stage.h / stage.w).min(1024.);
-        view.y = (900. - view.h).max(0.);
+        view.x = 180.;
+        view.y = 0.;
     }
     if (phone && g.hq.focus.is_some()) || short {
         let (cx, _) = g.hq.focus.unwrap_or(Room::Common).center();
@@ -64,6 +77,22 @@ fn scene_view(g: &Game, stage: Rect, phone: bool, short: bool) -> Rect {
             };
             view.h = 490.;
         }
+    }
+    let target_aspect = stage.w / stage.h.max(1.);
+    let view_aspect = view.w / view.h.max(1.);
+    if view_aspect > target_aspect {
+        view.w = (view.h * target_aspect).min(1536.);
+        view.x = view.x.clamp(0., 1536. - view.w);
+    } else {
+        view.h = (view.w / target_aspect).min(900.);
+        view.y = view.y.clamp(0., 900. - view.h);
+    }
+    if short {
+        view.y = if matches!(g.hq.focus, Some(Room::Recovery | Room::Records)) {
+            0.
+        } else {
+            600.
+        };
     }
     view
 }
@@ -120,8 +149,10 @@ fn room_targets(
             && !((phone || short) && r.y < stage.y + 100.)
         {
             let target = Rect::new(r.x, r.y, r.w.max(90.), 44.);
-            panel(Rect::new(target.x, target.y + 7., target.w, 30.), PANEL);
-            label(room.name(&g.guild.text), target, 15., GOLD);
+            if !(!phone && !short && room == Room::Assignments) {
+                panel(Rect::new(target.x, target.y + 7., target.w, 30.), PANEL);
+                label(room.name(&g.guild.text), target, 15., GOLD);
+            }
             if interactive && help::is_target(g, room.name(&g.guild.text)) {
                 draw_rectangle_lines(target.x, target.y + 7., target.w, 30., 2., GOLD);
             }
@@ -191,7 +222,6 @@ fn draw_people(
     stage: Rect,
     view: Rect,
     phone: bool,
-    short: bool,
     interactive: bool,
 ) -> Option<UiAction> {
     let mut action = None;
@@ -203,7 +233,7 @@ fn draw_people(
         {
             continue;
         }
-        if let Some(next) = draw_person(g, stage, view, id, phone, short, interactive) {
+        if let Some(next) = draw_person(g, stage, view, id, phone, interactive) {
             action = Some(next);
         }
     }
@@ -216,7 +246,6 @@ fn draw_person(
     view: Rect,
     id: usize,
     phone: bool,
-    short: bool,
     interactive: bool,
 ) -> Option<UiAction> {
     let state = activity(&g.guild, id);
@@ -258,8 +287,6 @@ fn draw_person(
         resting,
         feet,
         height,
-        phone,
-        short,
     };
     draw_person_figure(g, &layout);
     let tag = person_tag(g, &layout);
@@ -301,8 +328,6 @@ struct PersonLayout {
     resting: bool,
     feet: Vec2,
     height: f32,
-    phone: bool,
-    short: bool,
 }
 
 fn draw_person_figure(g: &Game, layout: &PersonLayout) {
@@ -353,45 +378,43 @@ fn person_tag(g: &Game, layout: &PersonLayout) -> Rect {
         rw,
         28.,
     );
-    if !layout.short && (!layout.phone || g.hq.focus.is_some()) {
-        panel(tag, PANEL);
-        let caption = if rw < 100. {
-            first(g, layout.id).to_string()
-        } else {
-            g.guild.text.format(
-                "ui.person_caption",
-                &[
-                    ("name", first(g, layout.id).to_string()),
-                    ("activity", layout.state.label(&g.guild.text).to_string()),
-                ],
-            )
-        };
-        label(
-            &caption,
-            if rw < 100. {
-                Rect::new(tag.x, tag.y, tag.w, 14.)
-            } else {
-                tag
-            },
-            if rw < 100. { 12. } else { 14. },
-            if layout.state == Activity::Ready {
-                Color::new(0.68, 0.82, 0.58, 1.)
-            } else {
-                GOLD
-            },
-        );
+    panel(tag, PANEL);
+    let caption = if rw < 100. {
+        first(g, layout.id).to_string()
+    } else {
+        g.guild.text.format(
+            "ui.person_caption",
+            &[
+                ("name", first(g, layout.id).to_string()),
+                ("activity", layout.state.label(&g.guild.text).to_string()),
+            ],
+        )
+    };
+    label(
+        &caption,
         if rw < 100. {
-            label(
-                if layout.state == Activity::Recovering {
-                    g.guild.text.get("ui.injured")
-                } else {
-                    layout.state.label(&g.guild.text)
-                },
-                Rect::new(tag.x, tag.y + 14., tag.w, 14.),
-                12.,
-                MUTED,
-            );
-        }
+            Rect::new(tag.x, tag.y, tag.w, 14.)
+        } else {
+            tag
+        },
+        if rw < 100. { 12. } else { 14. },
+        if layout.state == Activity::Ready {
+            Color::new(0.68, 0.82, 0.58, 1.)
+        } else {
+            GOLD
+        },
+    );
+    if rw < 100. {
+        label(
+            if layout.state == Activity::Recovering {
+                g.guild.text.get("ui.injured")
+            } else {
+                layout.state.label(&g.guild.text)
+            },
+            Rect::new(tag.x, tag.y + 14., tag.w, 14.),
+            12.,
+            MUTED,
+        );
     }
     tag
 }

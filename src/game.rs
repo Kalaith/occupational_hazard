@@ -28,6 +28,66 @@ fn load_preferences() -> ((bool, bool), Option<String>) {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FeedbackSeverity {
+    Info,
+    Error,
+}
+
+pub struct Feedback {
+    pub message: String,
+    pub severity: FeedbackSeverity,
+    remaining: Option<f32>,
+}
+
+impl Default for Feedback {
+    fn default() -> Self {
+        Self {
+            message: String::new(),
+            severity: FeedbackSeverity::Info,
+            remaining: None,
+        }
+    }
+}
+
+impl Feedback {
+    pub fn info(&mut self, message: impl Into<String>) {
+        self.message = message.into();
+        self.severity = FeedbackSeverity::Info;
+        self.remaining = Some(4.0);
+    }
+
+    pub fn error(&mut self, message: impl Into<String>) {
+        self.message = message.into();
+        self.severity = FeedbackSeverity::Error;
+        self.remaining = None;
+    }
+
+    pub fn clear_info(&mut self) {
+        if self.severity == FeedbackSeverity::Info {
+            self.dismiss();
+        }
+    }
+
+    pub fn dismiss(&mut self) {
+        self.message.clear();
+        self.remaining = None;
+    }
+
+    pub fn is_error(&self) -> bool {
+        !self.message.is_empty() && self.severity == FeedbackSeverity::Error
+    }
+
+    pub fn tick(&mut self, dt: f32) {
+        if let Some(remaining) = &mut self.remaining {
+            *remaining -= dt;
+            if *remaining <= 0.0 {
+                self.dismiss();
+            }
+        }
+    }
+}
+
 pub struct Game {
     pub hq: crate::headquarters::Headquarters,
     #[cfg(target_os = "windows")]
@@ -45,11 +105,12 @@ pub struct Game {
     pub report_detail: bool,
     pub report_page: usize,
     pub board_page: usize,
-    pub notice: String,
+    pub feedback: Feedback,
     pub has_save: bool,
     pub confirm_new: bool,
     pub victory: bool,
     pub month_open: bool,
+    pub review_details: bool,
     pub confirm_day: bool,
     pub help_page: Option<usize>,
     capture: bool,
@@ -106,11 +167,18 @@ impl Game {
             report_detail: false,
             report_page: 0,
             board_page: 0,
-            notice: preference_notice.unwrap_or_default(),
+            feedback: {
+                let mut feedback = Feedback::default();
+                if let Some(notice) = preference_notice {
+                    feedback.error(notice);
+                }
+                feedback
+            },
             has_save: persistence::slot_exists("occupational_hazard", "guild"),
             confirm_new: false,
             victory: false,
             month_open: false,
+            review_details: false,
             confirm_day: false,
             help_page: None,
             capture: false,
@@ -119,6 +187,7 @@ impl Game {
     }
 
     pub fn update(&mut self, dt: f32) {
+        self.feedback.tick(dt);
         input::capture(self);
         actions::update(self, dt);
     }

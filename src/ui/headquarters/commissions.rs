@@ -4,12 +4,6 @@ use super::*;
 pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
     let ids = g.guild.open_contracts(&g.contracts);
     let compact = r.w < 600.;
-    text(
-        g.guild.text.get("ui.compare_commissions"),
-        Rect::new(r.x, r.y, r.w, 30.),
-        24.,
-        INK,
-    );
     if ids.is_empty() {
         text(
             g.guild.text.get("ui.no_postings"),
@@ -20,12 +14,12 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
         return None;
     }
     let row_h = if compact { 110. } else { 80. };
-    let rows = ((r.h - 94.) / row_h).floor().max(1.) as usize;
+    let rows = ((r.h - 52.) / row_h).floor().max(1.) as usize;
     let pages = ids.len().div_ceil(rows);
     let page = g.board_page.min(pages - 1);
     for (slot, &id) in ids.iter().skip(page * rows).take(rows).enumerate() {
         let q = &g.contracts[id];
-        let row = Rect::new(r.x, r.y + 42. + slot as f32 * row_h, r.w, row_h - 8.);
+        let row = Rect::new(r.x, r.y + 4. + slot as f32 * row_h, r.w, row_h - 8.);
         panel(row, PANEL);
         text(
             &q.title,
@@ -73,6 +67,16 @@ pub fn draw(g: &Game, r: Rect) -> Option<UiAction> {
             },
             18.,
             MUTED,
+        );
+        text(
+            &preparation::service_status(g, id),
+            if compact {
+                Rect::new(row.x + 12., row.y + 87., row.w - 24., 20.)
+            } else {
+                Rect::new(row.x + 12., row.y + 58., row.w * 0.48, 20.)
+            },
+            15.,
+            GOLD,
         );
         if activated(row) {
             return Some(UiAction::Quest(id));

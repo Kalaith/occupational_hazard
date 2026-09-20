@@ -118,4 +118,23 @@ See [design and action map](docs/cutaway_design.md),
 existing deterministic first-month rules and guild save schema. Recruitment,
 relationships, death and procedural contracts remain roadmap work.
 
+### Headquarters screen brief
+
+The current decision on the headquarters overview is which person, room or
+return needs attention before the next day. The cutaway building is the
+dominant focus; the current assignment/return state is the supporting region;
+Menu and saved preferences stay quiet utilities. The primary action is the
+next useful visible control: open Assignments, inspect a person or read a
+return, then ADVANCE DAY when the guild is ready. Staff identity, availability,
+fatigue, injury and urgent returns remain discoverable beside those actions;
+full staff detail is available through the labelled STAFF disclosure.
+
+The normal supported canvas is 1280×720. The smallest supported canvases are
+390×844 portrait and 844×390 short landscape; 1024×768 is the tablet check
+size. At narrow sizes the building keeps the largest useful selectable view,
+while staff detail, rooms and assignment comparisons reflow into visible
+focused controls. Touch feedback uses the same projected mapping for artwork
+and hit targets, with selected, urgent and primary actions outlined or filled
+using the guild palette.
+
 Developer frame timing: F3 toggles the shared toolkit overlay. This diagnostic is optional; gameplay remains fully available through visible pointer controls. See docs/verification/cutaway_comparison.md for the measured host and limitations.

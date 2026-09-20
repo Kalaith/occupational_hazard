@@ -18,8 +18,19 @@ pub fn draw(g: &Game) -> Option<UiAction> {
     let short = h < 500.;
     let has_window = g.hq.sheet != Sheet::None;
     let overview = phone && g.hq.focus.is_none();
+    let compact_overview = (phone || short) && g.hq.focus.is_none();
+    let guidance_reserved = if g.lesson().is_some() && (phone || short) {
+        136.
+    } else {
+        0.
+    };
     let stage = if overview {
-        Rect::new(0., 124., w, (h - 560.).clamp(64., w * 0.66))
+        Rect::new(
+            0.,
+            124.,
+            w,
+            (h - 338. - guidance_reserved).clamp(170., w * 0.92),
+        )
     } else {
         Rect::new(0., 0., w, h)
     };
@@ -66,7 +77,13 @@ pub fn draw(g: &Game) -> Option<UiAction> {
                 GOLD,
             );
         }
-        let area = Rect::new(r.x + 24., r.y + 74., ww - 48., wh - 98.);
+        let feedback_height = if g.feedback.is_error() { 58. } else { 0. };
+        let area = Rect::new(
+            r.x + 24.,
+            r.y + 74. + feedback_height,
+            ww - 48.,
+            wh - 98. - feedback_height,
+        );
         let inner = match g.hq.sheet {
             Sheet::Rooms => phone::rooms(g, area),
             Sheet::Commissions => commissions::draw(g, area),
@@ -77,34 +94,62 @@ pub fn draw(g: &Game) -> Option<UiAction> {
             Sheet::Facility(room) => management::facility(g, area, room),
             Sheet::None => None,
         };
-        return inner.or(action);
+        let mut result = inner.or(action);
+        if g.feedback.is_error() {
+            result = draw_feedback(
+                g,
+                Rect::new(r.x + 24., r.y + 74., ww - 48., feedback_height),
+            )
+            .or(result);
+        }
+        return result;
     }
     if let Some(next) = chrome::hud(g) {
         action = Some(next);
     }
     if phone || short {
-        if button(
-            Rect::new(12., 68., (w - 32.) / 2., 44.),
-            g.guild.text.get("ui.overview"),
-            false,
-        ) {
-            action = Some(UiAction::Overview);
-        }
-        if button(
-            Rect::new(w / 2. + 4., 68., (w - 32.) / 2., 44.),
-            g.guild.text.get("ui.rooms"),
-            false,
-        ) {
-            action = Some(UiAction::Rooms);
+        if compact_overview {
+            if button(
+                Rect::new(12., 68., w - 24., 44.),
+                g.guild.text.get("ui.rooms"),
+                false,
+            ) {
+                action = Some(UiAction::Rooms);
+            }
+        } else {
+            if button(
+                Rect::new(12., 68., (w - 32.) / 2., 44.),
+                g.guild.text.get("ui.overview"),
+                false,
+            ) {
+                action = Some(UiAction::Overview);
+            }
+            if button(
+                Rect::new(w / 2. + 4., 68., (w - 32.) / 2., 44.),
+                g.guild.text.get("ui.rooms"),
+                false,
+            ) {
+                action = Some(UiAction::Rooms);
+            }
         }
         if overview {
-            action = phone::overview(g, stage.bottom() + 14.).or(action);
+            action = phone::overview(g, stage.bottom() + 10.).or(action);
         }
     }
-    if g.lesson().is_some() {
+    if g.feedback.is_error() {
         let r = Rect::new(
             16.,
-            if phone || short { h - 282. } else { 74. },
+            if phone || short { h - 136. } else { 74. },
+            (w - 32.).min(440.),
+            116.,
+        );
+        if let Some(next) = draw_feedback(g, r) {
+            action = Some(next);
+        }
+    } else if g.lesson().is_some() {
+        let r = Rect::new(
+            16.,
+            if phone || short { h - 136. } else { 74. },
             (w - 32.).min(440.),
             116.,
         );
@@ -114,7 +159,7 @@ pub fn draw(g: &Game) -> Option<UiAction> {
         if let Some(next) = help::draw_guidance(g, r) {
             action = Some(next);
         }
-    } else if !g.notice.is_empty() {
+    } else if !g.feedback.message.is_empty() {
         let r = Rect::new(
             16.,
             if phone || short { h - 226. } else { 74. },
@@ -126,13 +171,28 @@ pub fn draw(g: &Game) -> Option<UiAction> {
             action = None;
         }
         text(
-            &g.notice,
+            &g.feedback.message,
             Rect::new(r.x + 12., r.y + 9., r.w - 24., 42.),
             16.,
             INK,
         );
     }
     action
+}
+
+fn draw_feedback(g: &Game, r: Rect) -> Option<UiAction> {
+    panel(r, PANEL);
+    let button_r = Rect::new(r.right() - 112., r.y + 10., 100., r.h - 20.);
+    text(
+        &g.feedback.message,
+        Rect::new(r.x + 12., r.y + 8., r.w - 136., r.h - 16.),
+        16.,
+        Color::new(1.0, 0.76, 0.52, 1.0),
+    );
+    if g.feedback.is_error() && button(button_r, g.guild.text.get("ui.dismiss_feedback"), false) {
+        return Some(UiAction::DismissFeedback);
+    }
+    None
 }
 pub fn text(value: &str, r: Rect, size: f32, color: Color) {
     paragraph(value, r, size, color);

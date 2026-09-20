@@ -130,6 +130,17 @@ fn draw_party(
         19.,
         GOLD,
     );
+    if button(
+        Rect::new(right.right() - 176., right.y, 176., 34.),
+        if g.hq.readiness_details {
+            g.guild.text.get("ui.hide_readiness_details")
+        } else {
+            g.guild.text.get("ui.readiness_details")
+        },
+        false,
+    ) {
+        action = Some(UiAction::ToggleReadinessDetails);
+    }
     if let Some(next) =
         preparation::members(g, Rect::new(right.x, right.y + 40., right.w, 255.), id)
     {
@@ -138,7 +149,7 @@ fn draw_party(
     let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
     text(
         &preparation::summary(g, id),
-        Rect::new(right.x, right.y + 300., right.w, 55.),
+        Rect::new(right.x, right.y + 296., right.w, 30.),
         18.,
         GOLD,
     );
@@ -146,17 +157,26 @@ fn draw_party(
         let reason = preparation::advice(g, id);
         text(
             &reason,
-            Rect::new(right.x, right.y + 354., right.w, 38.),
+            Rect::new(right.x, right.y + 330., right.w, 36.),
             17.,
             INK,
         );
     }
     action = preparation::scout(
         g,
-        Rect::new(right.x, right.bottom() - 122., right.w, 44.),
+        Rect::new(right.x, right.bottom() - 152., right.w, 44.),
         id,
     )
     .or(action);
+    text(
+        &g.guild.text.format(
+            "ui.dispatch_service",
+            &[("status", preparation::service_status(g, id))],
+        ),
+        Rect::new(right.x, right.bottom() - 104., right.w, 22.),
+        15.,
+        MUTED,
+    );
     let day = journey.map_or(g.guild.day + q.days, |e| e.returns);
     text(
         &g.guild.text.format(
@@ -173,7 +193,7 @@ fn draw_party(
                 ),
             ],
         ),
-        Rect::new(right.x, right.bottom() - 70., right.w, 24.),
+        Rect::new(right.x, right.bottom() - 76., right.w, 24.),
         16.,
         GOLD,
     );

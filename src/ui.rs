@@ -21,10 +21,14 @@ pub enum UiAction {
     Rooms,
     CommissionPage(usize),
     Overview,
+    ToggleStaff,
+    ToggleReadinessDetails,
     Room(crate::headquarters::Room),
     PrepareTrial(usize),
     SheetPage(usize),
     Journey(usize),
+    JourneyPage(usize),
+    ReturnSection(usize),
     ReducedMotion,
     TextSize,
     SkipMotion,
@@ -38,6 +42,7 @@ pub enum UiAction {
     CloseMonth,
     Sandbox,
     Restart,
+    ReviewDetails,
     Purchase(crate::services::Purchase),
     Start,
     Continue,
@@ -59,6 +64,7 @@ pub enum UiAction {
     Promote(usize),
     CloseVictory,
     Save,
+    DismissFeedback,
 }
 
 pub fn draw(game: &Game) -> Option<UiAction> {
@@ -147,12 +153,14 @@ fn menu(game: &Game) -> Option<UiAction> {
             return Some(action);
         }
     }
-    paragraph(
-        &game.notice,
-        Rect::new(20.0, screen_height() - 65.0, screen_width() - 40.0, 60.0),
-        16.0,
-        GOLD,
-    );
+    if !game.feedback.message.is_empty() {
+        paragraph(
+            &game.feedback.message,
+            Rect::new(20.0, screen_height() - 65.0, screen_width() - 40.0, 60.0),
+            16.0,
+            GOLD,
+        );
+    }
     None
 }
 

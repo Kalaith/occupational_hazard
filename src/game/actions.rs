@@ -31,12 +31,23 @@ fn apply_action(game: &mut Game, action: UiAction) -> bool {
             game.hq.open(Sheet::None);
             game.hq.focus = None;
         }
+        UiAction::ToggleStaff => game.hq.staff_open = !game.hq.staff_open,
+        UiAction::ToggleReadinessDetails => game.hq.readiness_details = !game.hq.readiness_details,
         UiAction::PrepareTrial(id) => prepare_trial(game, id),
         UiAction::Room(room) => open_room(game, room),
         UiAction::SheetPage(page) => game.hq.page = page,
         UiAction::Journey(id) => {
             game.hq.open(Sheet::Jobs);
             game.hq.journey = Some(id);
+        }
+        UiAction::JourneyPage(page) => game.hq.journey_page = page,
+        UiAction::ReturnSection(section) => {
+            game.hq.return_section = section;
+            if section == 1 {
+                game.report_page = 0;
+            } else {
+                game.hq.journey_page = 0;
+            }
         }
         UiAction::ReducedMotion => toggle_motion(game),
         UiAction::TextSize => toggle_text_size(game),
@@ -59,12 +70,15 @@ fn apply_action(game: &mut Game, action: UiAction) -> bool {
         UiAction::Month => {
             game.guild.tutorial.acknowledge(Lesson::Welcome);
             game.month_open = true;
+            game.review_details = false;
             game.save();
         }
         UiAction::CloseMonth => game.month_open = false,
+        UiAction::ReviewDetails => game.review_details = !game.review_details,
         UiAction::Sandbox => {
             game.guild.continue_sandbox();
             game.month_open = false;
+            game.review_details = false;
             game.save();
         }
         UiAction::Restart => {
@@ -100,6 +114,7 @@ fn apply_action(game: &mut Game, action: UiAction) -> bool {
         UiAction::Promote(id) => promote(game, id),
         UiAction::CloseVictory => game.victory = false,
         UiAction::Save => game.save(),
+        UiAction::DismissFeedback => game.feedback.dismiss(),
     }
     true
 }
@@ -141,10 +156,10 @@ fn toggle_text_size(game: &mut Game) {
 fn apply_purchase(game: &mut Game, purchase: crate::services::Purchase) {
     match game.guild.purchase(purchase, &game.contracts) {
         Ok(message) => {
-            game.notice = message;
+            game.feedback.info(message);
             game.save();
         }
-        Err(error) => game.notice = error,
+        Err(error) => game.feedback.error(error),
     }
 }
 
@@ -173,7 +188,7 @@ fn start_new_guild(game: &mut Game) -> bool {
     game.tab = 0;
     game.in_title = false;
     game.confirm_new = false;
-    game.notice.clear();
+    game.feedback.dismiss();
     game.save();
     true
 }
@@ -191,23 +206,21 @@ fn continue_guild(game: &mut Game) {
                     game.guild.finish_review(&game.contracts);
                     game.month_open = false;
                     game.in_title = false;
-                    game.notice.clear();
+                    game.feedback.clear_info();
                     game.save();
                 }
-                Err(error) => {
-                    game.notice = game
-                        .guild
+                Err(error) => game.feedback.error(
+                    game.guild
                         .text
-                        .format("action.cannot_open_ledger", &[("error", error)])
-                }
+                        .format("action.cannot_open_ledger", &[("error", error)]),
+                ),
             }
         }
-        Err(error) => {
-            game.notice = game
-                .guild
+        Err(error) => game.feedback.error(
+            game.guild
                 .text
-                .format("action.cannot_open_ledger", &[("error", error)])
-        }
+                .format("action.cannot_open_ledger", &[("error", error)]),
+        ),
     }
 }
 
@@ -222,12 +235,14 @@ fn open_tab(game: &mut Game, tab: usize) {
     if tab == 2 {
         game.report_detail = false;
         game.report_page = 0;
+        game.hq.return_section = usize::from(game.guild.reports.is_empty());
+        game.hq.journey_page = 0;
     }
     if tab == 2 && !game.guild.reports.is_empty() {
         game.guild.tutorial.acknowledge(Lesson::Reports);
         game.save();
     }
-    game.notice.clear();
+    game.feedback.clear_info();
 }
 
 fn select_quest(game: &mut Game, id: usize) {
@@ -239,7 +254,7 @@ fn select_quest(game: &mut Game, id: usize) {
     game.hq.open(Sheet::Jobs);
     game.hq.page = page;
     game.selected = id;
-    game.notice.clear();
+    game.feedback.clear_info();
 }
 
 fn toggle_party_member(game: &mut Game, id: usize) {
@@ -250,7 +265,7 @@ fn toggle_party_member(game: &mut Game, id: usize) {
         game.guild.tutorial.acknowledge(Lesson::Welcome);
         game.guild.tutorial.acknowledge(Lesson::Selection);
     }
-    game.notice.clear();
+    game.feedback.clear_info();
 }
 
 fn dispatch(game: &mut Game) {
@@ -270,11 +285,11 @@ fn dispatch(game: &mut Game) {
             if game.contracts[game.selected].promotion {
                 game.guild.tutorial.acknowledge(Lesson::Trial);
             }
-            game.notice = game.guild.text.get("ui.dispatched").into();
+            game.feedback.info(game.guild.text.get("ui.dispatched"));
             game.party.clear();
             game.save();
         }
-        Err(error) => game.notice = error,
+        Err(error) => game.feedback.error(error),
     }
 }
 
@@ -309,10 +324,10 @@ fn promote(game: &mut Game, id: usize) {
             game.guild.tutorial.acknowledge(Lesson::Promotion);
             game.victory = !game.guild.victory_seen;
             game.guild.victory_seen = true;
-            game.notice = game.guild.text.get("action.promotion").into();
+            game.feedback.info(game.guild.text.get("action.promotion"));
             game.save();
         }
-        Err(error) => game.notice = error,
+        Err(error) => game.feedback.error(error),
     }
 }
 
@@ -343,7 +358,7 @@ fn advance_day(game: &mut Game) {
         .flat_map(|expedition| expedition.party.iter().copied())
         .collect();
     game.guild.next_day(&game.contracts);
-    game.notice = if returning > 0 {
+    game.feedback.info(if returning > 0 {
         game.guild.text.format(
             "ui.return_reports",
             &[
@@ -353,7 +368,7 @@ fn advance_day(game: &mut Game) {
         )
     } else {
         game.guild.text.get("ui.new_day").into()
-    };
+    });
     if returning > 0 {
         game.hq.open(Sheet::Returns);
         game.hq.transition = Some(Transition {
@@ -365,6 +380,8 @@ fn advance_day(game: &mut Game) {
         game.report = 0;
         game.report_detail = false;
         game.report_page = 0;
+        game.hq.return_section = 1;
+        game.hq.journey_page = 0;
     }
     game.save();
 }
@@ -385,10 +402,11 @@ impl Game {
                 "preferences",
                 &(self.hq.reduced_motion, self.hq.large_text),
             ) {
-                self.notice = self
-                    .guild
-                    .text
-                    .format("action.preferences_save_failed", &[("error", error)]);
+                self.feedback.error(
+                    self.guild
+                        .text
+                        .format("action.preferences_save_failed", &[("error", error)]),
+                );
             }
         }
     }
@@ -398,20 +416,25 @@ impl Game {
             return;
         }
         if let Err(error) = self.guild.migrate_board(&self.contracts) {
-            self.notice = self
-                .guild
-                .text
-                .format("action.ledger_save_failed", &[("error", error)]);
+            self.feedback.error(
+                self.guild
+                    .text
+                    .format("action.ledger_save_failed", &[("error", error)]),
+            );
             return;
         }
         match persistence::save_to_slot("occupational_hazard", "guild", &self.guild) {
-            Ok(()) => self.has_save = true,
-            Err(error) => {
-                self.notice = self
-                    .guild
-                    .text
-                    .format("action.ledger_save_retry", &[("error", error)])
+            Ok(()) => {
+                self.has_save = true;
+                if self.feedback.is_error() {
+                    self.feedback.dismiss();
+                }
             }
+            Err(error) => self.feedback.error(
+                self.guild
+                    .text
+                    .format("action.ledger_save_retry", &[("error", error)]),
+            ),
         }
     }
 }

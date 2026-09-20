@@ -62,6 +62,41 @@ pub fn member(g: &Game, id: usize, quest: usize) -> String {
     )
 }
 
+fn compact_member(g: &Game, id: usize) -> String {
+    let a = &g.guild.roster[id];
+    if g.guild.busy(id) {
+        return g.guild.text.get("ui.away_cannot_join").into();
+    }
+    if a.injury > 0 {
+        return g
+            .guild
+            .text
+            .format("ui.medical_days", &[("days", a.injury.to_string())]);
+    }
+    g.guild.text.format(
+        "ui.member_quick",
+        &[
+            ("class", a.class.clone()),
+            (
+                "activity",
+                activity(&g.guild, id).label(&g.guild.text).to_string(),
+            ),
+            ("fatigue", a.fatigue.to_string()),
+        ],
+    )
+}
+
+pub fn service_status(g: &Game, id: usize) -> String {
+    let q = &g.contracts[id];
+    if !q.service {
+        g.guild.text.get("ui.service_none").into()
+    } else if g.guild.board.service_credit.contains(&q.id) {
+        g.guild.text.get("ui.service_credited").into()
+    } else {
+        g.guild.text.get("ui.service_new").into()
+    }
+}
+
 pub fn summary(g: &Game, id: usize) -> String {
     let q = &g.contracts[id];
     if let Some(journey) = g.hq.journey {
@@ -84,6 +119,15 @@ pub fn summary(g: &Game, id: usize) -> String {
     } else {
         g.guild.text.get("ui.outmatched")
     };
+    if !g.hq.readiness_details {
+        return g.guild.text.format(
+            "ui.preparation_quick",
+            &[
+                ("verdict", verdict.to_string()),
+                ("party", g.party.len().to_string()),
+            ],
+        );
+    }
     g.guild.text.format(
         "ui.preparation_summary",
         &[
@@ -182,8 +226,13 @@ pub fn members(g: &Game, r: Rect, quest: usize) -> Option<UiAction> {
             20.,
             INK,
         );
+        let detail = if g.hq.readiness_details {
+            member(g, id, quest)
+        } else {
+            compact_member(g, id)
+        };
         text(
-            &member(g, id, quest),
+            &detail,
             Rect::new(x, row.y + 30., row.right() - x - 8., row.h - 32.),
             17.,
             MUTED,

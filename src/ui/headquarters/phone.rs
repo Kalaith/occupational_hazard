@@ -24,9 +24,73 @@ pub fn rooms(g: &Game, r: Rect) -> Option<UiAction> {
 
 pub fn overview(g: &Game, y: f32) -> Option<UiAction> {
     let w = screen_width();
-    let row_h = ((screen_height() - y - 214.) / 3.).clamp(48., 65.);
+    let summary = Rect::new(12., y, w - 24., 48.);
+    panel(summary, PANEL);
+    let ready = g
+        .guild
+        .roster
+        .iter()
+        .enumerate()
+        .filter(|(id, _)| matches!(activity(&g.guild, *id), Activity::Ready))
+        .count();
+    let away = g
+        .guild
+        .expeditions
+        .iter()
+        .map(|e| e.party.len())
+        .sum::<usize>();
+    let recovering = g
+        .guild
+        .roster
+        .iter()
+        .filter(|a| a.injury > 0 || a.fatigue > 0)
+        .count();
+    text(
+        &g.guild.text.format(
+            if g.hq.staff_open {
+                "ui.staff_open"
+            } else {
+                "ui.staff_summary"
+            },
+            &[
+                ("count", g.guild.roster.len().to_string()),
+                ("ready", ready.to_string()),
+                ("away", away.to_string()),
+                ("recovering", recovering.to_string()),
+            ],
+        ),
+        Rect::new(summary.x + 12., summary.y + 4., summary.w - 24., 40.),
+        17.,
+        GOLD,
+    );
+    if activated(summary) {
+        return Some(UiAction::ToggleStaff);
+    }
+    if !g.hq.staff_open {
+        return if button(
+            Rect::new(12., y + 56., w - 24., 48.),
+            g.guild.text.get("ui.compare_phone"),
+            false,
+        ) {
+            Some(UiAction::CommissionList)
+        } else {
+            None
+        };
+    }
+    let cards_y = y + 56.;
+    let available_bottom = if g.lesson().is_some() {
+        screen_height() - 146.
+    } else {
+        screen_height() - 214.
+    };
+    let row_h = ((available_bottom - cards_y) / 3.).clamp(44., 62.);
     for id in 0..g.guild.roster.len() {
-        let r = Rect::new(12., y + id as f32 * row_h, w - 24., (row_h - 5.).max(44.));
+        let r = Rect::new(
+            12.,
+            cards_y + id as f32 * row_h,
+            w - 24.,
+            (row_h - 5.).max(44.),
+        );
         panel(r, PANEL);
         let size = (r.h - 12.).min(46.);
         portrait(g, key(id), Rect::new(r.x + 6., r.y + 6., size, size));
@@ -63,7 +127,7 @@ pub fn overview(g: &Game, y: f32) -> Option<UiAction> {
         }
     }
     if button(
-        Rect::new(12., y + row_h * 3. + 3., w - 24., 48.),
+        Rect::new(12., cards_y + row_h * 3. + 3., w - 24., 48.),
         g.guild.text.get("ui.compare_phone"),
         false,
     ) {
@@ -107,14 +171,44 @@ fn short_readiness(g: &Game, r: Rect, id: usize) -> Option<UiAction> {
     let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
     text(
         &preparation::summary(g, id),
-        Rect::new(r.x, r.y + 46., r.w, 56.),
+        Rect::new(r.x, r.y + 46., r.w, 42.),
         19.,
         GOLD,
     );
+    if button(
+        Rect::new(r.x, r.y + 90., r.w, 34.),
+        if g.hq.readiness_details {
+            g.guild.text.get("ui.hide_readiness_details")
+        } else {
+            g.guild.text.get("ui.readiness_details")
+        },
+        false,
+    ) {
+        return Some(UiAction::ToggleReadinessDetails);
+    }
+    let q = &g.contracts[id];
+    let timing = if g.guild.day + q.days <= g.guild.config.review.cutoff_day {
+        g.guild.text.get("ui.before_review").to_string()
+    } else {
+        g.guild.text.get("ui.after_review").to_string()
+    };
+    text(
+        &g.guild.text.format(
+            "ui.decision_service",
+            &[
+                ("status", preparation::service_status(g, id)),
+                ("day", (g.guild.day + q.days).to_string()),
+                ("timing", timing),
+            ],
+        ),
+        Rect::new(r.x, r.y + 126., r.w, 26.),
+        15.,
+        MUTED,
+    );
     text(
         &preparation::advice(g, id),
-        Rect::new(r.x, r.y + 105., r.w, 60.),
-        18.,
+        Rect::new(r.x, r.y + 153., r.w, 22.),
+        15.,
         INK,
     );
     let action = preparation::scout(g, Rect::new(r.x, r.bottom() - 98., r.w, 44.), id);
@@ -134,20 +228,20 @@ fn contract_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> 
     if !short {
         destination(g, id, Rect::new(r.x, r.y + 46., r.w, image_h));
     }
+    let compact = short && r.h < 420.;
+    let footer_top = r.bottom() - if compact { 166. } else { 226. };
     let body_y = r.y + if short { 42. } else { image_h + 60. };
     text(
         &q.brief,
-        Rect::new(r.x, body_y, r.w, r.bottom() - 154. - body_y),
+        Rect::new(r.x, body_y, r.w, (footer_top - body_y - 8.).max(28.)),
         20.,
         INK,
     );
-    if r.h > 620.
-        && button(
-            Rect::new(r.x, r.bottom() - 240., r.w, 44.),
-            g.guild.text.get("ui.acceptance_terms"),
-            false,
-        )
-    {
+    if button(
+        Rect::new(r.x, footer_top, r.w, if compact { 30. } else { 36. }),
+        g.guild.text.get("ui.acceptance_terms"),
+        false,
+    ) {
         return Some(UiAction::SheetPage(3));
     }
     text(
@@ -169,9 +263,39 @@ fn contract_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> 
                 ("danger", q.danger.clone()),
             ],
         ),
-        Rect::new(r.x, r.bottom() - 150., r.w, 53.),
-        18.,
+        Rect::new(
+            r.x,
+            r.bottom() - if compact { 132. } else { 182. },
+            r.w,
+            if compact { 24. } else { 38. },
+        ),
+        if compact { 14. } else { 16. },
         GOLD,
+    );
+    text(
+        &g.guild.text.format(
+            "ui.decision_service",
+            &[
+                ("status", preparation::service_status(g, id)),
+                ("day", (g.guild.day + q.days).to_string()),
+                (
+                    "timing",
+                    if g.guild.day + q.days <= g.guild.config.review.cutoff_day {
+                        g.guild.text.get("ui.before_review").to_string()
+                    } else {
+                        g.guild.text.get("ui.after_review").to_string()
+                    },
+                ),
+            ],
+        ),
+        Rect::new(
+            r.x,
+            r.bottom() - if compact { 102. } else { 142. },
+            r.w,
+            if compact { 24. } else { 34. },
+        ),
+        if compact { 14. } else { 16. },
+        MUTED,
     );
     let expiry = if q.promotion {
         g.guild.text.get("ui.standing_trial").into()
@@ -205,12 +329,22 @@ fn contract_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> 
                 ),
             ],
         ),
-        Rect::new(r.x, r.bottom() - 95., r.w, 43.),
-        18.,
+        Rect::new(
+            r.x,
+            r.bottom() - if compact { 72. } else { 104. },
+            r.w,
+            if compact { 24. } else { 38. },
+        ),
+        if compact { 14. } else { 16. },
         MUTED,
     );
     if primary(
-        Rect::new(r.x, r.bottom() - 48., r.w, 48.),
+        Rect::new(
+            r.x,
+            r.bottom() - if compact { 44. } else { 48. },
+            r.w,
+            if compact { 40. } else { 48. },
+        ),
         g.guild.text.get("ui.choose_party"),
         true,
     ) {
@@ -220,6 +354,7 @@ fn contract_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> 
 }
 
 fn party_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> {
+    let q = &g.contracts[id];
     if short {
         let mut action = super::planning::cards(g, Rect::new(r.x, r.y + 42., r.w, 170.));
         if primary(
@@ -240,17 +375,48 @@ fn party_page(g: &Game, r: Rect, id: usize, short: bool) -> Option<UiAction> {
         19.,
         GOLD,
     );
+    if button(
+        Rect::new(r.x, summary_y + 70., r.w, 34.),
+        if g.hq.readiness_details {
+            g.guild.text.get("ui.hide_readiness_details")
+        } else {
+            g.guild.text.get("ui.readiness_details")
+        },
+        false,
+    ) {
+        return Some(UiAction::ToggleReadinessDetails);
+    }
     let problem = g.guild.dispatch_problem(id, &g.party, &g.contracts);
     text(
         &preparation::advice(g, id),
         Rect::new(
             r.x,
-            summary_y + 75.,
+            summary_y + 110.,
             r.w,
-            (r.bottom() - 114. - summary_y - 75.).min(65.),
+            (r.bottom() - 150. - summary_y - 110.).min(65.),
         ),
         18.,
         INK,
+    );
+    text(
+        &g.guild.text.format(
+            "ui.decision_service",
+            &[
+                ("status", preparation::service_status(g, id)),
+                ("day", (g.guild.day + q.days).to_string()),
+                (
+                    "timing",
+                    if g.guild.day + q.days <= g.guild.config.review.cutoff_day {
+                        g.guild.text.get("ui.before_review").to_string()
+                    } else {
+                        g.guild.text.get("ui.after_review").to_string()
+                    },
+                ),
+            ],
+        ),
+        Rect::new(r.x, r.bottom() - 184., r.w, 28.),
+        15.,
+        GOLD,
     );
     action = preparation::scout(g, Rect::new(r.x, r.bottom() - 104., r.w, 44.), id).or(action);
     if primary(

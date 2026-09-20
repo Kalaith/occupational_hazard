@@ -1006,3 +1006,21 @@ availability, recovery and purchased training. Portrait cards support party
 planning, while departures and returns connect the decision to the people.
 Validation and remaining evidence are tracked requirement by requirement in
 `docs/cutaway_requirement_ledger.md`.
+
+### Current headquarters screen brief
+
+On the overview, the player decides what needs attention before advancing the
+day: a person who can work or recover, an available assignment, or an unread
+return. The cutaway workplace is the dominant focus, with the current
+assignment/return state as the supporting area and Menu as a quiet utility.
+The next useful action remains visible without advancing time automatically.
+Staff identity and actionable availability/recovery states stay discoverable;
+the full fatigue list opens from the labelled STAFF disclosure. Planning makes
+the commission comparison and final dispatch the dominant decision, while
+terms, return timing, service credit and blocking reasons stay beside the
+action or in a visible disclosure.
+
+The supported canvas contract is 1280×720 normal, with 1024×768 tablet,
+390×844 portrait and 844×390 short-landscape checks. Narrow layouts preserve a
+single artwork-to-hit-target projection and move secondary collections into
+focused pages instead of shrinking required controls.

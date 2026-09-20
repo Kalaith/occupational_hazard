@@ -49,19 +49,21 @@ pub(super) fn cards(g: &Game, r: Rect) -> Option<UiAction> {
             17.,
             MUTED,
         );
-        text(
-            &if blocked {
-                activity(&g.guild, id).label(&g.guild.text).to_string()
-            } else {
-                g.guild.text.format(
-                    "ui.contributes",
-                    &[("strength", g.guild.strength(q, &[id]).to_string())],
-                )
-            },
-            Rect::new(x, r.y + 143., cw, 23.),
-            17.,
-            MUTED,
-        );
+        if g.hq.readiness_details {
+            text(
+                &if blocked {
+                    activity(&g.guild, id).label(&g.guild.text).to_string()
+                } else {
+                    g.guild.text.format(
+                        "ui.contributes",
+                        &[("strength", g.guild.strength(q, &[id]).to_string())],
+                    )
+                },
+                Rect::new(x, r.y + 143., cw, 23.),
+                17.,
+                MUTED,
+            );
+        }
         if !blocked && g.hq.journey.is_none() && activated(Rect::new(x, r.y, cw, r.h)) {
             return Some(UiAction::Party(id));
         }

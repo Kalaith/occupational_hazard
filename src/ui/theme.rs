@@ -26,20 +26,6 @@ pub fn panel(r: Rect, color: Color) {
         1.,
         Color::new(0.9, 0.73, 0.44, 0.2),
     );
-    if r.h >= 120. && r.w >= 160. {
-        draw_rectangle_lines(r.x + 6., r.y + 6., r.w - 12., r.h - 12., 1., BRASS);
-        for (x, dx) in [(r.x + 6., 1.), (r.right() - 6., -1.)] {
-            for (y, dy) in [(r.y + 6., 1.), (r.bottom() - 6., -1.)] {
-                draw_triangle(
-                    vec2(x, y),
-                    vec2(x + dx * 17., y),
-                    vec2(x, y + dy * 17.),
-                    BRASS,
-                );
-                rivet(vec2(x + dx * 4., y + dy * 4.));
-            }
-        }
-    }
 }
 
 fn rivet(p: Vec2) {
@@ -71,14 +57,16 @@ pub fn button(r: Rect, title: &str, selected: bool, primary: bool, enabled: bool
     let face = Rect::new(r.x, r.y + if pressed { 2. } else { 0. }, r.w, r.h - 2.);
     panel(face, color);
     let edge = if enabled { GOLD } else { BRASS };
-    draw_rectangle_lines(
-        face.x + 3.,
-        face.y + 3.,
-        face.w - 6.,
-        face.h - 6.,
-        1.,
-        Color::new(edge.r, edge.g, edge.b, 0.45),
-    );
+    if selected || primary || !enabled {
+        draw_rectangle_lines(
+            face.x + 3.,
+            face.y + 3.,
+            face.w - 6.,
+            face.h - 6.,
+            1.,
+            Color::new(edge.r, edge.g, edge.b, 0.45),
+        );
+    }
     if selected {
         draw_rectangle(face.x + 5., face.bottom() - 5., face.w - 10., 2., GOLD);
     }

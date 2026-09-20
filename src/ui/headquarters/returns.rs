@@ -15,8 +15,48 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
         24.,
         INK,
     );
-    let mut y = r.y + 46.;
-    for (id, e) in g.guild.expeditions.iter().enumerate() {
+    let tabs_y = r.y + 40.;
+    let half = (r.w - 8.) / 2.;
+    if button(
+        Rect::new(r.x, tabs_y, half, 42.),
+        &g.guild.text.format(
+            "ui.returns_journeys",
+            &[("count", g.guild.expeditions.len().to_string())],
+        ),
+        g.hq.return_section == 0,
+    ) {
+        return Some(UiAction::ReturnSection(0));
+    }
+    if button(
+        Rect::new(r.x + half + 8., tabs_y, half, 42.),
+        &g.guild.text.format(
+            "ui.returns_reports",
+            &[("count", g.guild.unread_reports().to_string())],
+        ),
+        g.hq.return_section == 1,
+    ) {
+        return Some(UiAction::ReturnSection(1));
+    }
+    if g.hq.return_section == 0 {
+        return journeys(g, r, tabs_y + 52.);
+    }
+    reports(g, r, tabs_y + 52.)
+}
+
+fn journeys(g: &Game, r: Rect, y: f32) -> Option<UiAction> {
+    let row_h = 66.;
+    let rows = ((r.bottom() - y - 52.) / row_h).floor().max(1.) as usize;
+    let pages = g.guild.expeditions.len().div_ceil(rows).max(1);
+    let page = g.hq.journey_page.min(pages - 1);
+    for (i, (id, e)) in g
+        .guild
+        .expeditions
+        .iter()
+        .enumerate()
+        .skip(page * rows)
+        .take(rows)
+        .enumerate()
+    {
         let names = e
             .party
             .iter()
@@ -24,7 +64,7 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
             .collect::<Vec<_>>()
             .join(" + ");
         if button(
-            Rect::new(r.x, y, r.w, 52.),
+            Rect::new(r.x, y + i as f32 * row_h, r.w, row_h - 6.),
             &g.guild.text.format(
                 "ui.expedition_entry",
                 &[
@@ -37,8 +77,34 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
         ) {
             return Some(UiAction::Journey(id));
         }
-        y += 60.;
     }
+    if g.guild.expeditions.is_empty() {
+        text(
+            g.guild.text.get("ui.no_returns"),
+            Rect::new(r.x, y, r.w, r.bottom() - y - 52.),
+            20.,
+            MUTED,
+        );
+    }
+    if pages > 1
+        && button(
+            Rect::new(r.x, r.bottom() - 46., r.w, 44.),
+            &g.guild.text.format(
+                "ui.more_journeys",
+                &[
+                    ("page", (page + 1).to_string()),
+                    ("pages", pages.to_string()),
+                ],
+            ),
+            false,
+        )
+    {
+        return Some(UiAction::JourneyPage((page + 1) % pages));
+    }
+    None
+}
+
+fn reports(g: &Game, r: Rect, y: f32) -> Option<UiAction> {
     text(
         &g.guild.text.format(
             "ui.unread_reports",
@@ -48,8 +114,9 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
         18.,
         GOLD,
     );
-    y += 34.;
-    let rows = ((r.bottom() - y - 52.) / 58.).floor().max(1.) as usize;
+    let list_y = y + 34.;
+    let row_h = 64.;
+    let rows = ((r.bottom() - list_y - 52.) / row_h).floor().max(1.) as usize;
     let pages = g.guild.reports.len().div_ceil(rows).max(1);
     let page = g.report_page.min(pages - 1);
     for (i, (id, report)) in g
@@ -62,7 +129,7 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
         .enumerate()
     {
         if button(
-            Rect::new(r.x, y + i as f32 * 58., r.w, 50.),
+            Rect::new(r.x, list_y + i as f32 * row_h, r.w, row_h - 6.),
             &g.guild.text.format(
                 "ui.report_entry",
                 &[
@@ -85,7 +152,7 @@ fn list(g: &Game, r: Rect) -> Option<UiAction> {
     if g.guild.reports.is_empty() {
         text(
             g.guild.text.get("ui.no_returns"),
-            Rect::new(r.x, y, r.w, r.bottom() - y),
+            Rect::new(r.x, list_y, r.w, r.bottom() - list_y - 52.),
             20.,
             MUTED,
         );

@@ -11,14 +11,6 @@ pub fn window(r: Rect) {
         55.,
         Color::new(0.27, 0.19, 0.11, 0.5),
     );
-    draw_rectangle_lines(
-        r.x + 5.,
-        r.y + 5.,
-        r.w - 10.,
-        r.h - 10.,
-        1.,
-        Color::new(0.34, 0.29, 0.21, 1.),
-    );
     rule(Rect::new(r.x + 18., r.y, r.w - 36., r.h), r.y + 64.);
     if r.w > 500. {
         crest(vec2(r.right() - 44., r.y + 36.), 17.);
@@ -63,7 +55,11 @@ fn header(g: &Game) -> Option<UiAction> {
         GOLD,
     );
     let review = Rect::new(
-        w - if phone { 196. } else { 274. },
+        if phone {
+            w - 196.
+        } else {
+            resources.right() + 12.
+        },
         12.,
         if phone { 90. } else { 166. },
         44.,
@@ -121,11 +117,22 @@ fn journey_card(g: &Game, stack: bool) -> Option<UiAction> {
         .enumerate()
         .min_by_key(|(_, e)| e.returns)
     {
+        let short = h < 500.;
         let r = Rect::new(
             12.,
-            h - if stack { 156. } else { 82. },
+            if short {
+                116.
+            } else {
+                h - if stack { 156. } else { 82. }
+            },
             if stack { w - 24. } else { (w - 580.).min(600.) },
-            if stack { 76. } else { 66. },
+            if short {
+                66.
+            } else if stack {
+                76.
+            } else {
+                66.
+            },
         );
         panel(r, PANEL);
         let names = e

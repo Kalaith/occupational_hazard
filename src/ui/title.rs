@@ -94,9 +94,9 @@ pub fn draw_title(g: &Game) -> Option<UiAction> {
             return Some(UiAction::Exit);
         }
     }
-    if !g.notice.is_empty() {
+    if !g.feedback.message.is_empty() {
         paragraph(
-            &g.notice,
+            &g.feedback.message,
             Rect::new(x + 20., y + height - 45., width - 40., 38.),
             15.,
             GOLD,

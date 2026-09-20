@@ -49,8 +49,9 @@ fn reset(game: &mut Game, scene_id: &str) {
     game.tab = 0;
     game.victory = false;
     game.month_open = scene_id == "objectives";
+    game.review_details = false;
     game.confirm_day = scene_id == "idle_warning";
-    game.notice.clear();
+    game.feedback.dismiss();
     game.pending = None;
 }
 
@@ -182,6 +183,7 @@ fn setup_scene_overrides(game: &mut Game, scene_id: &str) {
     setup_blocked_trial(game, scene_id);
     setup_return_scene(game, scene_id);
     setup_departure(game, scene_id);
+    setup_dense_returns(game, scene_id);
 }
 
 fn setup_pending_returns(game: &mut Game, scene_id: &str) {
@@ -254,4 +256,33 @@ fn setup_departure(game: &mut Game, scene_id: &str) {
         arriving: false,
         elapsed: 0.,
     });
+}
+
+fn setup_dense_returns(game: &mut Game, scene_id: &str) {
+    if !matches!(scene_id, "dense_returns" | "dense_reports") {
+        return;
+    }
+    game.guild.day = 9;
+    game.guild.migrate_board(&game.contracts).unwrap();
+    game.guild.dispatch(0, &[0], &game.contracts).unwrap();
+    game.guild.dispatch(1, &[2], &game.contracts).unwrap();
+    game.guild.dispatch(2, &[1], &game.contracts).unwrap();
+    game.guild.reports = (0..3)
+        .map(|index| crate::simulation::Report {
+            read: index == 2,
+            title: format!(
+                "Day {} / Returned / Long journal entry {}",
+                8 + index,
+                index + 1
+            ),
+            body: format!(
+                "Mira completed the assignment. Report detail {}.",
+                index + 1
+            ),
+            reward: format!("+{} gold · +{} XP", 35 + index * 10, 20 + index * 5),
+        })
+        .collect();
+    game.tab = 2;
+    game.hq.sheet = Sheet::Returns;
+    game.hq.return_section = usize::from(scene_id == "dense_reports");
 }
